@@ -1,37 +1,35 @@
 package GameObject;
 
-import World.PhysicsWorld;
-import com.badlogic.gdx.graphics.Color;
-import GameObject.Elements.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class GameObject {
-    protected Color color = Color.BLACK;
-    public Transform transform;
-    public PhysicsComponent physics;   // Puede ser null
-    public ColliderComponent collider; // Puede ser null
+public class GameObject {
+    private static int nextId = 0;
+    private final int id;
+    private int signature;
+    Map<Class<?>, Object> components = new HashMap<>();
 
-    public GameObject(float x, float y) {
-        this.transform = new Transform(x, y);
+    public GameObject(){
+        id = nextId;
+        nextId++;
     }
 
-    public GameObject withPhysics() {
-        this.physics = new PhysicsComponent();
-        return this;
+    public <T> void addComponent(T component){
+        if (components.containsKey(component.getClass()))
+            return;
+        components.put(component.getClass(), component);
+        signature |= ComponentRegistry.getBit(component.getClass());
     }
 
-    public GameObject withCollider(float radius) {
-        this.collider = new ColliderComponent(radius);
-        return this;
+    public <T> T getComponent (Class<T> type){
+        return type.cast(components.get(type));
     }
 
-    public Color getColor() {
-        return color;
+    public boolean hasComponent (Class<?> type){
+        return components.containsKey(type);
     }
 
-    /**
-     * Actualiza la lógica del objeto (IA, decisiones, cambios de estado).
-     * @param dt Delta time (tiempo transcurrido)
-     * @param world Referencia al mundo para consultar vecinos, mapa, etc.
-     */
-    public abstract void update(float dt, PhysicsWorld world);
+    public int getSignature() {
+        return signature;
+    }
 }
