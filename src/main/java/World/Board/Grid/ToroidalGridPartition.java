@@ -1,9 +1,11 @@
 package World.Board.Grid;
 
+import GameObject.Components.Core.TransformComponent;
+import GameObject.Components.ComponentRegistry;
 import GameObject.GameObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class ToroidalGridPartition extends GridPartition{
     private ArrayList<GameObject>[] cells;
@@ -37,10 +39,10 @@ public class ToroidalGridPartition extends GridPartition{
     }
 
     @Override
-    public ArrayList<GameObject> getNearby(GameObject obj, int distance) {
+    public ArrayList<GameObject> getNearby(TransformComponent transform, int distance) {
         ArrayList<GameObject> nearby = new ArrayList<>();
-        int centerCol = getCol(obj.transform.position.x);
-        int centerRow = getRow(obj.transform.position.y);
+        int centerCol = getCol(transform.getPosition().x);
+        int centerRow = getRow(transform.getPosition().y);
 
         for (int i = -distance; i <= distance; i++){
             for (int j = -distance; j <= distance; j++) {
@@ -64,8 +66,18 @@ public class ToroidalGridPartition extends GridPartition{
     }
 
     @Override
-    public void add(GameObject obj) {
-        int id = getCol(obj.transform.position.x)+ getRow(obj.transform.position.y) * cols;
-        cells[id].add(obj);
+    public void add(GameObject gameObject) {
+        if (gameObject.checkSignature(ComponentRegistry.getBit(TransformComponent.class))){
+            TransformComponent transform = gameObject.getComponent(TransformComponent.class);
+            int id = getCol(transform.getPosition().x)+ getRow(transform.getPosition().y) * cols;
+            cells[id].add(gameObject);
+        }
+    }
+
+    @Override
+    public void add(List<GameObject> gameObjects) {
+        for (GameObject gameObject : gameObjects){
+            add(gameObject);
+        }
     }
 }

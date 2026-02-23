@@ -1,3 +1,5 @@
+package GameObject.Components.Dot;
+
 import com.badlogic.gdx.graphics.Color;
 
 import java.util.Random;

@@ -1,9 +1,9 @@
 package World.Board.Grid;
 
+import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class GridPartition {
@@ -43,9 +43,11 @@ public abstract class GridPartition {
 
     public abstract void clear();
 
-    public abstract void add(GameObject obj);
+    public abstract void add(GameObject gameObject);
 
-    public abstract ArrayList<GameObject> getNearby(GameObject obj, int distance);
+    public abstract void add(List<GameObject> gameObjects);
+
+    public abstract ArrayList<GameObject> getNearby(TransformComponent transform, int distance);
 
     protected abstract int getCol(float x);
 

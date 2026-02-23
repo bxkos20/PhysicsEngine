@@ -1,6 +1,6 @@
 package World.Board;
 
-import GameObject.Elements.*;
+import GameObject.Components.Core.TransformComponent;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Board {
@@ -18,5 +18,5 @@ public abstract class Board {
 
     public abstract Vector2 getMidPoint(Vector2 a, Vector2 b);
 
-    public abstract void enforceBounds (Transform t);
+    public abstract void enforceBounds (TransformComponent t);
 }

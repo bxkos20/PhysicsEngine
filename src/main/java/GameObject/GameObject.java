@@ -1,5 +1,7 @@
 package GameObject;
 
+import GameObject.Components.ComponentRegistry;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,5 +33,9 @@ public class GameObject {
 
     public int getSignature() {
         return signature;
+    }
+
+    public boolean checkSignature(int otherSignature){
+        return (signature & otherSignature) == otherSignature;
     }
 }

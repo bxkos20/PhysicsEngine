@@ -1,4 +1,4 @@
-package GameObject;
+package GameObject.Components;
 
 import java.util.HashMap;
 import java.util.Map;

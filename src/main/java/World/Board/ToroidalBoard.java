@@ -1,6 +1,6 @@
 package World.Board;
 
-import GameObject.Elements.*;
+import GameObject.Components.Core.TransformComponent;
 import com.badlogic.gdx.math.Vector2;
 
 public class ToroidalBoard extends Board {
@@ -12,14 +12,14 @@ public class ToroidalBoard extends Board {
      * Teletransporta el objeto si se sale de los bordes.
      * Se debe llamar en cada frame después de mover el objeto.
      */
-    public void enforceBounds(Transform t) {
+    public void enforceBounds(TransformComponent transform) {
         // Eje X
-        if (t.position.x < 0) t.position.x += width;
-        else if (t.position.x > width) t.position.x -= width;
+        if (transform.getPosition().x < 0) transform.getPosition().x += width;
+        else if (transform.getPosition().x > width) transform.getPosition().x -= width;
 
         // Eje Y
-        if (t.position.y < 0) t.position.y += height;
-        else if (t.position.y > height) t.position.y -= height;
+        if (transform.getPosition().y < 0) transform.getPosition().y += height;
+        else if (transform.getPosition().y > height) transform.getPosition().y -= height;
     }
 
     /**

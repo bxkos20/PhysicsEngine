@@ -1,5 +1,9 @@
 package World.Collision;
 
+import GameObject.Components.ComponentRegistry;
+import GameObject.Components.Core.ColliderComponent;
+import GameObject.Components.Core.PhysicsComponent;
+import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
 import World.Board.Board;
 import com.badlogic.gdx.math.Vector2;
@@ -14,9 +18,15 @@ public class ElasticCollision extends Collision {
      * Si uno es estático (masa 0), no se mueve.
      */
     private void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
+        PhysicsComponent aPhysics = a.getComponent(PhysicsComponent.class);
+        TransformComponent aTransform = a.getComponent(TransformComponent.class);
+
+        PhysicsComponent bPhysics = b.getComponent(PhysicsComponent.class);
+        TransformComponent bTransform = b.getComponent(TransformComponent.class);
+
         // Obtenemos la masa inversa (0 si es estático/pared)
-        float imA = (a.physics.mass == 0) ? 0 : 1 / a.physics.mass;
-        float imB = (b.physics.mass == 0) ? 0 : 1 / b.physics.mass;
+        float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
+        float imB = (bPhysics.getMass() == 0) ? 0 : 1 / bPhysics.getMass();
         float totalInvMass = imA + imB;
 
         // Si ambos son estáticos (totalInvMass = 0), no hacer nada para evitar NaN
@@ -28,23 +38,27 @@ public class ElasticCollision extends Collision {
         float separationB = overlap * (imB / totalInvMass);
 
         // A se mueve en contra de la normal
-        a.transform.position.mulAdd(directionNormal, -separationA);
+        aTransform.getPosition().mulAdd(directionNormal, -separationA);
         // B se mueve a favor de la normal
-        b.transform.position.mulAdd(directionNormal, separationB);
+        bTransform.getPosition().mulAdd(directionNormal, separationB);
     }
 
     private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
-        if (a.physics == null || b.physics == null) return;
+        if (!a.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class)) ||
+                        !b.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class))) return;
+
+        PhysicsComponent aPhysics = a.getComponent(PhysicsComponent.class);
+        PhysicsComponent bPhysics = b.getComponent(PhysicsComponent.class);
 
         // Masa inversa (Manejo de objetos estáticos)
-        float imA = (a.physics.mass == 0) ? 0 : 1 / a.physics.mass;
-        float imB = (b.physics.mass == 0) ? 0 : 1 / b.physics.mass;
+        float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
+        float imB = (bPhysics.getMass() == 0) ? 0 : 1 / bPhysics.getMass();
 
         // Si ambos son masa infinita, no hay rebote
         if (imA + imB == 0) return;
 
         // Usamos set y sub para reciclar el vector temporal y no generar Garbage Collection
-        tmpRelVel.set(b.physics.velocity).sub(a.physics.velocity);
+        tmpRelVel.set(bPhysics.getVelocity()).sub(aPhysics.getVelocity());
 
         float normalVelocity = tmpRelVel.dot(directionNormal);
 
@@ -52,25 +66,29 @@ public class ElasticCollision extends Collision {
         if (normalVelocity > 0) return;
 
         // Calcular restitución
-        float e = Math.min(a.physics.restitution, b.physics.restitution);
+        float e = Math.min(aPhysics.getRestitution(), bPhysics.getRestitution());
 
         // Fórmula del Impulso (j)
         float numerator = -(1 + e) * normalVelocity;
         float denominator = imA + imB;
         float j = numerator / denominator;
 
-        a.physics.velocity.mulAdd(directionNormal, -j * imA);
-        b.physics.velocity.mulAdd(directionNormal, j * imB);
+        aPhysics.getVelocity().mulAdd(directionNormal, -j * imA);
+        bPhysics.getVelocity().mulAdd(directionNormal, j * imB);
     }
 
     @Override
     public void solveCollision(GameObject a, GameObject b, Board board) {
-        if (a.collider == null || b.collider == null) return;
+        TransformComponent aTransform = a.getComponent(TransformComponent.class);
+        ColliderComponent aCollider = a.getComponent(ColliderComponent.class);
 
-        Vector2 direction = board.getDirectionVector(a.transform.position, b.transform.position);
+        TransformComponent bTransform = b.getComponent(TransformComponent.class);
+        ColliderComponent bCollider = b.getComponent(ColliderComponent.class);
+
+        Vector2 direction = board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition());
 
         float distSq = direction.len2();
-        float radiiSum = a.collider.radius + b.collider.radius;
+        float radiiSum = aCollider.getRadius() + bCollider.getRadius();
 
         if (distSq < radiiSum * radiiSum) {
             float dist = (float) Math.sqrt(distSq);
