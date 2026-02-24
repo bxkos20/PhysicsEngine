@@ -15,7 +15,7 @@ public class CollisionSystem extends System{
 
     public CollisionSystem(GridPartition gridPartition, Board board, Collision collision) {
         super(ComponentRegistry.getBit(TransformComponent.class) |
-                ComponentRegistry.getBit(ColliderComponent.class));
+                ComponentRegistry.getBit(ColliderComponent.class), false);
         this.gridPartition = gridPartition;
         this.board = board;
         this.collision = collision;

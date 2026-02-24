@@ -14,10 +14,10 @@ public class DotSystem extends System {
     private final Board board;
     private final float G;
 
-    public DotSystem(GridPartition gridPartition, Board board, float G) {
+    public DotSystem(boolean threading, GridPartition gridPartition, Board board, float G) {
         super(ComponentRegistry.getBit(TransformComponent.class) |
                 ComponentRegistry.getBit(DotComponent.class) |
-                ComponentRegistry.getBit(PhysicsComponent.class));
+                ComponentRegistry.getBit(PhysicsComponent.class), threading);
         this.gridPartition = gridPartition;
         this.board = board;
         this.G = G;

@@ -4,11 +4,15 @@ import GameObject.Components.ComponentRegistry;
 import GameObject.Components.Core.PhysicsComponent;
 import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
+import World.Board.Board;
 
 public class MovementSystem extends System{
-    public MovementSystem() {
+    private Board board;
+
+    public MovementSystem(boolean threading, Board board) {
         super(ComponentRegistry.getBit(TransformComponent.class)
-                | ComponentRegistry.getBit(PhysicsComponent.class));
+                | ComponentRegistry.getBit(PhysicsComponent.class), threading);
+        this.board = board;
     }
 
     @Override
@@ -20,6 +24,8 @@ public class MovementSystem extends System{
         physics.getVelocity().mulAdd(physics.getSumForces(), dt / physics.getMass());
 
         transform.getPosition().add(physics.getVelocity().x * dt, physics.getVelocity().y * dt);
+
+        board.enforceBounds(transform);
 
         physics.getSumForces().set(0, 0);
     }

@@ -9,7 +9,6 @@ import java.util.List;
 
 public class ToroidalGridPartition extends GridPartition{
     private ArrayList<GameObject>[] cells;
-    private ArrayList<GameObject> nearby = new ArrayList<>();
 
 
     public ToroidalGridPartition(float width, float height, float cellSize) {
@@ -26,6 +25,7 @@ public class ToroidalGridPartition extends GridPartition{
     @Override
     protected int getCol(float x) {
         int col = (int) Math.floor(x / cellSize);
+;
         if (col < 0) col += cols;
         else if (col >= cols) col -= cols;
         return col;
@@ -41,7 +41,8 @@ public class ToroidalGridPartition extends GridPartition{
 
     @Override
     public ArrayList<GameObject> getNearby(TransformComponent transform, int distance) {
-        nearby.clear();
+        ArrayList<GameObject> nearby = new ArrayList<>();
+
         int centerCol = getCol(transform.getPosition().x);
         int centerRow = getRow(transform.getPosition().y);
 
@@ -59,7 +60,6 @@ public class ToroidalGridPartition extends GridPartition{
 
                 // 3. Calcular ID y añadir
                 int id = neighborCol + neighborRow * cols;
-
                 nearby.addAll(cells[id]);
             }
         }
@@ -69,6 +69,7 @@ public class ToroidalGridPartition extends GridPartition{
     @Override
     public void add(GameObject gameObject) {
         if (gameObject.checkSignature(ComponentRegistry.getBit(TransformComponent.class))){
+
             TransformComponent transform = gameObject.getComponent(TransformComponent.class);
             int id = getCol(transform.getPosition().x)+ getRow(transform.getPosition().y) * cols;
             cells[id].add(gameObject);
