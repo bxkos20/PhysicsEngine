@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ToroidalGridPartition extends GridPartition{
     private ArrayList<GameObject>[] cells;
+    private ArrayList<GameObject> nearby = new ArrayList<>();
 
 
     public ToroidalGridPartition(float width, float height, float cellSize) {
@@ -40,7 +41,7 @@ public class ToroidalGridPartition extends GridPartition{
 
     @Override
     public ArrayList<GameObject> getNearby(TransformComponent transform, int distance) {
-        ArrayList<GameObject> nearby = new ArrayList<>();
+        nearby.clear();
         int centerCol = getCol(transform.getPosition().x);
         int centerRow = getRow(transform.getPosition().y);
 

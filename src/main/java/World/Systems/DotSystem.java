@@ -31,6 +31,7 @@ public class DotSystem extends System {
         DotComponent dot = gameObject.getComponent(DotComponent.class);
 
         int searchDistance = (int) Math.ceil(dot.getDotType().MAX_DISTANCE / gridPartition.getCellSize());
+        //int searchDistance = 1; //Este numero afecta enormemente al rendimientp
         for (GameObject other : gridPartition.getNearby(transform, searchDistance)) {
             if (gameObject == other) continue;
 

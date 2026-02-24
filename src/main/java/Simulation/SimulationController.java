@@ -47,7 +47,7 @@ public class SimulationController extends ApplicationAdapter {
     public void create() {
         ToroidalBoard board = new ToroidalBoard(width, height);
         ElasticCollision collision = new ElasticCollision();
-        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 50);
+        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 25);
         world = new World(board, collision, gridPartition);
         renderer = new Renderer(width, height);
         
@@ -90,7 +90,8 @@ public class SimulationController extends ApplicationAdapter {
             renderer.tick(world);
 
         // Mostrar FPS en el título
-        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale);
+        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
+                " | " + world.getProfilingInfo());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;

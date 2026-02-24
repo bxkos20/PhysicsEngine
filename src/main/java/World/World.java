@@ -70,11 +70,19 @@ public class World {
         // --- FASE 4: ACTUALIZACIÓN DE GRID ---
         // Como los objetos se han movido, la Grid anterior ya no es válida.
         // La reconstruimos para detectar colisiones en la nueva posición.
-        gridPartition.clear();
-        gridPartition.add(gameObjects);
+        //gridPartition.clear();
+        //gridPartition.add(gameObjects);
 
         // --- FASE 5: RESOLUCIÓN DE COLISIONES ---
         // Usamos la Grid actualizada para encontrar solapamientos reales
         collisionSystem.update(dt, gameObjects);
+    }
+
+    // En World.java
+    public String getProfilingInfo() {
+        return String.format("Dots: %.2fms | Physics: %.2fms | Collisions: %.2fms",
+                dotSystem.getLastExecutionTimeMs(),
+                movementSystem.getLastExecutionTimeMs(),
+                collisionSystem.getLastExecutionTimeMs());
     }
 }
