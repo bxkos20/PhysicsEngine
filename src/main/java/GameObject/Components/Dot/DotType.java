@@ -18,14 +18,12 @@ public enum DotType {
 
 
     public static final float[][] INTERACTION = new float[DotType.values().length][DotType.values().length];
-    public static final int RADIUS = 5;
     public final Color COLOR;
     public final float MIN_DISTANCE;
     public final float MAX_DISTANCE;
 
 
     DotType(Color color) {
-        Random random = new Random();
         COLOR = color;
         MIN_DISTANCE = 25;
         MAX_DISTANCE = 50;

@@ -2,6 +2,7 @@ package Simulation;
 
 import GameObject.Components.Core.ColliderComponent;
 import GameObject.Components.Core.PhysicsComponent;
+import GameObject.Components.Core.RendererComponent;
 import GameObject.Components.Core.TransformComponent;
 import GameObject.Components.Dot.DotComponent;
 import GameObject.Components.Dot.DotType;
@@ -14,7 +15,6 @@ import World.World;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -29,9 +29,6 @@ public class SimulationController extends ApplicationAdapter {
     public float timeScale = 1.0f;
 
     public boolean render = true;
-
-    // Paso de física fijo (60 veces por segundo). Cuanto más pequeño, más precisa la física.
-    private final float FIXED_TIME_STEP = 1 / 60f;
 
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
@@ -68,6 +65,7 @@ public class SimulationController extends ApplicationAdapter {
                 dot.addComponent(new PhysicsComponent(1, 0.5f, 0.05f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
+                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, 5));
 
                 world.addObject(dot);
             }
@@ -81,6 +79,8 @@ public class SimulationController extends ApplicationAdapter {
         accumulator += frameTime * timeScale;
 
         // 2. Ejecutamos la física en pasos fijos hasta consumir el tiempo acumulado
+        // Paso de física fijo (60 veces por segundo). Cuanto más pequeño, más precisa la física.
+        float FIXED_TIME_STEP = 1 / 60f;
         while (accumulator >= FIXED_TIME_STEP) {
             world.update(FIXED_TIME_STEP);
             accumulator -= FIXED_TIME_STEP;
@@ -91,7 +91,7 @@ public class SimulationController extends ApplicationAdapter {
 
         // Mostrar FPS en el título
         Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
-                " | " + world.getProfilingInfo());
+                " | " + world.getProfilingInfo() + " | " + renderer.getProfilingInfo());
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;

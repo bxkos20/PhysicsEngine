@@ -1,11 +1,9 @@
 package Simulation.Render;
 
-import GameObject.Components.Core.ColliderComponent;
-import GameObject.Components.Core.PhysicsComponent;
-import GameObject.Components.Core.TransformComponent;
-import GameObject.Components.Dot.DotComponent;
-import GameObject.GameObject;
 import GameObject.Components.ComponentRegistry;
+import GameObject.Components.Core.RendererComponent;
+import GameObject.Components.Core.TransformComponent;
+import GameObject.GameObject;
 import World.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,8 +14,7 @@ public class Renderer {
     ShapeRenderer shapeRenderer;
     OrthographicCamera camera;
     CameraController cameraController;
-
-
+    private float lastExecutionTimeMs; // Para el profiling
 
     public Renderer(int width, int height){
         shapeRenderer = new ShapeRenderer();
@@ -30,8 +27,8 @@ public class Renderer {
         Gdx.input.setInputProcessor(cameraController); // Activar inputs
     }
 
-    public void tick(World world){  //TODO: RenderComponent
-        // Limpiar pantalla
+    public void tick(World world){
+        long start = java.lang.System.nanoTime();
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
 
         camera.update();
@@ -39,18 +36,24 @@ public class Renderer {
 
         // Dibujar
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         for (GameObject gameObject : world.getGameObjects()){
-            if (!gameObject.checkSignature(ComponentRegistry.getBit(TransformComponent.class) |
-                    ComponentRegistry.getBit(DotComponent.class) |
-                    ComponentRegistry.getBit(PhysicsComponent.class))) continue;
+            if (!gameObject.checkSignature(ComponentRegistry.getBit(RendererComponent.class) |
+                    ComponentRegistry.getBit(TransformComponent.class))) continue;
 
-            ColliderComponent collider = gameObject.getComponent(ColliderComponent.class);
+            RendererComponent rendererComponent = gameObject.getComponent(RendererComponent.class);
             TransformComponent transform = gameObject.getComponent(TransformComponent.class);
-            DotComponent dot = gameObject.getComponent(DotComponent.class);
 
-            shapeRenderer.setColor(dot.getDotType().COLOR);
-            shapeRenderer.circle(transform.getPosition().x, transform.getPosition().y, collider.getRadius());
+            shapeRenderer.setColor(rendererComponent.getColor());
+            shapeRenderer.circle(transform.getPosition().x, transform.getPosition().y, rendererComponent.getRadius());
         }
+
         shapeRenderer.end();
+        this.lastExecutionTimeMs = (java.lang.System.nanoTime() - start) / 1_000_000f;
+    }
+
+    public String getProfilingInfo() {
+        return String.format("Render: %.2fms",
+                lastExecutionTimeMs);
     }
 }
