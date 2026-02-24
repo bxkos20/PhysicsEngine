@@ -12,15 +12,14 @@ import com.badlogic.gdx.math.Vector2;
 public class DotSystem extends System {
     private final GridPartition gridPartition;
     private final Board board;
-    private final float G;
+    private final float G = 100f;
 
-    public DotSystem(GridPartition gridPartition, Board board, float G) {
+    public DotSystem(GridPartition gridPartition, Board board) {
         super(ComponentRegistry.getBit(TransformComponent.class) |
                 ComponentRegistry.getBit(DotComponent.class) |
                 ComponentRegistry.getBit(PhysicsComponent.class));
         this.gridPartition = gridPartition;
         this.board = board;
-        this.G = G;
     }
 
 
