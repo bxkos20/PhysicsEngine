@@ -36,7 +36,7 @@ public class SimulationController extends ApplicationAdapter {
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
 
-    final int totalDots = 2000;
+    final int totalDots = 500;
 
     public SimulationController(int width, int height) {
         this.width = width;
@@ -65,7 +65,7 @@ public class SimulationController extends ApplicationAdapter {
 
                 GameObject dot = new GameObject();
                 dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 1f, 0.9f));
+                dot.addComponent(new PhysicsComponent(1, 1f, 0.01f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
 
