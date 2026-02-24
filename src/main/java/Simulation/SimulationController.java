@@ -33,7 +33,7 @@ public class SimulationController extends ApplicationAdapter {
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
 
-    final int totalDots = 2000;
+    final int totalDots = 1000;
 
     public SimulationController(int width, int height) {
         this.width = width;
@@ -62,7 +62,7 @@ public class SimulationController extends ApplicationAdapter {
 
                 GameObject dot = new GameObject();
                 dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 0.5f, 0.05f));
+                dot.addComponent(new PhysicsComponent(1, 1f, 0.01f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
                 dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, 5));
@@ -95,6 +95,9 @@ public class SimulationController extends ApplicationAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) DotType.randomizeInteraction();
     }
 }

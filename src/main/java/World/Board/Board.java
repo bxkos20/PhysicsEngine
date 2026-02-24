@@ -18,5 +18,5 @@ public abstract class Board {
 
     public abstract Vector2 getMidPoint(Vector2 a, Vector2 b);
 
-    public abstract void enforceBounds (TransformComponent t);
+    public abstract void enforceBounds (TransformComponent transform);
 }

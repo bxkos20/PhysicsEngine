@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class World {
-    private final float G = 25f;
-
     // Lista de entidades
     private final List<GameObject> gameObjects;
     private final List<GameObject> objectsToAdd; // Buffer para añadir con seguridad
@@ -37,7 +35,7 @@ public class World {
         this.objectsToAdd = new ArrayList<>();
         this.movementSystem = new MovementSystem(true, board);
         this.collisionSystem = new CollisionSystem(gridPartition, board, collision);
-        this.dotSystem = new DotSystem(true, gridPartition, board, G);
+        this.dotSystem = new DotSystem(true, gridPartition, board);
     }
 
     public void addObject(GameObject obj) {
