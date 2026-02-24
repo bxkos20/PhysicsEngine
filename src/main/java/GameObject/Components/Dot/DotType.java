@@ -25,8 +25,8 @@ public enum DotType {
 
     DotType(Color color) {
         COLOR = color;
-        MIN_DISTANCE = 15 * 5;
-        MAX_DISTANCE = 30 * 5;
+        MIN_DISTANCE = 25;
+        MAX_DISTANCE = 50;
     }
 
     public static void randomizeInteraction() {

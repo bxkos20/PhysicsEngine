@@ -33,7 +33,7 @@ public class SimulationController extends ApplicationAdapter {
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
 
-    final int totalDots = 1000;
+    final int totalDots = 5000;
 
     public SimulationController(int width, int height) {
         this.width = width;
