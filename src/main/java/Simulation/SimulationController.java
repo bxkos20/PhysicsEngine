@@ -65,7 +65,7 @@ public class SimulationController extends ApplicationAdapter {
 
                 GameObject dot = new GameObject();
                 dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 0.5f, 0.05f));
+                dot.addComponent(new PhysicsComponent(1, 1f, 0.9f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
 
@@ -95,6 +95,8 @@ public class SimulationController extends ApplicationAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
     }
 }

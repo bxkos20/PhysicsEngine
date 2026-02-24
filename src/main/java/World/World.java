@@ -35,7 +35,7 @@ public class World {
         this.gridPartition = gridPartition;
         this.gameObjects = new ArrayList<>();
         this.objectsToAdd = new ArrayList<>();
-        this.movementSystem = new MovementSystem();
+        this.movementSystem = new MovementSystem(board);
         this.collisionSystem = new CollisionSystem(gridPartition, board, collision);
         this.dotSystem = new DotSystem(gridPartition, board, G);
     }
