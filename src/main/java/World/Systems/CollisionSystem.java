@@ -27,6 +27,7 @@ public class CollisionSystem extends System{
 
         for (GameObject other : gridPartition.getNearby(transform, 1)){
             if (gameObject == other) continue;
+            if (gameObject.hashCode() < other.hashCode()) continue;
             if (!other.checkSignature(ComponentRegistry.getBit(TransformComponent.class) |
                     ComponentRegistry.getBit(ColliderComponent.class))) continue;
 

@@ -44,7 +44,7 @@ public class SimulationController extends ApplicationAdapter {
     public void create() {
         ToroidalBoard board = new ToroidalBoard(width, height);
         ElasticCollision collision = new ElasticCollision();
-        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 25);
+        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 50);
         world = new World(board, collision, gridPartition);
         renderer = new Renderer(width, height);
         

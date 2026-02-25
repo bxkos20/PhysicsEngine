@@ -90,12 +90,11 @@ public class ElasticCollision extends Collision {
         float distSq = direction.len2();
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
 
-        if (distSq < radiiSum * radiiSum) {
+        if (distSq < radiiSum * radiiSum) { // Is colliding
             float dist = (float) Math.sqrt(distSq);
 
             // Evita división por cero al normalizar si están en el mismo pixel exacto
-            if (dist <= 0.00001f)
-                return;
+            dist = Math.max(dist , 0.1f);
 
             direction.nor(); // Normalizamos
 
