@@ -6,7 +6,7 @@ import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
 import World.Board.Board;
 
-public class MovementSystem extends System{
+public class MovementSystem extends System {
     private Board board;
 
     public MovementSystem(boolean threading, Board board) {
@@ -20,10 +20,17 @@ public class MovementSystem extends System{
         PhysicsComponent physics = gameObject.getComponent(PhysicsComponent.class);
         TransformComponent transform = gameObject.getComponent(TransformComponent.class);
 
-        physics.getVelocity().mulAdd(physics.getVelocity(), physics.getFriction() * -1);
-        physics.getVelocity().mulAdd(physics.getSumForces(), dt / physics.getMass());
+        // Actualizar Velocidad (v = v + (F / m) * dt)
+        float invMass = (physics.getMass() <= 0) ? 0 : (1f / physics.getMass());
+        physics.getVelocity().mulAdd(physics.getSumForces(), invMass * dt);
 
-        transform.getPosition().add(physics.getVelocity().x * dt, physics.getVelocity().y * dt);
+        // 3. Aplicar Fricción/Damping (v = v * (1 - friction * dt))
+        // Esto reduce la velocidad gradualmente sin riesgo de invertir el sentido
+        float frictionFactor = Math.max(0, 1 - physics.getFriction() * dt);
+        physics.getVelocity().scl(frictionFactor);
+
+        // 4. Actualizar Posición (p = p + v * dt)
+        transform.getPosition().mulAdd(physics.getVelocity(), dt);
 
         board.enforceBounds(transform);
 

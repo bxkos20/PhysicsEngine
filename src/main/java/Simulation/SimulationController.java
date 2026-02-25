@@ -62,7 +62,7 @@ public class SimulationController extends ApplicationAdapter {
 
                 GameObject dot = new GameObject();
                 dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 1f, 0.01f));
+                dot.addComponent(new PhysicsComponent(1, 1f, 1f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
                 dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, 5));
