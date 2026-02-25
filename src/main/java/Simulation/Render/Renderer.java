@@ -1,6 +1,7 @@
 package Simulation.Render;
 
 import GameObject.Components.ComponentRegistry;
+import GameObject.Components.Core.PhysicsComponent;
 import GameObject.Components.Core.RendererComponent;
 import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
@@ -11,6 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Renderer {
+    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
+    private static final int RENDERER_ID = ComponentRegistry.getId(RendererComponent.class);
+
     ShapeRenderer shapeRenderer;
     OrthographicCamera camera;
     CameraController cameraController;
@@ -38,11 +42,11 @@ public class Renderer {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         for (GameObject gameObject : world.getGameObjects()){
-            if (!gameObject.checkSignature(ComponentRegistry.getBit(RendererComponent.class) |
-                    ComponentRegistry.getBit(TransformComponent.class))) continue;
+            if (!gameObject.checkSignature(ComponentRegistry.idToBit(RENDERER_ID) |
+                    ComponentRegistry.idToBit(TRANSFORM_ID))) continue;
 
-            RendererComponent rendererComponent = gameObject.getComponent(RendererComponent.class);
-            TransformComponent transform = gameObject.getComponent(TransformComponent.class);
+            RendererComponent rendererComponent = gameObject.getComponent(RENDERER_ID);
+            TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
 
             shapeRenderer.setColor(rendererComponent.getColor());
             shapeRenderer.circle(transform.getPosition().x, transform.getPosition().y, rendererComponent.getRadius());

@@ -33,7 +33,7 @@ public class SimulationController extends ApplicationAdapter {
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
 
-    final int totalDots = 5000;
+    final int totalDots = 2000;
 
     public SimulationController(int width, int height) {
         this.width = width;
@@ -44,7 +44,7 @@ public class SimulationController extends ApplicationAdapter {
     public void create() {
         ToroidalBoard board = new ToroidalBoard(width, height);
         ElasticCollision collision = new ElasticCollision();
-        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 50);
+        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 25);
         world = new World(board, collision, gridPartition);
         renderer = new Renderer(width, height);
         
@@ -62,7 +62,7 @@ public class SimulationController extends ApplicationAdapter {
 
                 GameObject dot = new GameObject();
                 dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 1f, 1f));
+                dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
                 dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, 5));

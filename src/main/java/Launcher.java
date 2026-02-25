@@ -5,8 +5,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 public class Launcher {
     final static int SCREEN_WIDTH = 1280;
     final static int SCREEN_HEIGHT = 720;
-    final static int WORLD_WIDTH = 5000;
-    final static int WORLD_HEIGHT = 5000;
+    final static int WORLD_WIDTH = 1000;
+    final static int WORLD_HEIGHT = 1000;
 
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
@@ -15,6 +15,7 @@ public class Launcher {
         config.setTitle("PlaceHolder");
         config.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         config.setForegroundFPS(60); // Bloquear a 60 FPS para no quemar la GPU
+        config.useVsync(false);
         config.setResizable(false);
 
         // Arrancar

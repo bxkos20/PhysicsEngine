@@ -4,14 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ComponentRegistry {
-    private static int nextBit = 0;
-    private static final Map<Class<?>, Integer> bitMap = new HashMap<>();
+    private static int nextId = 0;
+    private static final Map<Class<?>, Integer> idMap = new HashMap<>();
 
-    public static int getBit(Class<?> componentClass) {
-        if (!bitMap.containsKey(componentClass)) {
-            bitMap.put(componentClass, 1 << nextBit);
-            nextBit++;
+    // 1. Obtener el ID secuencial (0, 1, 2, 3...) para el índice del Array
+    public static int getId(Class<?> componentClass) {
+        if (!idMap.containsKey(componentClass)) {
+            idMap.put(componentClass, nextId);
+            nextId++;
         }
-        return bitMap.get(componentClass);
+        return idMap.get(componentClass);
+    }
+
+    // 2. Obtener la máscara de bits (1, 2, 4, 8...) para la signature
+    public static long getBit(Class<?> componentClass) {
+        return 1L << getId(componentClass);
+    }
+
+    public static long idToBit(int id){
+        return 1L << id;
     }
 }

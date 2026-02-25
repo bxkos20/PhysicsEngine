@@ -9,6 +9,9 @@ import World.Board.Board;
 import com.badlogic.gdx.math.Vector2;
 
 public class ElasticCollision extends Collision {
+    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
+    private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
+    private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
 
     // Optimización: Vector temporal para no crear basura (new Vector2) en cada frame
     private final Vector2 tmpRelVel = new Vector2();
@@ -18,11 +21,11 @@ public class ElasticCollision extends Collision {
      * Si uno es estático (masa 0), no se mueve.
      */
     private void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
-        PhysicsComponent aPhysics = a.getComponent(PhysicsComponent.class);
-        TransformComponent aTransform = a.getComponent(TransformComponent.class);
+        PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
 
-        PhysicsComponent bPhysics = b.getComponent(PhysicsComponent.class);
-        TransformComponent bTransform = b.getComponent(TransformComponent.class);
+        PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
+        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
 
         // Obtenemos la masa inversa (0 si es estático/pared)
         float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
@@ -44,11 +47,11 @@ public class ElasticCollision extends Collision {
     }
 
     private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
-        if (!a.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class)) ||
-                        !b.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class))) return;
+        if (!a.checkSignature(PHYSICS_ID) || !b.checkSignature(PHYSICS_ID)) return;
+        //TODO: If one have an the other no make the bouncing too
 
-        PhysicsComponent aPhysics = a.getComponent(PhysicsComponent.class);
-        PhysicsComponent bPhysics = b.getComponent(PhysicsComponent.class);
+        PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+        PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
 
         // Masa inversa (Manejo de objetos estáticos)
         float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
@@ -79,11 +82,11 @@ public class ElasticCollision extends Collision {
 
     @Override
     public void solveCollision(GameObject a, GameObject b, Board board) {
-        TransformComponent aTransform = a.getComponent(TransformComponent.class);
-        ColliderComponent aCollider = a.getComponent(ColliderComponent.class);
+        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
+        ColliderComponent aCollider = a.getComponent(COLLIDER_ID);
 
-        TransformComponent bTransform = b.getComponent(TransformComponent.class);
-        ColliderComponent bCollider = b.getComponent(ColliderComponent.class);
+        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
+        ColliderComponent bCollider = b.getComponent(COLLIDER_ID);
 
         Vector2 direction = board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition());
 

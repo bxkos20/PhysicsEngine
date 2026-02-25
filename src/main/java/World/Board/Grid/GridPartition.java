@@ -3,8 +3,8 @@ package World.Board.Grid;
 import GameObject.Components.Core.TransformComponent;
 import GameObject.GameObject;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class GridPartition {
     protected final int rows;
@@ -41,16 +41,18 @@ public abstract class GridPartition {
         return height;
     }
 
+    protected abstract int getCol(float x);
+
+    protected abstract int getRow(float y);
+
     public abstract void clear();
+
+    public abstract List<GameObject> getNearby(TransformComponent transform, int distance);
+
+    public abstract void processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor);
 
     public abstract void add(GameObject gameObject);
 
     public abstract void add(List<GameObject> gameObjects);
-
-    public abstract ArrayList<GameObject> getNearby(TransformComponent transform, int distance);
-
-    protected abstract int getCol(float x);
-
-    protected abstract int getRow(float y);
 
 }

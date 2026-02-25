@@ -9,13 +9,18 @@ import World.Board.Grid.GridPartition;
 import World.Collision.Collision;
 
 public class CollisionSystem extends System{
-    private GridPartition gridPartition;
-    private Board board;
-    private Collision collision;
+    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
+    private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
+
+    private final GridPartition gridPartition;
+    private final Board board;
+    private final Collision collision;
 
     public CollisionSystem(GridPartition gridPartition, Board board, Collision collision) {
-        super(ComponentRegistry.getBit(TransformComponent.class) |
-                ComponentRegistry.getBit(ColliderComponent.class), false);
+        super(ComponentRegistry.idToBit(TRANSFORM_ID) |
+                ComponentRegistry.idToBit(COLLIDER_ID),
+                false
+        );
         this.gridPartition = gridPartition;
         this.board = board;
         this.collision = collision;
@@ -23,15 +28,15 @@ public class CollisionSystem extends System{
 
     @Override
     protected void processGameObject(float dt, GameObject gameObject) {
-        TransformComponent transform = gameObject.getComponent(TransformComponent.class);
+        TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
 
-        for (GameObject other : gridPartition.getNearby(transform, 1)){
-            if (gameObject == other) continue;
-            if (gameObject.getId() < other.getId()) continue;
-            if (!other.checkSignature(ComponentRegistry.getBit(TransformComponent.class) |
-                    ComponentRegistry.getBit(ColliderComponent.class))) continue;
+        gridPartition.processNearby(transform, 1, other -> {
+            if (gameObject == other || gameObject.getId() < other.getId()) return;
+
+            if (!other.checkSignature(ComponentRegistry.idToBit(TRANSFORM_ID) |
+                    ComponentRegistry.idToBit(COLLIDER_ID))) return;
 
             collision.solveCollision(gameObject, other, board);
-        }
+        });
     }
 }

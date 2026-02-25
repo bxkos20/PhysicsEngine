@@ -2,44 +2,40 @@ package GameObject;
 
 import GameObject.Components.ComponentRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class GameObject {
     private static int nextId = 0;
     private final int id;
-    private int signature;
-    Map<Class<?>, Object> components = new HashMap<>();
+    private long signature = 0L;
+
+    // Máximo 32 componentes por defecto (el tamaño de los bits de un 'int')
+    private final Object[] components = new Object[32];
 
     public GameObject(){
-        id = nextId;
-        nextId++;
+        id = nextId++;
     }
 
     public <T> void addComponent(T component){
-        if (components.containsKey(component.getClass()))
-            return;
-        components.put(component.getClass(), component);
-        signature |= ComponentRegistry.getBit(component.getClass());
+        int compId = ComponentRegistry.getId(component.getClass());
+        if (components[compId] != null) return; // Ya tiene este componente
+
+        components[compId] = component;
+        signature |= (1 << compId); // Actualizamos la firma
     }
 
-    public <T> T getComponent (Class<T> type){
-        return type.cast(components.get(type));
+    @SuppressWarnings("unchecked")
+    public <T> T getComponent(int componentId) {
+        return (T) components[componentId];
     }
 
-    public boolean hasComponent (Class<?> type){
-        return components.containsKey(type);
+    public boolean hasComponent(int componentId) {
+        return components[componentId] != null;
     }
 
-    public int getSignature() {
-        return signature;
-    }
+    public long getSignature() { return signature; }
 
-    public boolean checkSignature(int otherSignature){
+    public boolean checkSignature(long otherSignature){
         return (signature & otherSignature) == otherSignature;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 }

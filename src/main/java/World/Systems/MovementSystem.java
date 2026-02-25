@@ -7,18 +7,21 @@ import GameObject.GameObject;
 import World.Board.Board;
 
 public class MovementSystem extends System {
-    private Board board;
+    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
+    private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
+
+    private final Board board;
 
     public MovementSystem(boolean threading, Board board) {
-        super(ComponentRegistry.getBit(TransformComponent.class)
-                | ComponentRegistry.getBit(PhysicsComponent.class), threading);
+        super(ComponentRegistry.idToBit(TRANSFORM_ID)
+                | ComponentRegistry.idToBit(PHYSICS_ID), threading);
         this.board = board;
     }
 
     @Override
     protected void processGameObject(float dt, GameObject gameObject) {
-        PhysicsComponent physics = gameObject.getComponent(PhysicsComponent.class);
-        TransformComponent transform = gameObject.getComponent(TransformComponent.class);
+        PhysicsComponent physics = gameObject.getComponent(PHYSICS_ID);
+        TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
 
         // Actualizar Velocidad (v = v + (F / m) * dt)
         float invMass = (physics.getMass() <= 0) ? 0 : (1f / physics.getMass());
