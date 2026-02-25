@@ -38,4 +38,8 @@ public class GameObject {
     public boolean checkSignature(int otherSignature){
         return (signature & otherSignature) == otherSignature;
     }
+
+    public int getId() {
+        return id;
+    }
 }
