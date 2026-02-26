@@ -16,6 +16,7 @@
 - [ ] Parallelizing `Collision` detection
   - [ ] Create `Collisision.isColliding(GameObject a, GameObject b, Board board)`
   - [ ] Adap `CollisionSystem` to permit parallelStream
+  - [ ] Adap `ElasticCollison.solveCollision` to don't check if they are colliding
   - [ ] Check possible race conditions
 
 ## 📖 Documentation & Code Quality
