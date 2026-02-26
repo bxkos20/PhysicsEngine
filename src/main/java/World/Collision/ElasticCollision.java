@@ -8,6 +8,8 @@ import GameObject.GameObject;
 import World.Board.Board;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
 public class ElasticCollision extends Collision {
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
@@ -15,6 +17,8 @@ public class ElasticCollision extends Collision {
 
     // Optimización: Vector temporal para no crear basura (new Vector2) en cada frame
     private final Vector2 tmpRelVel = new Vector2();
+    private final Vector2 tmpDir = new Vector2();
+
 
     /**
      * Separa dos objetos respetando sus masas.
@@ -88,9 +92,9 @@ public class ElasticCollision extends Collision {
         TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
         ColliderComponent bCollider = b.getComponent(COLLIDER_ID);
 
-        Vector2 direction = board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition());
+        board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition(), tmpDir);
 
-        float distSq = direction.len2();
+        float distSq = tmpDir.len2();
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
 
         if (distSq < radiiSum * radiiSum) { // Is colliding
@@ -99,13 +103,13 @@ public class ElasticCollision extends Collision {
             // Evita división por cero al normalizar si están en el mismo pixel exacto
             dist = Math.max(dist , 0.1f);
 
-            direction.nor(); // Normalizamos
+            tmpDir.nor(); // Normalizamos
 
             // 1. Separar (Ahora respeta paredes estáticas)
-            disconnection(a, b, direction, radiiSum - dist);
+            disconnection(a, b, tmpDir, radiiSum - dist);
 
             // 2. Rebotar
-            elasticCollision(a, b, direction);
+            elasticCollision(a, b, tmpDir);
         }
     }
 }

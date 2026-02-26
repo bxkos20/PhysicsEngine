@@ -10,6 +10,8 @@ import World.Board.Board;
 import World.Board.Grid.GridPartition;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
 public class DotSystem extends System {
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
@@ -18,6 +20,8 @@ public class DotSystem extends System {
     private final GridPartition gridPartition;
     private final Board board;
     private final float G = 25f;
+
+    private final ThreadLocal<Vector2> dirThread = ThreadLocal.withInitial(Vector2::new);
 
     public DotSystem(boolean threading, GridPartition gridPartition, Board board) {
         super(ComponentRegistry.idToBit(TRANSFORM_ID) |
@@ -52,12 +56,16 @@ public class DotSystem extends System {
 
 
             if (dist < dot.getDotType().MIN_DISTANCE) {
-                Vector2 dir = board.getDirectionVector(transform.getPosition(), otherTransform.getPosition()).scl(1 / dist);
+                Vector2 dir = dirThread.get();
+                board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
+                dir.scl(1 / dist);
                 float nearFactor = (dot.getDotType().MIN_DISTANCE / dist) - 1;
                 physics.addForce(dir.scl(-nearFactor * G));
 
             } else if (dist < dot.getDotType().MAX_DISTANCE) {
-                Vector2 dir = board.getDirectionVector(transform.getPosition(), otherTransform.getPosition()).scl(1 / dist);
+                Vector2 dir = dirThread.get();
+                board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
+                dir.scl(1 / dist);
                 float mid = (dot.getDotType().MAX_DISTANCE + dot.getDotType().MIN_DISTANCE) / 2;
                 float nearFactor = 1 - (Math.abs(dist - mid) / (mid - dot.getDotType().MIN_DISTANCE));
                 float forceMagnitude = (dot.getDotType().getInteraction(otherDot.getDotType()) * G) * nearFactor;

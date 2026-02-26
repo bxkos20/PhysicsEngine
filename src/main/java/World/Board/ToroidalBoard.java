@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public class ToroidalBoard extends Board {
     public ToroidalBoard(float width, float height) {
         super(width, height);
-    }
+    } //TODO: Try dont use unecesary if-else
 
     /**
      * Teletransporta el objeto si se sale de los bordes.
@@ -25,9 +25,9 @@ public class ToroidalBoard extends Board {
     /**
      * Calcula la distancia MÁS CORTA considerando el mundo toroidal.
      */
-    public float getDistance(Vector2 a, Vector2 b) {
-        float dx = Math.abs(a.x - b.x);
-        float dy = Math.abs(a.y - b.y);
+    public float getDistance(Vector2 origin, Vector2 target) {
+        float dx = Math.abs(origin.x - target.x);
+        float dy = Math.abs(origin.y - target.y);
 
         // Si la distancia directa es mayor que la mitad del mundo,
         // el camino corto es dando la vuelta por el otro lado.
@@ -42,7 +42,7 @@ public class ToroidalBoard extends Board {
      * tomando el camino más corto (atravesando paredes si es necesario).
      * Útil para que los agentes sepan hacia dónde ir.
      */
-    public Vector2 getDirectionVector(Vector2 origin, Vector2 target) {
+    public Vector2 getDirectionVector(Vector2 origin, Vector2 target, Vector2 out) {
         float dx = target.x - origin.x;
         float dy = target.y - origin.y;
 
@@ -59,27 +59,27 @@ public class ToroidalBoard extends Board {
             dy += height; // Es más corto ir hacia abajo cruzando el borde
         }
 
-        return new Vector2(dx, dy);
+        return out.set(dx, dy);
     }
 
     /**
      * Calcula el punto medio real considerando la toroidicidad.
      */
-    public Vector2 getMidPoint(Vector2 a, Vector2 b) {
-        // Usamos el vector dirección corregido para encontrar el medio
-        Vector2 dir = getDirectionVector(a, b);
+    public Vector2 getMidPoint(Vector2 origin, Vector2 target, Vector2 out) {
+        // Obtenemos el VectorAB
+        getDirectionVector(origin, target, out);
 
-        // El punto medio es: A + (VectorAB / 2)
-        Vector2 mid = new Vector2(a).mulAdd(dir, 0.5f);
+        // El punto medio es: (VectorAB / 2) + A
+        out.scl(0.5f).add(origin);
 
         // Aseguramos que el resultado final esté dentro de los límites
         // (Por si el punto medio cae justo en el borde negativo o excesivo)
-        if (mid.x < 0) mid.x += width;
-        else if (mid.x > width) mid.x -= width;
+        if (out.x < 0) out.x += width;
+        else if (out.x > width) out.x -= width;
 
-        if (mid.y < 0) mid.y += height;
-        else if (mid.y > height) mid.y -= height;
+        if (out.y < 0) out.y += height;
+        else if (out.y > height) out.y -= height;
 
-        return mid;
+        return out;
     }
 }
