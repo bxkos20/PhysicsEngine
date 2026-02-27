@@ -13,9 +13,6 @@
 - [ ] **Efficient Grid Update (Broad-phase):**
   - [ ] Add a `previousCells` array in `ToroidalGridPartition` to track entity positions.
   - [ ] Implement the `refresh(List<GameObject>)` method to only update entities that cross cell boundaries.
-- [ ] **Mitigate JAVA problems in  the main loop**
-  - [ ] Remove unnecessaries if - else
-  - [X] Remove foreach (Create Garbage)
 
 ## 📖 Documentation & Code Quality
 - [ ] **Javadoc & Code Comments:**
