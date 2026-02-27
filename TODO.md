@@ -13,14 +13,9 @@
 - [ ] **Efficient Grid Update (Broad-phase):**
   - [ ] Add a `previousCells` array in `ToroidalGridPartition` to track entity positions.
   - [ ] Implement the `refresh(List<GameObject>)` method to only update entities that cross cell boundaries.
-- [ ] **Parallelizing `Collision` detection**
-  - [x] Create `Collisision.isColliding(GameObject a, GameObject b, Board board)`
-  - [x] Adap `CollisionSystem` to permit parallelStream
-  - [x] Adap `ElasticCollison.solveCollision` to don't check if they are colliding
-  - [ ] Check possible race conditions
 - [ ] **Mitigate JAVA problems in  the main loop**
   - [ ] Remove unnecessaries if - else
-  - [ ] Remove foreach (Create Garbage)
+  - [X] Remove foreach (Create Garbage)
 
 ## 📖 Documentation & Code Quality
 - [ ] **Javadoc & Code Comments:**
