@@ -44,7 +44,7 @@ public class SimulationController extends ApplicationAdapter {
     public void create() {
         ToroidalBoard board = new ToroidalBoard(width, height);
         ElasticCollision collision = new ElasticCollision();
-        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 25);
+        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 50);
         world = new World(board, collision, gridPartition);
         renderer = new Renderer(width, height);
         
@@ -97,6 +97,7 @@ public class SimulationController extends ApplicationAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) timeScale = 0;
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) DotType.randomizeInteraction();
     }

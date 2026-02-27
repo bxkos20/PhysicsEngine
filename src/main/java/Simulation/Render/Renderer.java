@@ -11,6 +11,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Renderer {
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     private static final int RENDERER_ID = ComponentRegistry.getId(RendererComponent.class);
@@ -41,7 +44,10 @@ public class Renderer {
         // Dibujar
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        for (GameObject gameObject : world.getGameObjects()){
+        List<GameObject> gameObjects = world.getGameObjects();
+        for (int i = 0; i < gameObjects.size(); i++) {
+            GameObject gameObject = gameObjects.get(i);
+
             if (!gameObject.checkSignature(ComponentRegistry.idToBit(RENDERER_ID) |
                     ComponentRegistry.idToBit(TRANSFORM_ID))) continue;
 

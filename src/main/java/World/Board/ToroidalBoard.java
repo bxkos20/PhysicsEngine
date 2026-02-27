@@ -38,6 +38,21 @@ public class ToroidalBoard extends Board {
     }
 
     /**
+     * Calcula la distancia MÁS CORTA considerando el mundo toroidal.
+     */
+    public float getDistance2(Vector2 origin, Vector2 target) {
+        float dx = Math.abs(origin.x - target.x);
+        float dy = Math.abs(origin.y - target.y);
+
+        // Si la distancia directa es mayor que la mitad del mundo,
+        // el camino corto es dando la vuelta por el otro lado.
+        if (dx > width / 2) dx = width - dx;
+        if (dy > height / 2) dy = height - dy;
+
+        return dx * dx + dy * dy;
+    }
+
+    /**
      * Devuelve el vector que apunta desde 'origin' hacia 'target'
      * tomando el camino más corto (atravesando paredes si es necesario).
      * Útil para que los agentes sepan hacia dónde ir.

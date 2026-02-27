@@ -94,22 +94,33 @@ public class ElasticCollision extends Collision {
 
         board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition(), tmpDir);
 
-        float distSq = tmpDir.len2();
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
 
-        if (distSq < radiiSum * radiiSum) { // Is colliding
-            float dist = (float) Math.sqrt(distSq);
+        float dist = tmpDir.len();
 
-            // Evita división por cero al normalizar si están en el mismo pixel exacto
-            dist = Math.max(dist , 0.1f);
+        // Evita división por cero al normalizar si están en el mismo pixel exacto
+        dist = Math.max(dist, 0.1f);
 
-            tmpDir.nor(); // Normalizamos
+        tmpDir.nor(); // Normalizamos
 
-            // 1. Separar (Ahora respeta paredes estáticas)
-            disconnection(a, b, tmpDir, radiiSum - dist);
+        // 1. Separar (Ahora respeta paredes estáticas)
+        disconnection(a, b, tmpDir, radiiSum - dist);
 
-            // 2. Rebotar
-            elasticCollision(a, b, tmpDir);
-        }
+        // 2. Rebotar
+        elasticCollision(a, b, tmpDir);
+    }
+
+    @Override
+    public boolean isColliding(GameObject a, GameObject b, Board board) {
+        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
+        ColliderComponent aCollider = a.getComponent(COLLIDER_ID);
+
+        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
+        ColliderComponent bCollider = b.getComponent(COLLIDER_ID);
+
+        float dist2 = board.getDistance2(aTransform.getPosition(), bTransform.getPosition());
+        float radiiSum = aCollider.getRadius() + bCollider.getRadius();
+
+        return (dist2 < radiiSum * radiiSum);
     }
 }

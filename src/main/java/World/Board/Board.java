@@ -14,6 +14,8 @@ public abstract class Board {
 
     public abstract float getDistance(Vector2 origin, Vector2 target);
 
+    public abstract float getDistance2(Vector2 origin, Vector2 target);
+
     public abstract Vector2 getDirectionVector(Vector2 origin, Vector2 target, Vector2 out);
 
     public abstract Vector2 getMidPoint(Vector2 origin, Vector2 target, Vector2 out);

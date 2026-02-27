@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class System {
     protected final long REQUIRED_SIGNATURE;
-    private final boolean THREADING;
-    private float lastExecutionTimeMs; // Para el profiling
+    protected final boolean THREADING;
+    protected float lastExecutionTimeMs; // Para el profiling
 
     public System(long requiredSignature, boolean threading) {
         this.REQUIRED_SIGNATURE = requiredSignature;
@@ -22,7 +22,8 @@ public abstract class System {
                 }
             });
         }else {
-            for (GameObject gameObject : gameObjects) {
+            for (int i = 0; i < gameObjects.size(); i++) {
+                GameObject gameObject = gameObjects.get(i);
                 if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
                     processGameObject(dt, gameObject);
                 }
