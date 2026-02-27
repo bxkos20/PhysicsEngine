@@ -50,7 +50,6 @@ public class CollisionSystem extends System {
                                     if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
 
                                     if (collision.isColliding(gameObject, other, board)) {
-                                        // ¡Tu genial idea! Lista 1D plana
                                         localList.add(gameObject);
                                         localList.add(other);
                                     }

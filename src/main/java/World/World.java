@@ -65,12 +65,6 @@ public class World {
         // --- FASE 3: INTEGRACIÓN FÍSICA ---
         movementSystem.update(dt, gameObjects);
 
-        // --- FASE 4: ACTUALIZACIÓN DE GRID ---
-        // Como los objetos se han movido, la Grid anterior ya no es válida.
-        // La reconstruimos para detectar colisiones en la nueva posición.
-        //gridPartition.clear();
-        //gridPartition.add(gameObjects);
-
         // --- FASE 5: RESOLUCIÓN DE COLISIONES ---
         // Usamos la Grid actualizada para encontrar solapamientos reales
         collisionSystem.update(dt, gameObjects);
