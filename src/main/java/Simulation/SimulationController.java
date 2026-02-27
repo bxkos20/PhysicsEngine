@@ -29,6 +29,7 @@ public class SimulationController extends ApplicationAdapter {
     public float timeScale = 1.0f;
 
     public boolean render = true;
+    public boolean pause = false;
 
     // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
@@ -74,6 +75,12 @@ public class SimulationController extends ApplicationAdapter {
 
     @Override
     public void render() {
+        manageInputs();
+        // Mostrar FPS en el título
+        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
+                " | " + world.getProfilingInfo() + " | " + renderer.getProfilingInfo());
+        if (pause) return;
+
         // 1. Calculamos cuánto tiempo "simulado" ha pasado en este frame real
         float frameTime = Math.min(Gdx.graphics.getDeltaTime(), 0.25f); // Limitamos para evitar espiral de la muerte si se cuelga
         accumulator += frameTime * timeScale;
@@ -88,16 +95,15 @@ public class SimulationController extends ApplicationAdapter {
 
         if (render)
             renderer.tick(world);
+    }
 
-        // Mostrar FPS en el título
-        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
-                " | " + world.getProfilingInfo() + " | " + renderer.getProfilingInfo());
 
+    public void manageInputs(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) timeScale = 0;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) pause = !pause;
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) DotType.randomizeInteraction();
     }
