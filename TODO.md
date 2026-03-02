@@ -12,12 +12,12 @@
 ## ⚡ Optimization & Refactoring
 - [ ] **Efficient Grid Update (Broad-phase):**
   - [ ] Add a `previousCells` array in `ToroidalGridPartition` to track entity positions.
-  - [ ] Implement the `refresh(List<GameObject>)` method to only update entities that cross cell boundaries.
+  - [ ] Implement the `refresh(List<gameObject>)` method to only update entities that cross cell boundaries.
 
 ## 📖 Documentation & Code Quality
 - [ ] **Javadoc & Code Comments:**
   - [ ] Translate all existing inline comments from Spanish to English.
-  - [ ] Write standard Javadoc for core ECS classes (`GameObject`, `System`, `ComponentRegistry`).
+  - [ ] Write standard Javadoc for core ECS classes (`gameObject`, `System`, `ComponentRegistry`).
   - [ ] Add detailed inline comments explaining the complex math in `CollisionSystem` and `DotSystem`.
 - [ ] **Project Documentation (README / Wiki):**
   - [ ] Write a comprehensive `README.md` explaining the engine's purpose and features.
