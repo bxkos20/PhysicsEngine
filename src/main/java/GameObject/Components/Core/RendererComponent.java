@@ -1,6 +1,6 @@
 package GameObject.Components.Core;
 
-import Render.Shapes.Shapes.Shape;
+import Render.Shapes.Shape;
 
 public class RendererComponent {
     private Shape shape;

@@ -8,7 +8,7 @@ import GameObject.Components.Dot.DotComponent;
 import GameObject.Components.Dot.DotType;
 import GameObject.GameObject;
 import Render.Renderer;
-import Render.Shapes.Shapes.Circle;
+import Render.Shapes.primitives.Circle;
 import World.Board.Grid.ToroidalGridPartition;
 import World.Collision.ElasticCollision;
 import World.Board.ToroidalBoard;

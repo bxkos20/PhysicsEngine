@@ -1,14 +1,16 @@
-package Render.Shapes.Shapes;
+package Render.Shapes.primitives;
 
-import com.badlogic.gdx.graphics.Color;
+import Render.Shapes.Shape;
+import Render.Shapes.rawDataMesh.RawDataMesh;
+import Render.Shapes.rawDataMesh.RawDataMeshFactory;
+
 import java.util.Objects;
 
 public class Circle extends Shape {
     private float radius;
     private int quality;
 
-    public Circle(Color color, float radius, int quality) {
-        super(color);
+    public Circle(float radius, int quality) {
         this.radius = radius;
         this.quality = quality;
     }
@@ -33,11 +35,16 @@ public class Circle extends Shape {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Circle circle = (Circle) o;
-        return Float.compare(radius, circle.radius) == 0 && quality == circle.quality && color.equals(circle.color);
+        return Float.compare(radius, circle.radius) == 0 && quality == circle.quality;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(color, radius, quality);
+        return Objects.hash(radius, quality);
+    }
+
+    @Override
+    public RawDataMesh createRawDataMesh() {
+        return RawDataMeshFactory.createCircle(radius, quality);
     }
 }
