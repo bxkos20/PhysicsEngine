@@ -1,29 +1,19 @@
 package GameObject.Components.Core;
 
-import com.badlogic.gdx.graphics.Color;
+import Render.Shapes.Shapes.Shape;
 
 public class RendererComponent {
-    private Color color;
-    private float radius;
+    private Shape shape;
 
-    public RendererComponent(Color color, float radius) {
-        this.color = color;
-        this.radius = radius;
+    public RendererComponent(Shape shape) {
+        this.shape = shape;
     }
 
-    public Color getColor() {
-        return color;
+    public Shape getShape() {
+        return shape;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public float getRadius() {
-        return radius;
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
+    public void setShape(Shape shape) {
+        this.shape = shape;
     }
 }

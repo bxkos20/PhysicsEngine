@@ -7,7 +7,8 @@ import GameObject.Components.Core.TransformComponent;
 import GameObject.Components.Dot.DotComponent;
 import GameObject.Components.Dot.DotType;
 import GameObject.GameObject;
-import Simulation.Render.Renderer;
+import Render.Renderer;
+import Render.Shapes.Shapes.Circle;
 import World.Board.Grid.ToroidalGridPartition;
 import World.Collision.ElasticCollision;
 import World.Board.ToroidalBoard;
@@ -66,7 +67,7 @@ public class SimulationController extends ApplicationAdapter {
                 dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
-                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, 5));
+                dot.addComponent(new RendererComponent(new Circle(DotType.values()[i].COLOR,5,12)));
 
                 world.addObject(dot);
             }

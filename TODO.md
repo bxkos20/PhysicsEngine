@@ -6,7 +6,7 @@
   - [ ] Implement mouse click detection (Raycasting/AABB) for GUI interactions.
   - [ ] Create a debug panel to modify global variables (e.g., gravity `G`, Dot size) in real-time.
 - [ ] **Advanced Collision System:**
-  - [ ] Add support for square/rectangular colliders (AABB - Axis-Aligned Bounding Box).
+  - [ ] Add support for rect/rectangular colliders (AABB - Axis-Aligned Bounding Box).
   - [ ] Implement mixed collision resolution (Circle vs. AABB).
 
 ## ⚡ Optimization & Refactoring
@@ -27,6 +27,7 @@
 ## 🐛 Known Bugs
 - [ ] **Jitter / Overlap under compression:** When multiple objects push each other simultaneously in a confined space, the collision resolution struggles, causing entities to overlap or vibrate.
 
-## 💡 Backlog / Future Ideas
+## 💡 Future Ideas
 - [ ] **Dynamic Spawning:** Allow adding and removing entities via mouse clicks during runtime.
 - [ ] **Collision Layers:** Implement bitmask filtering to define which objects are allowed to collide with each other (e.g., UI vs. Physics objects).
+- [ ] **Replace LibGDX with my own code** To have all control of the behavior of the code
