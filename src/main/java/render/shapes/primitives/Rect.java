@@ -10,7 +10,7 @@ public class Rect extends Shape {
     private float width;
     private float height;
 
-    public Rect(Color color, float width, int height) {
+    public Rect(float width, int height) {
         this.width = width;
         this.height = height;
     }

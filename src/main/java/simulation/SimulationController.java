@@ -67,7 +67,7 @@ public class SimulationController extends ApplicationAdapter {
                 dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
-                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, new Circle(5,12)));
+                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, new Circle(5,8)));
 
                 world.addObject(dot);
             }

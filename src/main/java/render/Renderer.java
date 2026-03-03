@@ -5,14 +5,15 @@ import gameObject.components.core.RendererComponent;
 import gameObject.components.core.TransformComponent;
 import gameObject.GameObject;
 import render.camera.CameraController;
+import render.shapes.MeshBatch;
 import render.shapes.ShapeRegistry;
+import render.shapes.rawDataMesh.RawDataMesh;
 import world.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class Renderer {
                     "}";
 
     private final ShaderProgram shader;
-    private final Matrix4 transformMatrix = new Matrix4();
+    private final MeshBatch meshBatch;
 
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     private static final int RENDERER_ID = ComponentRegistry.getId(RendererComponent.class);
@@ -54,6 +55,12 @@ public class Renderer {
     public Renderer(int width, int height) {
         ShaderProgram.pedantic = false; // Permite que no usemos todas las variables
         shader = new ShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+        if (!shader.isCompiled()) {
+            throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+        }
+        
+        // Initialize the batch with a reasonable size
+        meshBatch = new MeshBatch(10000, 20000);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(width / 2f, height / 2f, 0); // Centrar en el mundo
@@ -69,38 +76,44 @@ public class Renderer {
 
         camera.update();
         shader.bind();
+        shader.setUniformMatrix("u_projTrans", camera.combined);
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         List<GameObject> gameObjects = world.getGameObjects();
 
-        // REVERTIDO: Bucle secuencial en el hilo principal (OpenGL Thread)
+        meshBatch.begin();
         for (int i = 0; i < gameObjects.size(); i++) {
             GameObject gameObject = gameObjects.get(i);
             if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
-                processGameObject(gameObject);
+                
+                RendererComponent rendererComponent = gameObject.getComponent(RENDERER_ID);
+                TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+                
+                RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh(rendererComponent.getShape());
+
+                // If the batch is full, flush it and start a new one
+                if (meshBatch.isFull(rawDataMesh)) {
+                    flush();
+                    meshBatch.begin();
+                }
+                
+                meshBatch.draw(rawDataMesh, transform.getPosition().x, transform.getPosition().y, rendererComponent.getColor());
             }
         }
+        
+        // Flush any remaining data at the end of the frame
+        flush();
 
         this.lastExecutionTimeMs = (java.lang.System.nanoTime() - start) / 1_000_000f;
     }
 
-    private void processGameObject(GameObject gameObject) {
-        RendererComponent rendererComponent = gameObject.getComponent(RENDERER_ID);
-        TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
-
-        // 1. Obtener o Crear la Malla (Caching con LongMap - Zero Garbage)
-        Mesh mesh = ShapeRegistry.getMesh(rendererComponent.getShape());
-
-        // 2. Calcular Matriz de Transformación (Mover el círculo a su sitio)
-        // Matriz = Proyección (Cámara) * Traslación (Objeto)
-        transformMatrix.set(camera.combined);
-        transformMatrix.translate(transform.getPosition().x, transform.getPosition().y, 0);
-
-        // 3. Enviar al Shader y Dibujar
-        shader.setUniformMatrix("u_projTrans", transformMatrix);
-        mesh.render(shader, GL20.GL_TRIANGLES);
+    private void flush() {
+        Mesh meshToRender = meshBatch.end();
+        if (meshToRender.getNumIndices() > 0) {
+            meshToRender.render(shader, GL20.GL_TRIANGLES, 0, meshBatch.getIndexCount());
+        }
     }
 
     public String getProfilingInfo() {
