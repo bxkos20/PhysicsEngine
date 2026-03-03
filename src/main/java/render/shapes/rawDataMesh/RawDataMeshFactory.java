@@ -6,14 +6,12 @@ public class RawDataMeshFactory {
 
     public static RawDataMesh createRect(float width, float height) {
         int vertexCount = 4;
-        int indexCount = 6; // 2 triangles * 3 vertex each
 
         // Arrays para la GPU
-        float[] vertexes = new float[vertexCount * 2]; // 3 floats per vertex
+        float[] vertexes = new float[vertexCount * 2]; // 2 floats per vertex
         short[] indexes = {0, 1, 3, 1, 2, 3};
 
         int vIndex = 0;
-        int iIndex = 0;
 
         //Add the vertexes
         //0
@@ -40,7 +38,7 @@ public class RawDataMeshFactory {
         int indexCount = quality * 3; // q triangles * 3 vertex each
 
         // Arrays para la GPU
-        float[] vertexes = new float[vertexCount * 2]; // 3 floats por vértice
+        float[] vertexes = new float[vertexCount * 2]; // 2 floats por vértice
         short[] indexes = new short[indexCount];
 
         int vIndex = 0;
@@ -61,6 +59,68 @@ public class RawDataMeshFactory {
             indexes[iIndex++] = 0;
             indexes[iIndex++] = i;
             indexes[iIndex++] = (i == quality) ? 1 : (short) (i + 1);
+        }
+
+        return new RawDataMesh(vertexes, indexes);
+    }
+
+    public static RawDataMesh createRectOutline(float width, float height, float size) {
+        int vertexCount = 8;
+        int indexCount = 24; // 8 triangles * 3 vertex each
+
+        // Arrays para la GPU
+        float[] vertexes = new float[vertexCount * 2]; // 2 floats per vertex
+        short[] indexes = new short[indexCount];
+
+        int vIndex = 0;
+        int iIndex = 0;
+
+        //Add the vertexes
+        //0
+        vertexes[vIndex++] = 0;
+        vertexes[vIndex++] = 0;
+
+        //1
+        vertexes[vIndex++] = width;
+        vertexes[vIndex++] = 0;
+
+        //2
+        vertexes[vIndex++] = width;
+        vertexes[vIndex++] = height;
+
+        //3
+        vertexes[vIndex++] = 0;
+        vertexes[vIndex++] = height;
+
+        //4
+        vertexes[vIndex++] = size;
+        vertexes[vIndex++] = size;
+
+        //5
+        vertexes[vIndex++] = width - size;
+        vertexes[vIndex++] = size;
+
+        //6
+        vertexes[vIndex++] = width - size;
+        vertexes[vIndex++] = height - size;
+
+        //7
+        vertexes[vIndex++] = size;
+        vertexes[vIndex++] = height - size;
+
+        short l = 4;
+
+        for (short i = 0; i < l; i++) {
+            short x = (i + 1 == l) ? 0 : (short) (i + 1);
+            //1
+            indexes[iIndex++] = i;
+            indexes[iIndex++] = (short) (l + i);
+            indexes[iIndex++] = x;
+
+            //2
+            indexes[iIndex++] = (short) (l + i);
+            indexes[iIndex++] = (short) (l + x);
+            indexes[iIndex++] = x;
         }
 
         return new RawDataMesh(vertexes, indexes);

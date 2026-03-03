@@ -9,10 +9,12 @@ import java.util.Objects;
 public class Circle extends Shape {
     private float radius;
     private int quality;
+    private final String key;
 
     public Circle(float radius, int quality) {
         this.radius = radius;
         this.quality = quality;
+        this.key = "C_" + radius + "_" + quality;
     }
 
     public float getRadius() {
@@ -32,19 +34,12 @@ public class Circle extends Shape {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Circle circle = (Circle) o;
-        return Float.compare(radius, circle.radius) == 0 && quality == circle.quality;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(radius, quality);
-    }
-
-    @Override
     public RawDataMesh createRawDataMesh() {
         return RawDataMeshFactory.createCircle(radius, quality);
+    }
+
+    @Override
+    public String getKey() {
+        return key;
     }
 }

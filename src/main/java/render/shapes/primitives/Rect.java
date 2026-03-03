@@ -9,10 +9,12 @@ import java.util.Objects;
 public class Rect extends Shape {
     private float width;
     private float height;
+    private final String key;
 
     public Rect(float width, int height) {
         this.width = width;
         this.height = height;
+        this.key = "R_" + width + "_" + height;
     }
 
     public float getWidth() {
@@ -32,20 +34,13 @@ public class Rect extends Shape {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Rect rect = (Rect) o;
-        return Float.compare(width, rect.width) == 0 && Float.compare(height, rect.height) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(width, height);
-    }
-
-    @Override
     public RawDataMesh createRawDataMesh() {
         return RawDataMeshFactory.createRect(width, height);
+    }
+
+    @Override
+    public String getKey() {
+        return key;
     }
 
 

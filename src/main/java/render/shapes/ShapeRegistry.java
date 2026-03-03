@@ -9,13 +9,14 @@ import java.util.Map;
  * recalculated every frame. This is a CPU and memory optimization.
  */
 public class ShapeRegistry {
-    private static final Map<Shape, RawDataMesh> shapeCache = new HashMap<>();
+    private static final Map<String, RawDataMesh> shapeCache = new HashMap<>();
 
     public static RawDataMesh getRawDataMesh(Shape shape) {
-        if (!shapeCache.containsKey(shape)) {
+        String key = shape.getKey();
+        if (!shapeCache.containsKey(key)) {
             // If the shape's raw data is not in the cache, create it and store it.
-            shapeCache.put(shape, shape.createRawDataMesh());
+            shapeCache.put(key, shape.createRawDataMesh());
         }
-        return shapeCache.get(shape);
+        return shapeCache.get(key);
     }
 }

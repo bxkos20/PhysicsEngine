@@ -9,6 +9,7 @@ import gameObject.components.dot.DotType;
 import gameObject.GameObject;
 import render.Renderer;
 import render.shapes.primitives.Circle;
+import render.shapes.primitives.Rect;
 import world.board.grid.ToroidalGridPartition;
 import world.collision.ElasticCollision;
 import world.board.ToroidalBoard;
