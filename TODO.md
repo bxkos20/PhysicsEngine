@@ -8,6 +8,7 @@
 - [ ] **Advanced Collision System:**
   - [ ] Add support for rect/rectangular colliders (AABB - Axis-Aligned Bounding Box).
   - [ ] Implement mixed collision resolution (Circle vs. AABB).
+- [ ] **Dot Density Repulsion System**
 
 ## ⚡ Optimization & Refactoring
 - [ ] **Efficient Grid Update (Broad-phase):**
