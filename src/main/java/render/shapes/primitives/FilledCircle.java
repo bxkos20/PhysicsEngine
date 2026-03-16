@@ -4,15 +4,13 @@ import render.shapes.Shape;
 import render.shapes.rawDataMesh.RawDataMesh;
 import render.shapes.rawDataMesh.RawDataMeshFactory;
 
-public class Circle extends Shape {
+public class FilledCircle extends Shape {
     private float radius;
     private int quality;
-    private float size;
 
-    public Circle(float radius, int quality, float size) {
+    public FilledCircle(float radius, int quality) {
         this.radius = radius;
         this.quality = quality;
-        this.size = size;
         this.inicialiceKey();
     }
 
@@ -34,6 +32,6 @@ public class Circle extends Shape {
 
     @Override
     public RawDataMesh createRawDataMesh() {
-        return RawDataMeshFactory.createCircleOutline(radius, quality, size);
+        return RawDataMeshFactory.createCircle(radius, quality);
     }
 }

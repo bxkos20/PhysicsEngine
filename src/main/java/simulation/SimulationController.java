@@ -9,7 +9,7 @@ import gameObject.components.dot.DotType;
 import gameObject.GameObject;
 import render.Renderer;
 import render.shapes.primitives.Circle;
-import render.shapes.primitives.Rect;
+import render.shapes.primitives.FilledCircle;
 import world.board.grid.ToroidalGridPartition;
 import world.collision.ElasticCollision;
 import world.board.ToroidalBoard;
@@ -68,7 +68,7 @@ public class SimulationController extends ApplicationAdapter {
                 dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x,y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
-                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, new Circle(5,8)));
+                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, new Circle(5, 32, 1f)));
 
                 world.addObject(dot);
             }

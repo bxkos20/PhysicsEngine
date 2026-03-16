@@ -4,15 +4,13 @@ import render.shapes.rawDataMesh.RawDataMesh;
 import render.shapes.Shape;
 import render.shapes.rawDataMesh.RawDataMeshFactory;
 
-public class Rect extends Shape {
+public class FilledRect extends Shape {
     private float width;
     private float height;
-    private float size;
 
-    public Rect(float width, float height, float size) {
+    public FilledRect(float width, int height) {
         this.width = width;
         this.height = height;
-        this.size = size;
         this.inicialiceKey();
     }
 
@@ -34,7 +32,7 @@ public class Rect extends Shape {
 
     @Override
     public RawDataMesh createRawDataMesh() {
-        return RawDataMeshFactory.createRectOutline(width, height, size);
+            return RawDataMeshFactory.createRect(width, height);
     }
 
 
