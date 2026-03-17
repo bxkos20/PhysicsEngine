@@ -3,9 +3,9 @@ package engine.world;
 import engine.ecs.GameObject;
 import engine.spatial.GridPartition;
 import engine.physics.Collision;
-import simulation.systems.CollisionSystem;
+import engine.ecs.systems.CollisionSystem;
 import simulation.systems.DotSystem;
-import simulation.systems.MovementSystem;
+import engine.ecs.systems.MovementSystem;
 
 import java.util.ArrayList;
 import java.util.List;

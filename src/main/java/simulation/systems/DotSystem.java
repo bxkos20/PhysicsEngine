@@ -2,6 +2,7 @@ package simulation.systems;
 
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
+import engine.ecs.systems.System;
 import simulation.components.DotComponent;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;

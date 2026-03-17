@@ -1,4 +1,4 @@
-package simulation.systems;
+package engine.ecs.systems;
 
 import engine.ecs.ComponentRegistry;
 import engine.ecs.components.PhysicsComponent;
