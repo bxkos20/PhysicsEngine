@@ -9,23 +9,55 @@ import simulation.systems.DotSystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+/**
+ * Container for all game entities and systems.
+ * 
+ * <p>Manages entity lifecycle, system execution order, and world geometry.
+ * Uses dependency injection for board, collision, and spatial partition.</p>
+ * 
+ * <h3>Update Pipeline:</h3>
+ * <ol>
+ *   <li>Add pending entities to main list</li>
+ *   <li>Clear and rebuild spatial grid</li>
+ *   <li>Run AI/logic system (DotSystem) - applies forces</li>
+ *   <li>Run physics integration (MovementSystem) - updates positions</li>
+ *   <li>Run collision detection (CollisionSystem) - resolves overlaps</li>
+ * </ol>
+ */
 public class World {
-    // Lista de entidades
+    /** Main entity list */
     private final List<GameObject> gameObjects;
-    private final List<GameObject> objectsToAdd; // Buffer para añadir con seguridad
+    
+    /** Buffer for entities waiting to be added */
+    private final List<GameObject> objectsToAdd;
 
-    // Geometría del mundo
+    /** World boundary handler */
     public final Board board;
+    
+    /** Collision resolution strategy */
     public final Collision collision;
+    
+    /** Spatial partitioning for neighbor queries */
     public final GridPartition gridPartition;
 
-    //Systems
+    /** Physics integration system */
     MovementSystem movementSystem;
+    
+    /** Collision detection system */
     CollisionSystem collisionSystem;
+    
+    /** Particle AI/interaction system */
     DotSystem dotSystem;
 
-    // Inyección de Dependencia: Recibimos el Board, no lo creamos
+    /**
+     * Creates a world with injected dependencies.
+     * 
+     * @param board         World boundary handler
+     * @param collision     Collision resolution strategy
+     * @param gridPartition Spatial partitioning implementation
+     */
     public World(Board board, Collision collision, GridPartition gridPartition) {
         this.board = board;
         this.collision = collision;
@@ -37,43 +69,63 @@ public class World {
         this.dotSystem = new DotSystem(true, gridPartition, board);
     }
 
+    /**
+     * Queues an entity for addition. Added at start of next update.
+     * 
+     * @param obj Entity to add
+     */
     public void addObject(GameObject obj) {
         objectsToAdd.add(obj);
     }
 
+    /**
+     * Returns the main entity list.
+     * 
+     * @return List of all active entities
+     */
     public List<GameObject> getGameObjects() {
         return gameObjects;
     }
 
+    /**
+     * Updates all systems for one frame.
+     * 
+     * @param dt Delta time in seconds
+     */
     public void update(float dt) {
-        // 0. Gestión de listas (Añadir nuevos nacimientos)
+        // Phase 0: Add pending entities
         if (!objectsToAdd.isEmpty()) {
             gameObjects.addAll(objectsToAdd);
             objectsToAdd.clear();
         }
 
-        // --- FASE 1: PREPARACIÓN DE IA ---
-        // Llenamos la Grid con las posiciones actuales para que la IA sepa quién está cerca
+        // Phase 1: Rebuild spatial grid
         gridPartition.clear();
         gridPartition.add(gameObjects);
 
-        // --- FASE 2: LÓGICA / IA ---
-        // Los objetos consultan la Grid y aplican fuerzas (pero NO se mueven aún)
+        // Phase 2: AI/Logic - apply forces based on neighbors
         dotSystem.update(dt, gameObjects);
 
-        // --- FASE 3: INTEGRACIÓN FÍSICA ---
+        // Phase 3: Physics integration - update positions
         movementSystem.update(dt, gameObjects);
 
-        // --- FASE 5: RESOLUCIÓN DE COLISIONES ---
-        // Usamos la Grid actualizada para encontrar solapamientos reales
+        // Phase 4: Collision detection and resolution
         collisionSystem.update(dt, gameObjects);
     }
 
-    // En World.java
+    /**
+     * Returns profiling information for all systems.
+     * 
+     * @return Formatted string with execution times
+     */
     public String getProfilingInfo() {
         return String.format("Dots: %.2fms | Physics: %.2fms | Collisions: %.2fms",
                 dotSystem.getLastExecutionTimeMs(),
                 movementSystem.getLastExecutionTimeMs(),
                 collisionSystem.getLastExecutionTimeMs());
+    }
+
+    public void forEachObject(Consumer<GameObject> action) {
+        gameObjects.forEach(action);
     }
 }

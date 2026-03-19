@@ -5,33 +5,28 @@ import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
 import backend.libgdx.render.shapes.Shape;
 
 /**
- * Outlined circle (ring) shape primitive.
- * Renders as a hollow circle with configurable line width.
+ * Filled circle shape primitive.
+ * Renders as a solid circle using triangle fan geometry.
  * 
- * @see CircleFilled
- * @see RawDataMeshFactory#createCircleOutline(float, int, float)
+ * @see Circle
+ * @see RawDataMeshFactory#createCircle(float, int)
  */
-public class Circle extends Shape {
+public class CircleFilled extends Shape {
     /** Radius of the circle in world units */
     private float radius;
     
-    /** Number of line segments to approximate the circle */
+    /** Number of triangles to approximate the circle */
     private int quality;
-    
-    /** Width of the outline stroke */
-    private float size;
 
     /**
-     * Creates an outlined circle shape.
+     * Creates a filled circle shape.
      * 
      * @param radius  Radius of the circle in world units
-     * @param quality Number of line segments (higher = smoother)
-     * @param size    Width of the outline stroke
+     * @param quality Number of triangles (higher = smoother)
      */
-    public Circle(float radius, int quality, float size) {
+    public CircleFilled(float radius, int quality) {
         this.radius = radius;
         this.quality = quality;
-        this.size = size;
         this.inicializeKey();
     }
 
@@ -54,40 +49,40 @@ public class Circle extends Shape {
     }
 
     /**
-     * Returns the circle's segment count.
+     * Returns the circle's triangle count.
      * 
-     * @return Number of segments
+     * @return Number of triangles
      */
     public int getQuality() {
         return quality;
     }
 
     /**
-     * Sets the circle's segment count.
+     * Sets the circle's triangle count.
      * 
-     * @param quality New segment count
+     * @param quality New triangle count
      */
     public void setQuality(int quality) {
         this.quality = quality;
     }
 
     /**
-     * Creates the raw mesh data for this circle outline.
+     * Creates the raw mesh data for this filled circle.
      * 
      * @return RawDataMesh containing vertices and indices
      */
     @Override
     public RawDataMesh createRawDataMesh() {
-        return RawDataMeshFactory.createCircleOutline(radius, quality, size);
+        return RawDataMeshFactory.createCircle(radius, quality);
     }
     
     /**
      * Returns the shape parameters for serialization.
      * 
-     * @return Array [radius, quality, lineWidth]
+     * @return Array [radius, quality]
      */
     @Override
     public float[] getParameters() {
-        return new float[]{radius, quality, size};
+        return new float[]{radius, quality};
     }
 }

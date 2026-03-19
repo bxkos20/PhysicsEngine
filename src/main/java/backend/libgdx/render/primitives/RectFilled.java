@@ -5,33 +5,28 @@ import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
 import backend.libgdx.render.shapes.Shape;
 
 /**
- * Outlined rectangle shape primitive.
- * Renders as a hollow rectangle with configurable line width.
+ * Filled rectangle shape primitive.
+ * Renders as a solid quad using two triangles.
  * 
- * @see RectFilled
- * @see RawDataMeshFactory#createRectOutline(float, float, float)
+ * @see Rect
+ * @see RawDataMeshFactory#createRect(float, float)
  */
-public class Rect extends Shape {
+public class RectFilled extends Shape {
     /** Width of the rectangle in world units */
     private float width;
     
     /** Height of the rectangle in world units */
     private float height;
-    
-    /** Width of the outline stroke */
-    private float size;
 
     /**
-     * Creates an outlined rectangle shape.
+     * Creates a filled rectangle shape.
      * 
      * @param width  Width of the rectangle in world units
      * @param height Height of the rectangle in world units
-     * @param size   Width of the outline stroke
      */
-    public Rect(float width, float height, float size) {
+    public RectFilled(float width, float height) {
         this.width = width;
         this.height = height;
-        this.size = size;
         this.inicializeKey();
     }
 
@@ -72,23 +67,23 @@ public class Rect extends Shape {
     }
 
     /**
-     * Creates the raw mesh data for this rectangle outline.
+     * Creates the raw mesh data for this filled rectangle.
      * 
      * @return RawDataMesh containing vertices and indices
      */
     @Override
     public RawDataMesh createRawDataMesh() {
-        return RawDataMeshFactory.createRectOutline(width, height, size);
+            return RawDataMeshFactory.createRect(width, height);
     }
     
     /**
      * Returns the shape parameters for serialization.
      * 
-     * @return Array [width, height, lineWidth]
+     * @return Array [width, height]
      */
     @Override
     public float[] getParameters() {
-        return new float[]{width, height, size};
+        return new float[]{width, height};
     }
 
 

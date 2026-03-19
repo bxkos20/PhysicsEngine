@@ -8,29 +8,63 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Spatial grid partition with toroidal (wrap-around) topology.
+ * 
+ * <p>Entities near world edges can interact with entities on the opposite side,
+ * creating a seamless wrap-around world. Used for simulations where particles
+ * should not bounce off walls but instead wrap around.</p>
+ * 
+ * <h3>Thread Safety:</h3>
+ * <p>Uses ThreadLocal for neighbor lists to support parallel collision detection.</p>
+ * 
+ * @see GridPartition
+ */
 public class ToroidalGridPartition extends GridPartition {
+    /** Cell storage array - each cell contains a list of game objects */
     private ArrayList<GameObject>[] cells;
+    
+    /** ThreadLocal neighbor list for parallel processing */
     private ThreadLocal<ArrayList<GameObject>> nearbyThread = ThreadLocal.withInitial(ArrayList::new);
 
 
+    /**
+     * Creates a toroidal grid partition.
+     * 
+     * @param width    World width
+     * @param height   World height
+     * @param cellSize Cell size
+     */
     public ToroidalGridPartition(float width, float height, float cellSize) {
         super(width, height, cellSize);
         cells = new ArrayList[rows * cols];
         for (int i = 0; i < cells.length; i++) cells[i] = new ArrayList<GameObject>();
     }
 
+    /**
+     * {@inheritDoc}
+     * Clears all cells without reallocating.
+     */
     @Override
     public void clear() {
         for (int i = 0; i < cells.length; i++) cells[i].clear();
     }
 
+    /**
+     * {@inheritDoc}
+     * Applies toroidal wrap: col = (col % cols + cols) % cols
+     */
     @Override
     protected int getCol(float x) {
-        int col = (int) Math.floor(x / cellSize);;
+        int col = (int) Math.floor(x / cellSize);
         col = (col % cols + cols) % cols;
         return col;
     }
 
+    /**
+     * {@inheritDoc}
+     * Applies toroidal wrap: row = (row % rows + rows) % rows
+     */
     @Override
     protected int getRow(float y) {
         int row = (int) Math.floor(y / cellSize);
@@ -38,6 +72,10 @@ public class ToroidalGridPartition extends GridPartition {
         return row;
     }
 
+    /**
+     * {@inheritDoc}
+     * Returns neighbors from all cells within distance, wrapping at edges.
+     */
     @Override
     public List<GameObject> getNearby(TransformComponent transform, int distance) {
         ArrayList<GameObject> nearby = nearbyThread.get();
@@ -63,6 +101,10 @@ public class ToroidalGridPartition extends GridPartition {
         return nearby;
     }
 
+    /**
+     * {@inheritDoc}
+     * Processes neighbors from all cells within distance, wrapping at edges.
+     */
     @Override
     public void processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor) {
         int centerCol = getCol(transform.getPosition().x);
@@ -88,6 +130,10 @@ public class ToroidalGridPartition extends GridPartition {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Adds entity to the cell corresponding to its position.
+     */
     @Override
     public void add(GameObject gameObject) {
         final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);

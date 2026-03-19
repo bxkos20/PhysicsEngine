@@ -2,8 +2,36 @@ package backend.libgdx.render.rawDataMesh;
 
 import com.badlogic.gdx.math.MathUtils;
 
+/**
+ * Factory for creating raw mesh data for primitive shapes.
+ * 
+ * <p>Generates vertex and index arrays for GPU rendering without
+ * allocating mesh objects. Used by {@link backend.libgdx.render.shapes.Shape} implementations to
+ * define their geometry.</p>
+ * 
+ * <h3>Coordinate System:</h3>
+ * <ul>
+ *   <li>Origin at bottom-left</li>
+ *   <li>X increases right</li>
+ *   <li>Y increases up</li>
+ * </ul>
+ */
 public class RawDataMeshFactory {
 
+    /**
+     * Creates a filled rectangle mesh (quad).
+     * 
+     * <p>Vertex layout:</p>
+     * <pre>
+     *   3---2
+     *   |   |
+     *   0---1
+     * </pre>
+     * 
+     * @param width  Rectangle width
+     * @param height Rectangle height
+     * @return RawMesh with 4 vertices and 6 indices (2 triangles)
+     */
     public static RawDataMesh createRect(float width, float height) {
         int vertexCount = 4;
 
@@ -32,6 +60,15 @@ public class RawDataMeshFactory {
         return new RawDataMesh(vertexes, indexes);
     }
 
+    /**
+     * Creates an outlined rectangle mesh (hollow).
+     * Uses 8 vertices (4 outer, 4 inner) to create line geometry.
+     * 
+     * @param width  Outer rectangle width
+     * @param height Outer rectangle height
+     * @param size   Line thickness (inset from outer edge)
+     * @return RawMesh with 8 vertices and 24 indices (8 triangles)
+     */
     public static RawDataMesh createRectOutline(float width, float height, float size) {
         int vertexCount = 8;
         int indexCount = 24; // 8 triangles * 3 vertex each
@@ -94,6 +131,13 @@ public class RawDataMeshFactory {
         return new RawDataMesh(vertexes, indexes);
     }
 
+    /**
+     * Creates a filled circle mesh using triangle fan from center.
+     * 
+     * @param radius  Circle radius
+     * @param quality Number of segments (triangles) around circumference
+     * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
+     */
     public static RawDataMesh createCircle(float radius, int quality) {
         int vertexCount = quality + 1; // q outlane + 1 center
         int indexCount = quality * 3; // q triangles * 3 vertex each
@@ -125,6 +169,14 @@ public class RawDataMeshFactory {
         return new RawDataMesh(vertexes, indexes);
     }
 
+    /**
+     * Creates an outlined circle mesh (ring) using inner/outer rings.
+     * 
+     * @param radius  Outer circle radius
+     * @param quality Number of segments around circumference
+     * @param size    Line thickness (radius - innerRadius)
+     * @return RawMesh with (quality * 2) vertices and (quality * 6) indices
+     */
     public static RawDataMesh createCircleOutline(float radius, int quality, float size) {
         int vertexCount = quality * 2;
         int indexCount = quality * 6; // quality * 2 triangles * 3 vertices

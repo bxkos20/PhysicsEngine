@@ -2,56 +2,97 @@ package engine.config;
 
 /**
  * Centralized configuration for the physics simulation.
- * Eliminates magic numbers and provides easy tuning.
+ * 
+ * <p>Eliminates magic numbers and provides easy tuning. All configuration
+ * values are organized into nested static classes by category.</p>
+ * 
+ * <p>Usage: {@code SimulationConfig.Display.SCREEN_WIDTH}</p>
  */
 public final class SimulationConfig {
     
-    // Display Configuration
+    /**
+     * Display/viewport configuration.
+     * Controls the application window dimensions.
+     */
     public static final class Display {
+        /** Viewport width in pixels */
         public static final int SCREEN_WIDTH = 1280;
+        /** Viewport height in pixels */
         public static final int SCREEN_HEIGHT = 720;
+        /** Width / Height ratio for aspect-correct rendering */
         public static final float ASPECT_RATIO = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
     }
     
-    // World Configuration  
+    /**
+     * World/simulation space configuration.
+     * Defines the bounds of the physics simulation area.
+     */
     public static final class World {
-        public static final int WORLD_WIDTH = 2500;
-        public static final int WORLD_HEIGHT = 2500;
+        /** World width in simulation units */
+        public static final int WORLD_WIDTH = 2000;
+        /** World height in simulation units */
+        public static final int WORLD_HEIGHT = 2000;
+        /** World width / height ratio */
         public static final float WORLD_ASPECT_RATIO = (float) WORLD_WIDTH / WORLD_HEIGHT;
     }
     
-    // Simulation Configuration
+    /**
+     * Physics simulation configuration.
+     * Controls entity counts, physics constants, and interaction parameters.
+     */
     public static final class Simulation {
+        /** Total number of particles/entities in simulation */
         public static final int TOTAL_DOTS = 2000;
-        public static final int DOT_TYPES = 10; // Number of dot types
+        /** Number of distinct particle types */
+        public static final int DOT_TYPES = 5;
+        /** Particles per type (TOTAL_DOTS / DOT_TYPES) */
         public static final int DOTS_PER_TYPE = TOTAL_DOTS / DOT_TYPES;
         
-        // Physics constants
-        public static final float FIXED_TIMESTEP = 1.0f / 60.0f; // 60 FPS physics
-        public static final float MAX_FRAME_TIME = 0.25f; // Spiral death prevention
+        /** Fixed timestep for physics (1/60 = 60 Hz physics) */
+        public static final float FIXED_TIMESTEP = 1.0f / 60.0f;
+        /** Maximum frame time to prevent spiral of death */
+        public static final float MAX_FRAME_TIME = 0.25f;
+        /** Default time multiplier (1.0 = real-time) */
         public static final float DEFAULT_TIMESCALE = 1.0f;
         
-        // Dot interaction constants
+        /** Gravitational attraction strength between particles */
         public static final float GRAVITY_CONSTANT = 25.0f;
+        /** Minimum distance for interaction calculations */
         public static final float MIN_INTERACTION_DISTANCE = 25.0f;
+        /** Maximum distance for interaction calculations */
         public static final float MAX_INTERACTION_DISTANCE = 75.0f;
     }
     
-    // Rendering Configuration
+    /**
+     * Rendering configuration.
+     * Controls GPU batch sizes and shape quality.
+     */
     public static final class Rendering {
-        public static final int BATCH_VERTICES = 10000;
-        public static final int BATCH_INDICES = 20000;
+        /** Maximum vertices per batch */
+        public static final int BATCH_VERTICES = 50000;
+        /** Maximum indices per batch */
+        public static final int BATCH_INDICES = 150000;
         
-        // Shape parameters
+        /** Default particle radius in world units */
         public static final float DEFAULT_DOT_RADIUS = 5.0f;
+        /** Circle segment count (higher = smoother) */
         public static final int DEFAULT_CIRCLE_SEGMENTS = 32;
+        /** Default outline line width */
         public static final float DEFAULT_LINE_WIDTH = 2.5f;
+        /** Fixed timestep for physics (1/60 = 30 Hz physics) */
+        public static final float FIXED_TIMESTEP = 1.0f / 30.0f;
     }
     
-    // Performance Configuration
+    /**
+     * Performance optimization configuration.
+     * Controls threading, spatial partitioning, and profiling.
+     */
     public static final class Performance {
+        /** Enable parallel processing for collision detection */
         public static final boolean ENABLE_MULTITHREADING = true;
-        public static final int GRID_CELL_SIZE = 50; // For spatial partitioning
+        /** Grid cell size for spatial partitioning (pixels) */
+        public static final int GRID_CELL_SIZE = 50;
+        /** Enable timing/profiling output */
         public static final boolean ENABLE_PROFILING = true;
     }
     

@@ -36,4 +36,11 @@ public class ThreadLocalRandom {
     public static int nextInt(int bound) {
         return get().nextInt(bound);
     }
+
+    /**
+     * Generate a random boolean
+     */
+    public static boolean nextBoolean() {
+        return get().nextBoolean();
+    }
 }

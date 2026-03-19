@@ -8,19 +8,46 @@ import engine.ecs.components.TransformComponent;
 import engine.math.Vector2;
 import engine.world.Board;
 
+/**
+ * Implements elastic collision detection and response.
+ * 
+ * <p>Uses impulse-based collision resolution with mass-weighted separation.
+ * Supports static objects (mass=0) which do not move during collision.</p>
+ * 
+ * <h3>Collision Response:</h3>
+ * <ol>
+ *   <li>Separate overlapping objects based on mass ratio</li>
+ *   <li>Apply impulse to change velocities</li>
+ *   <li>Respect restitution (bounciness) coefficient</li>
+ * </ol>
+ * 
+ * @see Collision
+ */
 public class ElasticCollision extends Collision {
+    /** Cached component ID for TransformComponent */
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
+    
+    /** Cached component ID for PhysicsComponent */
     private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
+    
+    /** Cached component ID for ColliderComponent */
     private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
 
-    // Optimización: Vector temporal para no crear basura (new Vector2) en cada frame
+    /** Reusable vector for relative velocity calculation (avoids GC) */
     private final Vector2 tmpRelVel = new Vector2();
+    
+    /** Reusable vector for direction/normal (avoids GC) */
     private final Vector2 tmpDir = new Vector2();
 
 
     /**
-     * Separa dos objetos respetando sus masas.
-     * Si uno es estático (masa 0), no se mueve.
+     * Separates two colliding objects based on their mass ratio.
+     * Static objects (mass=0) do not move.
+     * 
+     * @param a                First game object
+     * @param b                Second game object
+     * @param directionNormal  Normal direction from A to B
+     * @param overlap          Penetration depth
      */
     private void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
         PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
@@ -48,6 +75,14 @@ public class ElasticCollision extends Collision {
         bTransform.getPosition().mulAdd(directionNormal, separationB);
     }
 
+    /**
+     * Applies elastic collision impulse to two objects.
+     * Uses coefficient of restitution for bounciness.
+     * 
+     * @param a               First game object
+     * @param b               Second game object
+     * @param directionNormal Normal direction from A to B
+     */
     private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
         if (!a.checkSignature(PHYSICS_ID) || !b.checkSignature(PHYSICS_ID)) return;
         
@@ -87,6 +122,11 @@ public class ElasticCollision extends Collision {
         bPhysics.getVelocity().mulAdd(directionNormal, j * imB);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>Resolves collision by separating objects and applying impulse.</p>
+     */
     @Override
     public void solveCollision(GameObject a, GameObject b, Board board) {
         TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
@@ -113,6 +153,11 @@ public class ElasticCollision extends Collision {
         elasticCollision(a, b, tmpDir);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>Checks if distance between objects is less than sum of radii.</p>
+     */
     @Override
     public boolean isColliding(GameObject a, GameObject b, Board board) {
         TransformComponent aTransform = a.getComponent(TRANSFORM_ID);

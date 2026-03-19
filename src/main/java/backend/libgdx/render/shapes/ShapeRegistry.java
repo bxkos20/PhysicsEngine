@@ -6,12 +6,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Caches the raw data of shapes (vertices and indices) so they are not
- * recalculated every frame. This is a CPU and memory optimization.
+ * Cache for shape mesh data to avoid redundant geometry calculations.
+ * 
+ * <p>Uses shape parameter keys to store and retrieve {@link RawDataMesh}
+ * instances. When a shape is first rendered, its mesh is created and cached.
+ * Subsequent renders of identical shapes reuse the cached mesh.</p>
+ * 
+ * <p>This optimization significantly reduces CPU overhead when rendering
+ * thousands of identical shapes (e.g., particles).</p>
  */
 public class ShapeRegistry {
+    /** Cache storage: key -> RawDataMesh */
     private static final Map<String, RawDataMesh> shapeCache = new HashMap<>();
 
+    /**
+     * Retrieves or creates mesh data for a shape.
+     * If the shape is not cached, creates and stores its mesh data.
+     * 
+     * @param shape The shape to get mesh data for
+     * @return Cached or newly created RawDataMesh
+     */
     public static RawDataMesh getRawDataMesh(Shape shape) {
         String key = shape.getKey();
         if (!shapeCache.containsKey(key)) {

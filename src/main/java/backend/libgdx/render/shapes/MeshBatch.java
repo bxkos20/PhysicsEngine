@@ -6,14 +6,46 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 
+/**
+ * GPU mesh batcher for efficient shape rendering.
+ * 
+ * <p>Collects multiple shapes into a single mesh to minimize draw calls.
+ * Each shape is translated to its world position and colored before being
+ * added to the batch.</p>
+ * 
+ * <h3>Vertex Format:</h3>
+ * <ul>
+ *   <li>Position: 2 floats (x, y)</li>
+ *   <li>Color: 1 packed float (RGBA)</li>
+ * </ul>
+ * 
+ * @see backend.libgdx.render.Renderer
+ */
 public class MeshBatch {
+    /** The GPU mesh for rendering */
     private final Mesh mesh;
+    
+    /** Vertex data buffer [x, y, color, x, y, color, ...] */
     private final float[] vertices;
+    
+    /** Index data buffer */
     private final short[] indices;
+    
+    /** Current vertex count in the batch */
     private int vertexCount;
+    
+    /** Current index count in the batch */
     private int indexCount;
-    private int vertexOffset; // Offset for indices (number of vertices, not floats)
+    
+    /** Offset for indices (number of vertices, not floats) */
+    private int vertexOffset;
 
+    /**
+     * Creates a mesh batch with specified capacity.
+     * 
+     * @param maxVertices Maximum number of vertices per batch
+     * @param maxIndices  Maximum number of indices per batch
+     */
     public MeshBatch(int maxVertices, int maxIndices) {
         // Create a dynamic mesh with Position and Color attributes
         this.mesh = new Mesh(false, maxVertices, maxIndices,
@@ -24,6 +56,10 @@ public class MeshBatch {
         this.indices = new short[maxIndices];
     }
 
+    /**
+     * Resets batch state for a new frame.
+     * Clears vertex and index counters.
+     */
     public void begin() {
         vertexCount = 0;
         indexCount = 0;
@@ -31,7 +67,10 @@ public class MeshBatch {
     }
 
     /**
-     * Checks if adding the given raw mesh would overflow the batch buffers.
+     * Checks if adding the given mesh would exceed batch capacity.
+     * 
+     * @param rawDataMesh Mesh to test
+     * @return true if batch would overflow
      */
     public boolean isFull(RawDataMesh rawDataMesh) {
         // Check if we have enough space for vertices (each vertex has 3 floats)
@@ -41,11 +80,17 @@ public class MeshBatch {
                indexCount + rawDataMesh.indexes.length > indices.length;
     }
 
-    public void draw(RawDataMesh rawDataMesh, float x, float y, Color color) {
+    /**
+     * Adds a shape to the batch with translation and color.
+     * 
+     * @param rawDataMesh Source mesh data
+     * @param x           World X position
+     * @param y           World Y position  
+     * @param color       RGBA color for all vertices
+     */
+    public void draw(RawDataMesh rawDataMesh, float x, float y, float colorBits) {
         float[] rawVertices = rawDataMesh.vertexes;
         short[] rawIndices = rawDataMesh.indexes;
-
-        float colorBits = color.toFloatBits();
 
         // Copy indices with offset adjustment
         for (int i = 0; i < rawIndices.length; i++) {
@@ -65,8 +110,9 @@ public class MeshBatch {
     }
 
     /**
-     * Uploads the data to the GPU and returns the Mesh ready for rendering.
-     * Call mesh.core.render() after this.
+     * Uploads batched data to GPU and returns renderable mesh.
+     * 
+     * @return Mesh ready for rendering with shader
      */
     public Mesh end() {
         if (vertexCount > 0) {
@@ -76,6 +122,11 @@ public class MeshBatch {
         return mesh;
     }
     
+    /**
+     * Returns the number of indices currently in the batch.
+     * 
+     * @return Index count for glDrawElements
+     */
     public int getIndexCount() {
         return indexCount;
     }

@@ -3,30 +3,58 @@ package engine.world;
 import engine.ecs.components.TransformComponent;
 import engine.math.Vector2;
 
+/**
+ * Board implementation with toroidal (wrap-around) topology.
+ * 
+ * <p>In a toroidal world, entities that exit one edge reappear on the opposite side.
+ * Distance calculations consider the shortest path, which may cross edges.</p>
+ * 
+ * <h3>Use Case:</h3>
+ * <p>Ideal for simulations where entities should not be confined by walls,
+ * such as particle simulations or open-world games with seamless wrapping.</p>
+ * 
+ * @see Board
+ */
 public class ToroidalBoard extends Board {
+    /**
+     * Creates a toroidal board with specified dimensions.
+     * 
+     * @param width  World width
+     * @param height World height
+     */
     public ToroidalBoard(float width, float height) {
         super(width, height);
     }
 
     /**
-     * Teletransporta el objeto si se sale de los bordes.
-     * Se debe llamar en cada frame después de mover el objeto.
+     * {@inheritDoc}
+     * 
+     * <p>Wraps position to world bounds using modulo:
+     * pos = (pos % size + size) % size</p>
      */
+    @Override
     public void enforceBounds(TransformComponent transform) {
         transform.getPosition().x = (transform.getPosition().x % width + width) % width;
         transform.getPosition().y = (transform.getPosition().y % height + height) % height;
     }
 
     /**
-     * Calcula la distancia MÁS CORTA considerando el mundo toroidal.
+     * {@inheritDoc}
+     * 
+     * <p>Calculates shortest distance considering wrap-around.</p>
      */
+    @Override
     public float getDistance(Vector2 origin, Vector2 target) {
         return (float) Math.sqrt(getDistance2(origin, target));
     }
 
     /**
-     * Calcula la distancia al cuadrado MÁS CORTA considerando el mundo toroidal.
+     * {@inheritDoc}
+     * 
+     * <p>Calculates shortest squared distance considering wrap-around.
+     * Uses: dx -= size * round(dx / size) for toroidal correction.</p>
      */
+    @Override
     public float getDistance2(Vector2 origin, Vector2 target) {
         float dx = origin.x - target.x;
         float dy = origin.y - target.y;
@@ -38,10 +66,12 @@ public class ToroidalBoard extends Board {
     }
 
     /**
-     * Devuelve el vector que apunta desde 'origin' hacia 'target'
-     * tomando el camino más corto (atravesando paredes si es necesario).
-     * Útil para que los agentes sepan hacia dónde ir.
+     * {@inheritDoc}
+     * 
+     * <p>Returns the shortest direction vector from origin to target,
+     * which may cross world edges.</p>
      */
+    @Override
     public void getDirectionVector(Vector2 origin, Vector2 target, Vector2 out) {
         float dx = target.x - origin.x;
         float dy = target.y - origin.y;
@@ -53,16 +83,20 @@ public class ToroidalBoard extends Board {
     }
 
     /**
-     * Calcula el punto medio real considerando la toroidicidad.
+     * {@inheritDoc}
+     * 
+     * <p>Calculates the true midpoint considering toroidal geometry.
+     * The midpoint is found by taking half the shortest path vector.</p>
      */
+    @Override
     public void getMidPoint(Vector2 origin, Vector2 target, Vector2 out) {
-        // Obtenemos el VectorAB
+        // Get the direction vector (shortest path)
         getDirectionVector(origin, target, out);
 
-        // El punto medio es: (VectorAB / 2) + A
+        // Midpoint is: origin + (direction / 2)
         out.scl(0.5f).add(origin);
 
-        // Aseguramos que el resultado final esté dentro de los límites
+        // Ensure result is within bounds
         out.x = (out.x % width + width) % width;
         out.y = (out.y % height + height) % height;
     }
