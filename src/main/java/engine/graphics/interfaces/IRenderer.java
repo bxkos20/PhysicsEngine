@@ -1,7 +1,6 @@
 package engine.graphics.interfaces;
 
 import engine.graphics.Color;
-import engine.world.World;
 
 /**
  * Interface for rendering abstraction.

@@ -1,6 +1,5 @@
 package engine.simulation;
 
-import backend.libgdx.render.primitives.Circle;
 import backend.libgdx.render.primitives.CircleFilled;
 import engine.config.SimulationConfig;
 import engine.ecs.ComponentRegistry;
@@ -14,9 +13,6 @@ import engine.util.ThreadLocalRandom;
 import engine.world.World;
 import simulation.components.DotComponent;
 import simulation.components.DotType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Core simulation controller for particle physics.
