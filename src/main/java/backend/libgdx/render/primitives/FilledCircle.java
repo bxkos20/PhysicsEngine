@@ -1,8 +1,8 @@
-package backend.libgdx.primitives;
+package backend.libgdx.render.primitives;
 
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
 import backend.libgdx.render.shapes.Shape;
-import backend.libgdx.rawDataMesh.RawDataMesh;
-import backend.libgdx.rawDataMesh.RawDataMeshFactory;
 
 public class FilledCircle extends Shape {
     private float radius;
@@ -33,5 +33,10 @@ public class FilledCircle extends Shape {
     @Override
     public RawDataMesh createRawDataMesh() {
         return RawDataMeshFactory.createCircle(radius, quality);
+    }
+    
+    @Override
+    public float[] getParameters() {
+        return new float[]{radius, quality};
     }
 }

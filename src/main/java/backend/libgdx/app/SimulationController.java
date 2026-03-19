@@ -1,103 +1,105 @@
 package backend.libgdx.app;
 
-import engine.ecs.components.ColliderComponent;
-import engine.ecs.components.PhysicsComponent;
-import engine.ecs.components.RendererComponent;
-import engine.ecs.components.TransformComponent;
-import simulation.components.DotComponent;
-import simulation.components.DotType;
-import engine.ecs.GameObject;
+import backend.libgdx.factories.LibGDXShapeFactory;
 import backend.libgdx.render.Renderer;
-import backend.libgdx.primitives.Circle;
-import engine.spatial.ToroidalGridPartition;
-import engine.physics.ElasticCollision;
-import engine.world.ToroidalBoard;
-import engine.world.World;
+import backend.libgdx.render.camera.CameraController;
+import backend.libgdx.render.camera.LibGDXCamera;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-
-import java.util.Arrays;
-import java.util.Random;
+import engine.config.SimulationConfig;
+import engine.factories.ShapeFactory;
+import engine.graphics.interfaces.ICamera;
+import engine.graphics.interfaces.IRenderer;
+import engine.physics.ElasticCollision;
+import engine.simulation.SimulationCore;
+import engine.spatial.ToroidalGridPartition;
+import engine.world.ToroidalBoard;
+import engine.world.World;
+import simulation.components.DotType;
 
 public class SimulationController extends ApplicationAdapter {
-    Renderer renderer;
-    World world;
+    private SimulationCore simulationCore;
+    private CameraController cameraController;
     private final int width;
     private final int height;
+    private final int worldWidth;
+    private final int worldHeight;
 
-    // Velocidad de la simulación (1.0f = tiempo real, 2.0f = doble, etc.)
-    public float timeScale = 1.0f;
-
+    // Simulation controls
+    public float timeScale = SimulationConfig.Simulation.DEFAULT_TIMESCALE;
     public boolean render = true;
     public boolean pause = false;
-
-    // Acumulador para guardar el tiempo "sobrante" entre frames
     private float accumulator = 0f;
 
-    final int totalDots = 2000;
-
-    public SimulationController(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public SimulationController(int worldWidth, int worldHeight) {
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
+        // Use actual screen dimensions for camera
+        this.width = SimulationConfig.Display.SCREEN_WIDTH;
+        this.height = SimulationConfig.Display.SCREEN_HEIGHT;
     }
 
     @Override
     public void create() {
-        ToroidalBoard board = new ToroidalBoard(width, height);
-        ElasticCollision collision = new ElasticCollision();
-        ToroidalGridPartition gridPartition = new ToroidalGridPartition(width, height, 50);
-        world = new World(board, collision, gridPartition);
-        renderer = new Renderer(width, height);
+        // Create LibGDX-specific implementations
+        ShapeFactory shapeFactory = new LibGDXShapeFactory();
         
-        Random random = new Random();
-
-        DotType.randomizeInteraction();
-        System.out.println(Arrays.deepToString(DotType.INTERACTION));
-
-        int dotPerType = totalDots / DotType.values().length;
-
-        for (int i = 0; i < DotType.values().length; i++) {
-            for (int j = 0; j < dotPerType; j++) {
-                float x = random.nextFloat() * width;
-                float y = random.nextFloat() * height;
-
-                GameObject dot = new GameObject();
-                dot.addComponent(new ColliderComponent(5));
-                dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
-                dot.addComponent(new TransformComponent(x,y));
-                dot.addComponent(new DotComponent(DotType.values()[i]));
-                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR, new Circle(5, 32, 2.5f)));
-
-                world.addObject(dot);
-            }
-        }
+        // Create camera with actual screen dimensions
+        ICamera camera = new LibGDXCamera(width, height);
+        
+        // Create renderer
+        IRenderer renderer = new Renderer(width, height, camera);
+        
+        // Create simulation core - pure engine logic!
+        simulationCore = new SimulationCore(worldWidth, worldHeight, shapeFactory, renderer);
+        
+        // Setup world components
+        ToroidalBoard board = new ToroidalBoard(
+            SimulationConfig.World.WORLD_WIDTH, 
+            SimulationConfig.World.WORLD_HEIGHT
+        );
+        ElasticCollision collision = new ElasticCollision();
+        ToroidalGridPartition gridPartition = new ToroidalGridPartition(
+            SimulationConfig.World.WORLD_WIDTH, 
+            SimulationConfig.World.WORLD_HEIGHT, 
+            SimulationConfig.Performance.GRID_CELL_SIZE
+        );
+        World world = new World(board, collision, gridPartition);
+        
+        // Inject world into simulation core
+        simulationCore.setWorld(world);
+        
+        // Create simulation
+        simulationCore.create();
+        
+        // Setup camera controls
+        cameraController = new CameraController(camera);
+        Gdx.input.setInputProcessor(cameraController);
     }
 
     @Override
     public void render() {
         manageInputs();
-        // Mostrar FPS en el título
+        // Show FPS in title
         Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
-                " | " + world.getProfilingInfo() + " | " + renderer.getProfilingInfo());
+                " | " + (simulationCore.getWorld() != null ? simulationCore.getWorld().getProfilingInfo() : "No world"));
         if (pause) return;
 
-        // 1. Calculamos cuánto tiempo "simulado" ha pasado en este frame real
-        float frameTime = Math.min(Gdx.graphics.getDeltaTime(), 0.25f); // Limitamos para evitar espiral de la muerte si se cuelga
+        // Fixed timestep with accumulator
+        float frameTime = Math.min(Gdx.graphics.getDeltaTime(), SimulationConfig.Simulation.MAX_FRAME_TIME);
         accumulator += frameTime * timeScale;
 
-        // 2. Ejecutamos la física en pasos fijos hasta consumir el tiempo acumulado
-        // Paso de física fijo (60 veces por segundo). Cuanto más pequeño, más precisa la física.
-        float FIXED_TIME_STEP = 1 / 60f;
+        float FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP;
         while (accumulator >= FIXED_TIME_STEP) {
-            world.update(FIXED_TIME_STEP);
+            simulationCore.update(FIXED_TIME_STEP);
             accumulator -= FIXED_TIME_STEP;
         }
 
-        if (render)
-            renderer.tick(world);
+        if (render) {
+            simulationCore.render();
+        }
     }
-
 
     public void manageInputs(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;

@@ -1,6 +1,7 @@
 package backend.libgdx.render.shapes;
 
-import backend.libgdx.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+
 import java.util.HashMap;
 import java.util.Map;
 

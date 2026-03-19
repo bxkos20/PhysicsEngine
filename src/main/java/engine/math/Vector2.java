@@ -24,6 +24,12 @@ public class Vector2 {
         return this;
     }
 
+    public Vector2 add(float x, float y) {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
     public Vector2 mulAdd(Vector2 vec, float scalar) {
         this.x += vec.x * scalar;
         this.y += vec.y * scalar;

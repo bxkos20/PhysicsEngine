@@ -1,14 +1,14 @@
 package simulation.systems;
 
+import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.System;
-import simulation.components.DotComponent;
-import engine.ecs.ComponentRegistry;
-import engine.ecs.GameObject;
-import engine.world.Board;
-import engine.spatial.GridPartition;
 import engine.math.Vector2;
+import engine.spatial.GridPartition;
+import engine.world.Board;
+import simulation.components.DotComponent;
 
 
 public class DotSystem extends System {

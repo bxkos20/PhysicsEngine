@@ -1,8 +1,8 @@
 package engine.spatial;
 
-import engine.ecs.components.TransformComponent;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
+import engine.ecs.components.TransformComponent;
 
 import java.util.ArrayList;
 import java.util.List;

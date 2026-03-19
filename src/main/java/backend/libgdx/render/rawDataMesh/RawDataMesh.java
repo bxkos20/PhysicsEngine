@@ -1,4 +1,4 @@
-package backend.libgdx.rawDataMesh;
+package backend.libgdx.render.rawDataMesh;
 
 public class RawDataMesh {
     public float[] vertexes;

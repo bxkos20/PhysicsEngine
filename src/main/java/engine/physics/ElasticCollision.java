@@ -1,12 +1,12 @@
 package engine.physics;
 
 import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.GameObject;
-import engine.world.Board;
 import engine.math.Vector2;
+import engine.world.Board;
 
 public class ElasticCollision extends Collision {
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
@@ -50,10 +50,15 @@ public class ElasticCollision extends Collision {
 
     private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
         if (!a.checkSignature(PHYSICS_ID) || !b.checkSignature(PHYSICS_ID)) return;
-        //TODO: If one have an the other no make the bouncing too
-
+        
+        // Handle static vs dynamic collisions
         PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
         PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
+        
+        if (aPhysics.getMass() == 0 && bPhysics.getMass() == 0) {
+            // Both static - no collision response needed
+            return;
+        }
 
         // Masa inversa (Manejo de objetos estáticos)
         float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();

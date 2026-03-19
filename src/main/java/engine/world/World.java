@@ -1,11 +1,11 @@
 package engine.world;
 
 import engine.ecs.GameObject;
-import engine.spatial.GridPartition;
-import engine.physics.Collision;
 import engine.ecs.systems.CollisionSystem;
-import simulation.systems.DotSystem;
 import engine.ecs.systems.MovementSystem;
+import engine.physics.Collision;
+import engine.spatial.GridPartition;
+import simulation.systems.DotSystem;
 
 import java.util.ArrayList;
 import java.util.List;

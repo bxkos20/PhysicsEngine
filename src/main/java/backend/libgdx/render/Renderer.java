@@ -1,24 +1,30 @@
 package backend.libgdx.render;
 
-import backend.libgdx.render.shapes.MeshBatch;
-import backend.libgdx.render.shapes.ShapeRegistry;
-import engine.ecs.ComponentRegistry;
-import engine.ecs.components.RendererComponent;
-import engine.ecs.components.TransformComponent;
-import engine.ecs.GameObject;
+import backend.libgdx.factories.LibGDXShapeFactory;
 import backend.libgdx.render.camera.CameraController;
-import backend.libgdx.rawDataMesh.RawDataMesh;
-import engine.world.World;
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.shapes.MeshBatch;
+import backend.libgdx.render.shapes.Shape;
+import backend.libgdx.render.shapes.ShapeRegistry;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.ScreenUtils;
+import engine.config.SimulationConfig;
+import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
+import engine.ecs.components.RenderData;
+import engine.ecs.components.TransformComponent;
+import engine.graphics.interfaces.ICamera;
+import engine.graphics.interfaces.IRenderer;
+import engine.graphics.interfaces.IShape;
+import engine.world.World;
 
 import java.util.List;
 
-public class Renderer {
+public class Renderer implements IRenderer {
     // Vertex Shader: Transforma la posición de los vértices usando una matriz
     private static final String VERTEX_SHADER =
             "attribute vec4 a_position;\n" +
@@ -43,31 +49,33 @@ public class Renderer {
     private final ShaderProgram shader;
     private final MeshBatch meshBatch;
 
+    private static final int RENDER_DATA_ID = ComponentRegistry.getId(RenderData.class);
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
-    private static final int RENDERER_ID = ComponentRegistry.getId(RendererComponent.class);
-    private static final long REQUIRED_SIGNATURE = ComponentRegistry.idToBit(RENDERER_ID) |
+    private static final long REQUIRED_SIGNATURE = ComponentRegistry.idToBit(RENDER_DATA_ID) |
             ComponentRegistry.idToBit(TRANSFORM_ID);
 
-    OrthographicCamera camera;
-    CameraController cameraController;
+    ICamera camera;
+    private CameraController cameraController;
     private float lastExecutionTimeMs; // Para el profiling
 
-    public Renderer(int width, int height) {
+    public Renderer(int width, int height, ICamera camera) {
         ShaderProgram.pedantic = false; // Permite que no usemos todas las variables
         shader = new ShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER);
         if (!shader.isCompiled()) {
             throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
         }
         
-        // Initialize the batch with a reasonable size
-        meshBatch = new MeshBatch(10000, 20000);
+        // Initialize the batch with configuration size
+        meshBatch = new MeshBatch(
+            SimulationConfig.Rendering.BATCH_VERTICES, 
+            SimulationConfig.Rendering.BATCH_INDICES
+        );
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(width / 2f, height / 2f, 0); // Centrar en el mundo
-        camera.update();
+        this.camera = camera;
+        this.camera.setPosition(width / 2f, height / 2f); // Center on world
+        this.camera.update();
 
-        cameraController = new CameraController(camera);
-        Gdx.input.setInputProcessor(cameraController); // Activar inputs
+        // CameraController is handled by SimulationController, not here
     }
 
     public void tick(World world) {
@@ -75,8 +83,11 @@ public class Renderer {
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
 
         camera.update();
+        // Get native matrix from engine wrapper
+        com.badlogic.gdx.math.Matrix4 gdxMatrix = 
+            (com.badlogic.gdx.math.Matrix4) camera.getCombinedMatrix().getNativeMatrix();
         shader.bind();
-        shader.setUniformMatrix("u_projTrans", camera.combined);
+        shader.setUniformMatrix("u_projTrans", gdxMatrix);
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -88,18 +99,23 @@ public class Renderer {
             GameObject gameObject = gameObjects.get(i);
             if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
                 
-                RendererComponent rendererComponent = gameObject.getComponent(RENDERER_ID);
+                RenderData renderData = gameObject.getComponent(RENDER_DATA_ID);
                 TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
                 
-                RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh(rendererComponent.getShape());
+                if (renderData != null && transform != null) {
+                    // Recreate shape from data using factory
+                    IShape shape = recreateShapeFromData(renderData);
+                    
+                    RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh((Shape) shape);
 
-                // If the batch is full, flush it and start a new one
-                if (meshBatch.isFull(rawDataMesh)) {
-                    flush();
-                    meshBatch.begin();
-                }
+                    // If the batch is full, flush it and start a new one
+                    if (meshBatch.isFull(rawDataMesh)) {
+                        flush();
+                        meshBatch.begin();
+                    }
                 
-                meshBatch.draw(rawDataMesh, transform.getPosition().x, transform.getPosition().y, rendererComponent.getColor());
+                    meshBatch.draw(rawDataMesh, transform.getPosition().x, transform.getPosition().y, convertColor(renderData.color));
+                }
             }
         }
         
@@ -117,7 +133,86 @@ public class Renderer {
     }
 
     public String getProfilingInfo() {
-        return String.format("Render: %.2fms",
-                lastExecutionTimeMs);
+        return String.format("Render: %.2fms", lastExecutionTimeMs);
+    }
+    
+    private IShape recreateShapeFromData(RenderData renderData) {
+        // Use LibGDX shape factory to recreate shape from data
+        LibGDXShapeFactory factory = new LibGDXShapeFactory();
+        
+        switch (renderData.shapeType) {
+            case "circle":
+                return factory.createCircle(
+                    renderData.shapeParams[0], // radius
+                    (int)renderData.shapeParams[1], // quality;  
+                    renderData.shapeParams[2]   // lineWidth
+                );
+            case "rect":
+                return factory.createRect(
+                    renderData.shapeParams[0], // width
+                    renderData.shapeParams[1], // height
+                    renderData.shapeParams[2]   // lineWidth
+                );
+            case "filled_circle":
+                return factory.createFilledCircle(
+                    renderData.shapeParams[0], // radius
+                    (int)renderData.shapeParams[1]   // quality
+                );
+            case "filled_rect":
+                return factory.createFilledRect(
+                    renderData.shapeParams[0], // width
+                    renderData.shapeParams[1]   // height
+                );
+            default:
+                throw new IllegalArgumentException("Unknown shape type: " + renderData.shapeType);
+        }
+    }
+
+    private Color convertColor(engine.graphics.Color color) {
+        return new Color(color.r, color.g, color.b, color.a);
+    }
+
+    @Override
+    public void begin() {
+        // Clear screen
+        ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
+        
+        // Update camera and setup shader
+        camera.update();
+        com.badlogic.gdx.math.Matrix4 gdxMatrix = 
+            (com.badlogic.gdx.math.Matrix4) camera.getCombinedMatrix().getNativeMatrix();
+        shader.bind();
+        shader.setUniformMatrix("u_projTrans", gdxMatrix);
+
+        // Setup blend mode
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        
+        // Start mesh batch
+        meshBatch.begin();
+    }
+
+    @Override
+    public void end() {
+        flush();
+    }
+
+    @Override
+    public void draw(IShape shape, float x, float y, engine.graphics.Color color) {
+        RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh((Shape)shape);
+
+        // If the batch is full, flush it and start a new one
+        if (meshBatch.isFull(rawDataMesh)) {
+            flush();
+            meshBatch.begin();
+        }
+
+        meshBatch.draw(rawDataMesh, x, y, convertColor(color));
+    }
+
+    @Override
+    public void setCamera(ICamera camera) {
+        this.cameraController = new CameraController(camera);
+        Gdx.input.setInputProcessor(cameraController);
     }
 }

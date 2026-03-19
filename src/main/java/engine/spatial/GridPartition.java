@@ -1,7 +1,7 @@
 package engine.spatial;
 
-import engine.ecs.components.TransformComponent;
 import engine.ecs.GameObject;
+import engine.ecs.components.TransformComponent;
 
 import java.util.List;
 import java.util.function.Consumer;

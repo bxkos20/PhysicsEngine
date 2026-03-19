@@ -1,8 +1,8 @@
-package backend.libgdx.primitives;
+package backend.libgdx.render.primitives;
 
-import backend.libgdx.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
 import backend.libgdx.render.shapes.Shape;
-import backend.libgdx.rawDataMesh.RawDataMeshFactory;
 
 public class Rect extends Shape {
     private float width;
@@ -35,6 +35,11 @@ public class Rect extends Shape {
     @Override
     public RawDataMesh createRawDataMesh() {
         return RawDataMeshFactory.createRectOutline(width, height, size);
+    }
+    
+    @Override
+    public float[] getParameters() {
+        return new float[]{width, height, size};
     }
 
 

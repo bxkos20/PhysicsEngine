@@ -1,20 +1,19 @@
 package simulation.components;
 
-import com.badlogic.gdx.graphics.Color;
-
-import java.util.Random;
+import engine.graphics.Color;
+import engine.util.ThreadLocalRandom;
 
 public enum DotType {
-    RED(Color.RED),
-    BlUE(Color.BLUE),
-    LIME(Color.LIME),
-    PINK(Color.PINK),
-    CYAN(Color.CYAN),
-    WHITE(Color.WHITE),
-    YELLOW(Color.YELLOW),
-    BROWN(Color.BROWN),
-    SLATE(Color.SLATE),
-    FIREBRICK(Color.FIREBRICK);
+    RED(new Color(1,0,0,1)),
+    GREEN(new Color(0,1,0,1)),
+    BLUE(new Color(0,0,1,1)),
+    YELLOW(new Color(1,1,0,1)),
+    PURPLE(new Color(1,0,1,1)),
+    CYAN(new Color(0,1,1,1)),
+    ORANGE(new Color(1,0.5f,0,1)),
+    MAGENTA(new Color(1,0,1,0.5f)),
+    LIME(new Color(0,1,0,0.5f)),
+    PINK(new Color(1,0.5f,0.5f,1));
 
 
     public static final float[][] INTERACTION = new float[DotType.values().length][DotType.values().length];
@@ -30,10 +29,9 @@ public enum DotType {
     }
 
     public static void randomizeInteraction() {
-        Random random = new Random();
         for (int i = 0; i < INTERACTION.length; i++) {
             for (int j = 0; j < INTERACTION[i].length; j++) {
-                INTERACTION[i][j] = random.nextFloat() * 2 - 1;
+                INTERACTION[i][j] = ThreadLocalRandom.nextFloat() * 2 - 1;
             }
         }
     }

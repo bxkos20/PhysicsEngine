@@ -1,15 +1,16 @@
 package engine.ecs.systems;
 
+import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.GameObject;
-import engine.ecs.ComponentRegistry;
-import engine.world.Board;
-import engine.spatial.GridPartition;
 import engine.physics.Collision;
+import engine.spatial.GridPartition;
+import engine.world.Board;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CollisionSystem extends System {
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
@@ -34,29 +35,25 @@ public class CollisionSystem extends System {
     public void update(float dt, List<GameObject> gameObjects) {
         long start = java.lang.System.nanoTime();
         if (THREADING) {
-            // FASE 1: Parallel detection
+            // FASE 1: Parallel detection using proper collector
             List<GameObject> pendingCollisions = gameObjects.parallelStream()
                     .filter(go -> go.checkSignature(REQUIRED_SIGNATURE))
-                    .collect(
-                            ArrayList::new,
-
-                            // 2. Lo que hace el hilo con su objeto
-                            (localList, gameObject) -> {
-                                TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
-
-                                gridPartition.processNearby(transform, 1, other -> {
-                                    if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
-
-                                    if (collision.isColliding(gameObject, other, board)) {
-                                        localList.add(gameObject);
-                                        localList.add(other);
-                                    }
-                                });
-                            },
-
-                            // 3. Al terminar, Java junta las listas de todos los hilos en pendingCollisions
-                            ArrayList::addAll
-                    );
+                    .flatMap(gameObject -> {
+                        TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+                        List<GameObject> collisions = new ArrayList<>();
+                        
+                        gridPartition.processNearby(transform, 1, other -> {
+                            if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
+                            
+                            if (collision.isColliding(gameObject, other, board)) {
+                                collisions.add(gameObject);
+                                collisions.add(other);
+                            }
+                        });
+                        
+                        return collisions.stream();
+                    })
+                    .collect(Collectors.toList());
 
             // FASE 2: Resolution
             for (int i = 0; i < pendingCollisions.size(); i += 2) {

@@ -1,9 +1,9 @@
 package engine.ecs.systems;
 
 import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.GameObject;
 import engine.world.Board;
 
 public class MovementSystem extends System {

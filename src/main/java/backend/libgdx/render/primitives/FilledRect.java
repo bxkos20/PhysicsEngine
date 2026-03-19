@@ -1,14 +1,14 @@
-package backend.libgdx.primitives;
+package backend.libgdx.render.primitives;
 
-import backend.libgdx.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
 import backend.libgdx.render.shapes.Shape;
-import backend.libgdx.rawDataMesh.RawDataMeshFactory;
 
 public class FilledRect extends Shape {
     private float width;
     private float height;
 
-    public FilledRect(float width, int height) {
+    public FilledRect(float width, float height) {
         this.width = width;
         this.height = height;
         this.inicialiceKey();
@@ -33,6 +33,11 @@ public class FilledRect extends Shape {
     @Override
     public RawDataMesh createRawDataMesh() {
             return RawDataMeshFactory.createRect(width, height);
+    }
+    
+    @Override
+    public float[] getParameters() {
+        return new float[]{width, height};
     }
 
 

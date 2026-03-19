@@ -1,22 +1,22 @@
 package engine.ecs.components;
 
-import com.badlogic.gdx.graphics.Color;
-import backend.libgdx.render.shapes.Shape;
+import engine.graphics.Color;
+import engine.graphics.interfaces.IShape;
 
 public class RendererComponent {  //TODO: don't follow ecs principes
     private Color color;
-    private Shape shape;
+    private IShape shape;
 
-    public RendererComponent(Color color, Shape shape) {
+    public RendererComponent(Color color, IShape shape) {
         this.color = color;
         this.shape = shape;
     }
 
-    public Shape getShape() {
+    public IShape getShape() {
         return shape;
     }
 
-    public void setShape(Shape shape) {
+    public void setShape(IShape shape) {
         this.shape = shape;
     }
 
