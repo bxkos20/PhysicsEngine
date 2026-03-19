@@ -38,6 +38,6 @@ public class Color {
 
     public float toFloatBits() {
         int color = ((int)(255 * a) << 24) | ((int)(255 * b) << 16) | ((int)(255 * g) << 8) | ((int)(255 * r));
-        return NumberUtils.intToFloatColor(color);
+        return Float.intBitsToFloat(color);
     }
 }
