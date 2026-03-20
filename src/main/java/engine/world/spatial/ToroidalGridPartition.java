@@ -1,4 +1,4 @@
-package engine.spatial;
+package engine.world.spatial;
 
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
@@ -22,10 +22,10 @@ import java.util.function.Consumer;
  */
 public class ToroidalGridPartition extends GridPartition {
     /** Cell storage array - each cell contains a list of game objects */
-    private ArrayList<GameObject>[] cells;
+    private final List<GameObject>[] cells;
     
     /** ThreadLocal neighbor list for parallel processing */
-    private ThreadLocal<ArrayList<GameObject>> nearbyThread = ThreadLocal.withInitial(ArrayList::new);
+    private final ThreadLocal<ArrayList<GameObject>> nearbyThread = ThreadLocal.withInitial(ArrayList::new);
 
 
     /**
@@ -37,8 +37,10 @@ public class ToroidalGridPartition extends GridPartition {
      */
     public ToroidalGridPartition(float width, float height, float cellSize) {
         super(width, height, cellSize);
-        cells = new ArrayList[rows * cols];
-        for (int i = 0; i < cells.length; i++) cells[i] = new ArrayList<GameObject>();
+        @SuppressWarnings("unchecked")
+        List<GameObject>[] cells = new List[rows * cols];
+        this.cells = cells;
+        for (int i = 0; i < cells.length; i++) cells[i] = new ArrayList<>();
     }
 
     /**
@@ -74,41 +76,13 @@ public class ToroidalGridPartition extends GridPartition {
 
     /**
      * {@inheritDoc}
-     * Returns neighbors from all cells within distance, wrapping at edges.
-     */
-    @Override
-    public List<GameObject> getNearby(TransformComponent transform, int distance) {
-        ArrayList<GameObject> nearby = nearbyThread.get();
-        nearby.clear();
-
-        int centerCol = getCol(transform.getPosition().x);
-        int centerRow = getRow(transform.getPosition().y);
-
-        for (int i = -distance; i <= distance; i++) {
-            for (int j = -distance; j <= distance; j++) {
-                int neighborCol = centerCol + i;
-                int neighborRow = centerRow + j;
-
-                // 2. Aplicar Wrap Toroidal (Lógica específica de esta clase)
-                neighborCol = (neighborCol % cols + cols) % cols;
-                neighborRow = (neighborRow % rows + rows) % rows;
-
-                // 3. Calcular ID y añadir
-                int id = neighborCol + neighborRow * cols;
-                nearby.addAll(cells[id]);
-            }
-        }
-        return nearby;
-    }
-
-    /**
-     * {@inheritDoc}
      * Processes neighbors from all cells within distance, wrapping at edges.
      */
     @Override
-    public void processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor) {
+    public int processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor) {
         int centerCol = getCol(transform.getPosition().x);
         int centerRow = getRow(transform.getPosition().y);
+        int cellsProcessed = 0;
 
         for (int i = -distance; i <= distance; i++) {
             for (int j = -distance; j <= distance; j++) {
@@ -121,13 +95,15 @@ public class ToroidalGridPartition extends GridPartition {
 
                 // 3. Calcular ID y añadir
                 int id = neighborCol + neighborRow * cols;
-                ArrayList<GameObject> cell = cells[id];
+                List<GameObject> cell = cells[id];
 
                 for (int k = 0; k < cell.size(); k++) {
                     processor.accept(cell.get(k));
+                    cellsProcessed++;
                 }
             }
         }
+        return cellsProcessed;
     }
 
     /**

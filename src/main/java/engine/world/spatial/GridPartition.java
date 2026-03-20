@@ -1,4 +1,4 @@
-package engine.spatial;
+package engine.world.spatial;
 
 import engine.ecs.GameObject;
 import engine.ecs.components.TransformComponent;
@@ -50,16 +50,6 @@ public abstract class GridPartition {
         this.rows = (int) Math.ceil(height / cellSize);
     }
 
-    /** @return Number of rows */
-    public int getRows() {
-        return rows;
-    }
-
-    /** @return Number of columns */
-    public int getCols() {
-        return cols;
-    }
-
     /** @return Cell size in world units */
     public float getCellSize() {
         return cellSize;
@@ -95,22 +85,14 @@ public abstract class GridPartition {
     public abstract void clear();
 
     /**
-     * Returns entities near the given transform.
-     * 
-     * @param transform Transform to search around
-     * @param distance  Cell distance to search (1 = adjacent cells)
-     * @return List of nearby entities
-     */
-    public abstract List<GameObject> getNearby(TransformComponent transform, int distance);
-
-    /**
      * Processes entities near the given transform with a callback.
      * 
      * @param transform  Transform to search around
      * @param distance   Cell distance to search
      * @param processor  Callback for each nearby entity
+     * @return Number of entities processed
      */
-    public abstract void processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor);
+    public abstract int processNearby(TransformComponent transform, int distance, Consumer<GameObject> processor);
 
     /**
      * Adds a single entity to the grid.

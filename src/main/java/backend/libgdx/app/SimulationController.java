@@ -11,7 +11,7 @@ import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.physics.ElasticCollision;
 import engine.simulation.SimulationCore;
-import engine.spatial.ToroidalGridPartition;
+import engine.world.spatial.ToroidalGridPartition;
 import engine.world.ToroidalBoard;
 import engine.world.World;
 import simulation.components.DotType;

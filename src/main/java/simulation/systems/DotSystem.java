@@ -7,7 +7,7 @@ import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.System;
 import engine.math.Vector2;
-import engine.spatial.GridPartition;
+import engine.world.spatial.GridPartition;
 import engine.world.Board;
 import simulation.components.DotComponent;
 

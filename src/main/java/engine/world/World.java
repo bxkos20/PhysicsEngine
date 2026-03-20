@@ -5,7 +5,7 @@ import engine.ecs.GameObject;
 import engine.ecs.systems.CollisionSystem;
 import engine.ecs.systems.MovementSystem;
 import engine.physics.Collision;
-import engine.spatial.GridPartition;
+import engine.world.spatial.GridPartition;
 import simulation.systems.DotSystem;
 
 import java.util.ArrayList;

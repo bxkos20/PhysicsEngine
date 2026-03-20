@@ -1,7 +1,5 @@
 package engine.graphics;
 
-import com.badlogic.gdx.utils.NumberUtils;
-
 /**
  * RGBA color representation for rendering.
  * 

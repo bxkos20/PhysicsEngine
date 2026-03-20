@@ -5,12 +5,11 @@ import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.physics.Collision;
-import engine.spatial.GridPartition;
+import engine.world.spatial.GridPartition;
 import engine.world.Board;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * System for detecting and resolving collisions between entities.
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * 
  * <h3>Threading Strategy:</h3>
  * <ul>
- *   <li>Detection phase: Parallel processing with ThreadLocal storage</li>
+ *   <li>Detection phase: Parallel processing with manual thread pool</li>
  *   <li>Resolution phase: Sequential to avoid race conditions</li>
  * </ul>
  * 
@@ -35,7 +34,7 @@ public class CollisionSystem extends System {
     private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
     
     /** ThreadLocal list for parallel collision pair collection */
-    private ThreadLocal<List<GameObject>> pairsThread = ThreadLocal.withInitial(ArrayList::new);
+    private final ThreadLocal<List<GameObject>> pairsThread = ThreadLocal.withInitial(ArrayList::new);
 
     /** Spatial partitioning for broad-phase collision detection */
     private final GridPartition gridPartition;
@@ -65,7 +64,7 @@ public class CollisionSystem extends System {
     }
 
     /**
-     * Updates collision detection and resolution.
+     * Updates collision detection and resolution using custom logic.
      * 
      * <p>Two-phase approach:</p>
      * <ol>
@@ -77,56 +76,76 @@ public class CollisionSystem extends System {
      * @param gameObjects All game objects to check
      */
     @Override
-    public void update(float dt, List<GameObject> gameObjects) {
-        long start = java.lang.System.nanoTime();
+    protected void processUpdate(float dt, List<GameObject> gameObjects) {
         if (THREADING) {
-            // Phase 1: Parallel detection
-            List<GameObject> pendingCollisions = gameObjects.parallelStream()
-                    .filter(go -> go.checkSignature(REQUIRED_SIGNATURE))
-                    .flatMap(gameObject -> {
-                        TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
-                        List<GameObject> collisions = new ArrayList<>();
-                        
-                        gridPartition.processNearby(transform, 1, other -> {
-                            // Skip duplicates and non-colliding entities
-                            if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
-                            
-                            if (collision.isColliding(gameObject, other, board)) {
-                                collisions.add(gameObject);
-                                collisions.add(other);
-                            }
-                        });
-                        
-                        return collisions.stream();
-                    })
-                    .collect(Collectors.toList());
-
-            // Phase 2: Sequential resolution
-            for (int i = 0; i < pendingCollisions.size(); i += 2) {
-                GameObject a = pendingCollisions.get(i);
-                GameObject b = pendingCollisions.get(i + 1);
-                collision.solveCollision(a, b, board);
-            }
-
+            processParallelCollisionDetection(gameObjects);
         } else {
-            // Sequential processing
-            for (int i = 0; i < gameObjects.size(); i++) {
-                GameObject gameObject = gameObjects.get(i);
+            processSequentialCollisionDetection(gameObjects);
+        }
+    }
+    
+    /**
+     * Parallel collision detection using base class helper methods.
+     * Eliminates GC pressure from parallelStream() and lambda allocations.
+     */
+    private void processParallelCollisionDetection(List<GameObject> gameObjects) {
+        // Collect collision pairs from all threads
+        List<GameObject> allCollisions = new ArrayList<>();
+        
+        // Use base class helper method for parallel processing with results
+        processInParallelWithResults(gameObjects, allCollisions, (items, startIdx, endIdx, results) -> {
+            List<GameObject> threadCollisions = pairsThread.get();
+            threadCollisions.clear();
+            
+            for (int i = startIdx; i < endIdx; i++) {
+                GameObject gameObject = items.get(i);
+                if (!gameObject.checkSignature(REQUIRED_SIGNATURE)) continue;
+                
+                TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+                
+                gridPartition.processNearby(transform, 1, other -> {
+                    // Skip duplicates and non-colliding entities
+                    if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
+                    
+                    if (collision.isColliding(gameObject, other, board)) {
+                        threadCollisions.add(gameObject);
+                        threadCollisions.add(other);
+                    }
+                });
+            }
+            
+            // Safely add this thread's collisions to the shared list
+            synchronized (allCollisions) {
+                results.addAll(threadCollisions);
+            }
+        });
+        
+        // Sequential resolution phase to avoid race conditions
+        for (int i = 0; i < allCollisions.size(); i += 2) {
+            GameObject a = allCollisions.get(i);
+            GameObject b = allCollisions.get(i + 1);
+            collision.solveCollision(a, b, board);
+        }
+    }
+    
+    /**
+     * Sequential collision detection and resolution.
+     */
+    private void processSequentialCollisionDetection(List<GameObject> gameObjects) {
+        for (GameObject gameObject : gameObjects) {
 
-                if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
-                    TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+            if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
+                TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
 
-                    gridPartition.processNearby(transform, 1, other -> {
-                        // Skip duplicates and check signatures
-                        if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
+                gridPartition.processNearby(transform, 1, other -> {
+                    // Skip duplicates and check signatures
+                    if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
 
-                        if (collision.isColliding(gameObject, other, board))
-                            collision.solveCollision(gameObject, other, board);
-                    });
-                }
+                    if (collision.isColliding(gameObject, other, board))
+                        collision.solveCollision(gameObject, other, board);
+                });
             }
         }
-        this.lastExecutionTimeMs = (java.lang.System.nanoTime() - start) / 1_000_000f;
     }
 
     /**

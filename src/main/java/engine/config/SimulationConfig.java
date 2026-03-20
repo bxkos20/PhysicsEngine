@@ -19,8 +19,6 @@ public final class SimulationConfig {
         public static final int SCREEN_WIDTH = 1280;
         /** Viewport height in pixels */
         public static final int SCREEN_HEIGHT = 720;
-        /** Width / Height ratio for aspect-correct rendering */
-        public static final float ASPECT_RATIO = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
     }
     
     /**
@@ -32,8 +30,6 @@ public final class SimulationConfig {
         public static final int WORLD_WIDTH = 2000;
         /** World height in simulation units */
         public static final int WORLD_HEIGHT = 2000;
-        /** World width / height ratio */
-        public static final float WORLD_ASPECT_RATIO = (float) WORLD_WIDTH / WORLD_HEIGHT;
     }
     
     /**
@@ -42,7 +38,7 @@ public final class SimulationConfig {
      */
     public static final class Simulation {
         /** Total number of particles/entities in simulation */
-        public static final int TOTAL_DOTS = 5000;
+        public static final int TOTAL_DOTS = 2500;
         /** Number of distinct particle types */
         public static final int DOT_TYPES = 10;
         /** Particles per type (TOTAL_DOTS / DOT_TYPES) */
@@ -88,8 +84,6 @@ public final class SimulationConfig {
         public static final boolean ENABLE_MULTITHREADING = true;
         /** Grid cell size for spatial partitioning (pixels) */
         public static final int GRID_CELL_SIZE = 50;
-        /** Enable timing/profiling output */
-        public static final boolean ENABLE_PROFILING = true;
     }
     
     // Private constructor to prevent instantiation
