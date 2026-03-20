@@ -1,7 +1,7 @@
 package engine.ecs.components;
 
 import engine.graphics.Color;
-import engine.graphics.interfaces.IShape;
+import engine.graphics.Shape;
 
 /**
  * Component for storing renderable shape data using the OOP shape system.
@@ -16,7 +16,7 @@ public class RenderComponent {
     /**
      * Shape type identifier.
      */
-    public final IShape shape;
+    public final Shape shape;
 
     /**
      * Creates render data with the specified properties.
@@ -24,7 +24,7 @@ public class RenderComponent {
      * @param color       RGBA color
      * @param shape       Shape instance
      */
-    public RenderComponent(Color color, IShape shape) {
+    public RenderComponent(Color color, Shape shape) {
         this.color = color;
         this.shape = shape;
     }

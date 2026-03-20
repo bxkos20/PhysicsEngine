@@ -3,7 +3,7 @@ package backend.libgdx.render;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.rawDataMesh.RawDataMesh;
 import backend.libgdx.render.shapes.MeshBatch;
-import backend.libgdx.render.shapes.Shape;
+import engine.graphics.Shape;
 import backend.libgdx.render.shapes.ShapeRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -17,7 +17,6 @@ import engine.ecs.components.TransformComponent;
 import engine.graphics.Color;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
-import engine.graphics.interfaces.IShape;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -200,8 +199,8 @@ public class Renderer implements IRenderer {
      * @param color Color for the shape
      */
     @Override
-    public void draw(IShape shape, float x, float y, Color color) {
-        RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh((Shape)shape);
+    public void draw(Shape shape, float x, float y, Color color) {
+        RawDataMesh rawDataMesh = ShapeRegistry.getRawDataMesh(shape);
 
         // If the batch is full, flush it and start a new one
         if (meshBatch.isFull(rawDataMesh)) {

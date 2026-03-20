@@ -1,6 +1,8 @@
 package backend.libgdx.render.shapes;
 
 import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.rawDataMesh.RawDataMeshFactory;
+import engine.graphics.Shape;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class ShapeRegistry {
         String key = shape.getKey();
         if (!shapeCache.containsKey(key)) {
             // If the shape's raw data is not in the cache, create it and store it.
-            shapeCache.put(key, shape.createRawDataMesh());
+            shapeCache.put(key, RawDataMeshFactory.create(shape));
         }
         return shapeCache.get(key);
     }

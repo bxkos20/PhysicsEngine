@@ -106,11 +106,12 @@ public class DotSystem extends System {
 
 
             if (dist < MIN_DISTANCE) {
+                if (dot.getDotType() == otherDot.getDotType()) return;
                 Vector2 dir = dirThread.get();
                 board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
                 dir.scl(1 / dist);
                 float nearFactor = (MIN_DISTANCE / dist);
-                physics.addForce(dir.scl(-nearFactor * nearFactor * G)); //Find a nice MAGIC number
+                physics.addForce(dir.scl(-nearFactor * nearFactor * G * 2.5f)); //Find a nice MAGIC number
 
             } else if (dist < MAX_DISTANCE) {
                 Vector2 dir = dirThread.get();

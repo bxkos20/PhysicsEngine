@@ -1,6 +1,6 @@
 package engine.simulation;
 
-import backend.libgdx.render.primitives.CircleFilled;
+import engine.graphics.shapes.CircleFilled;
 import engine.config.SimulationConfig;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;

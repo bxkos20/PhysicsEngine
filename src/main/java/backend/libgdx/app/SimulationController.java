@@ -175,7 +175,7 @@ public class SimulationController extends ApplicationAdapter { //TODO: A lot of 
         float frameTime = Math.min(Gdx.graphics.getDeltaTime(), SimulationConfig.Simulation.MAX_FRAME_TIME);
         renderAccumulator += frameTime;
         if (render) {
-            float RENDERER_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP;
+            float RENDERER_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP_RENDERING;
             while (renderAccumulator >= RENDERER_FIXED_TIME_STEP) {
                 simulationCore.render();
                 renderAccumulator -= RENDERER_FIXED_TIME_STEP;
@@ -187,7 +187,7 @@ public class SimulationController extends ApplicationAdapter { //TODO: A lot of 
         // Fixed timestep with accumulator
         simulationAccumulator += frameTime * timeScale;
 
-        float SIMULATION_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP;
+        float SIMULATION_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP_SIMULATION;
         while (simulationAccumulator >= SIMULATION_FIXED_TIME_STEP) {
             simulationCore.update(SIMULATION_FIXED_TIME_STEP);
             simulationAccumulator -= SIMULATION_FIXED_TIME_STEP;

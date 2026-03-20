@@ -1,6 +1,7 @@
 package engine.graphics.interfaces;
 
 import engine.graphics.Color;
+import engine.graphics.Shape;
 
 /**
  * Interface for rendering abstraction.
@@ -30,7 +31,7 @@ public interface IRenderer {
      * @param y     World Y position
      * @param color RGBA color
      */
-    void draw(IShape shape, float x, float y, Color color);
+    void draw(Shape shape, float x, float y, Color color);
     
     /**
      * Sets the camera for view transformation.

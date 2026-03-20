@@ -42,14 +42,16 @@ public final class SimulationConfig {
      */
     public static final class Simulation {
         /** Total number of particles/entities in simulation */
-        public static final int TOTAL_DOTS = 2000;
+        public static final int TOTAL_DOTS = 5000;
         /** Number of distinct particle types */
-        public static final int DOT_TYPES = 5;
+        public static final int DOT_TYPES = 10;
         /** Particles per type (TOTAL_DOTS / DOT_TYPES) */
         public static final int DOTS_PER_TYPE = TOTAL_DOTS / DOT_TYPES;
         
         /** Fixed timestep for physics (1/60 = 60 Hz physics) */
-        public static final float FIXED_TIMESTEP = 1.0f / 60.0f;
+        public static final float FIXED_TIMESTEP_SIMULATION = 1.0f / 60.0f;
+        /** Fixed timestep for physics (1/60 = 60 Hz physics) */
+        public static final float FIXED_TIMESTEP_RENDERING = 1.0f / 30.0f;
         /** Maximum frame time to prevent spiral of death */
         public static final float MAX_FRAME_TIME = 0.25f;
         /** Default time multiplier (1.0 = real-time) */
@@ -75,12 +77,6 @@ public final class SimulationConfig {
         
         /** Default particle radius in world units */
         public static final float DEFAULT_DOT_RADIUS = 5.0f;
-        /** Circle segment count (higher = smoother) */
-        public static final int DEFAULT_CIRCLE_SEGMENTS = 32;
-        /** Default outline line width */
-        public static final float DEFAULT_LINE_WIDTH = 2.5f;
-        /** Fixed timestep for physics (1/60 = 30 Hz physics) */
-        public static final float FIXED_TIMESTEP = 1.0f / 30.0f;
     }
     
     /**

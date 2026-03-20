@@ -1,5 +1,6 @@
 package engine.world;
 
+import engine.config.SimulationConfig;
 import engine.ecs.GameObject;
 import engine.ecs.systems.CollisionSystem;
 import engine.ecs.systems.MovementSystem;
@@ -64,9 +65,9 @@ public class World {
         this.gridPartition = gridPartition;
         this.gameObjects = new ArrayList<>();
         this.objectsToAdd = new ArrayList<>();
-        this.movementSystem = new MovementSystem(true, board);
+        this.movementSystem = new MovementSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING, board);
         this.collisionSystem = new CollisionSystem(true, gridPartition, board, collision);
-        this.dotSystem = new DotSystem(true, gridPartition, board);
+        this.dotSystem = new DotSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING, gridPartition, board);
     }
 
     /**
