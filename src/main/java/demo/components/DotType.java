@@ -1,4 +1,4 @@
-package simulation.components;
+package demo.components;
 
 import engine.config.SimulationConfig;
 import engine.graphics.Color;

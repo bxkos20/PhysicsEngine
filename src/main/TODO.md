@@ -1,4 +1,15 @@
-# 📝 Physics Engine - TODO List //TODO: Add a 
+# 📝 Physics Engine - TODO List
+
+## 🎯 Version 0.1 - Minimally Functional Engine
+- [ ] **Create version 0.1 with a minimally functional engine**
+  - [X] Implement basic ECS system with entities and components
+  - [ ] Create basic physics system with gravity and collisions
+  - [X] Implement spatial partitioning for collision optimization
+  - [ ] Create basic rendering system for visualization
+  - [X] Add basic demo configuration
+  - [X] Create simple demo with interacting dots
+  - [ ] Document basic API and usage examples
+  - [ ] Create another demo to know the system portability
 
 ## 🚀 Features
 - [ ] **Custom GUI:**

@@ -4,9 +4,9 @@ import engine.config.SimulationConfig;
 import engine.ecs.GameObject;
 import engine.ecs.systems.CollisionSystem;
 import engine.ecs.systems.MovementSystem;
+import engine.ecs.systems.System;
 import engine.physics.Collision;
 import engine.world.spatial.GridPartition;
-import simulation.systems.DotSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * <ol>
  *   <li>Add pending entities to main list</li>
  *   <li>Clear and rebuild spatial grid</li>
- *   <li>Run AI/logic system (DotSystem) - applies forces</li>
+ *   <li>Run custom logic system (if provided) - applies forces</li>
  *   <li>Run physics integration (MovementSystem) - updates positions</li>
  *   <li>Run collision detection (CollisionSystem) - resolves overlaps</li>
  * </ol>
@@ -48,9 +48,6 @@ public class World {
     
     /** Collision detection system */
     CollisionSystem collisionSystem;
-    
-    /** Particle AI/interaction system */
-    DotSystem dotSystem;
 
     /**
      * Creates a world with injected dependencies.
@@ -65,18 +62,18 @@ public class World {
         this.gridPartition = gridPartition;
         this.gameObjects = new ArrayList<>();
         this.objectsToAdd = new ArrayList<>();
+        //TODO: Move to EngineSimulation
         this.movementSystem = new MovementSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING, board);
         this.collisionSystem = new CollisionSystem(true, gridPartition, board, collision);
-        this.dotSystem = new DotSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING, gridPartition, board);
     }
 
     /**
      * Queues an entity for addition. Added at start of next update.
      * 
-     * @param obj Entity to add
+     * @param gameObject Entity to add
      */
-    public void addObject(GameObject obj) {
-        objectsToAdd.add(obj);
+    public void addEntity(GameObject gameObject) {
+        objectsToAdd.add(gameObject);
     }
 
     /**
@@ -104,9 +101,6 @@ public class World {
         gridPartition.clear();
         gridPartition.add(gameObjects);
 
-        // Phase 2: AI/Logic - apply forces based on neighbors
-        dotSystem.update(dt, gameObjects);
-
         // Phase 3: Physics integration - update positions
         movementSystem.update(dt, gameObjects);
 
@@ -120,8 +114,10 @@ public class World {
      * @return Formatted string with execution times
      */
     public String getProfilingInfo() {
-        return String.format("Dots: %.2fms | Physics: %.2fms | Collisions: %.2fms",
-                dotSystem.getLastExecutionTimeMs(),
+        StringBuilder customInfo = new StringBuilder();
+        
+        return String.format("%sPhysics: %.2fms | Collisions: %.2fms",
+                customInfo.toString(),
                 movementSystem.getLastExecutionTimeMs(),
                 collisionSystem.getLastExecutionTimeMs());
     }
