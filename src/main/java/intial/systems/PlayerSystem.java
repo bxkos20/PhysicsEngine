@@ -1,7 +1,11 @@
 package intial.systems;
 
 import engine.ecs.GameObject;
+import engine.ecs.components.ColliderComponent;
+import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.System;
+import engine.inputs.IKeyInput;
+import intial.components.PlayerComponent;
 
 public class PlayerSystem extends System {
     /**
@@ -10,14 +14,15 @@ public class PlayerSystem extends System {
      * @param threading         Enable parallel processing
      */
     public PlayerSystem(boolean threading) {
-        super(0
-                , threading);
+        super(false,
+                PlayerComponent.class,
+                TransformComponent.class,
+                ColliderComponent.class
+        );
     }
 
     @Override
     protected void processGameObject(float dt, GameObject gameObject) {
-        for (int i = 0; i < ; i++) {
-
-        }
+        if (IKeyInput.)
     }
 }

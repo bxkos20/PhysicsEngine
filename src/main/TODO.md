@@ -11,6 +11,9 @@
   - [ ] Document basic API and usage examples
   - [X] Create simple demo with pong game
   - [ ] Make configuration simulation configurable
+  - [ ] Modify project structure !!!
+    - [ ] Injectate all the dependencies
+    - [ ] Should be simulation configurable
 
 ## 🚀 Features
 - [ ] **Custom GUI:**

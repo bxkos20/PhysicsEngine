@@ -54,9 +54,9 @@ public class CollisionSystem extends System {
      * @param collision      Collision resolution strategy
      */
     public CollisionSystem(boolean threading, GridPartition gridPartition, Board board, Collision collision) {
-        super(ComponentRegistry.idToBit(TRANSFORM_ID) |
-                        ComponentRegistry.idToBit(COLLIDER_ID),
-                threading
+        super(threading,
+                TransformComponent.class,
+                ColliderComponent.class
         );
         this.gridPartition = gridPartition;
         this.board = board;
