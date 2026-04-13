@@ -346,4 +346,10 @@ public abstract class System {
         }
         return sum / executionTimes.size();
     }
+    static long getSignature(Class<?>... classes){
+        int signature = 0;
+        for (Class<?> classType classes){
+
+        }
+    }
 }

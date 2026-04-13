@@ -6,10 +6,11 @@
   - [ ] Create basic physics system with gravity and collisions
   - [X] Implement spatial partitioning for collision optimization
   - [ ] Create basic rendering system for visualization
-  - [X] Add basic demos.dots configuration
-  - [X] Create simple demos.dots with interacting demos.dots
+  - [X] Add basic simulation configuration
+  - [X] Create simple demo with interacting dots
   - [ ] Document basic API and usage examples
-  - [ ] Create another demos.dots to know the system portability
+  - [X] Create simple demo with pong game
+  - [ ] Make configuration simulation configurable
 
 ## 🚀 Features
 - [ ] **Custom GUI:**
