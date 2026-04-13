@@ -1,6 +1,5 @@
-package demo;
+package demos.dots;
 
-import engine.app.EngineSimulation;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.SimulationConfig;
 import engine.ecs.GameObject;
@@ -10,14 +9,11 @@ import engine.ecs.components.RenderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.shapes.CircleFilled;
 import engine.util.ThreadLocalRandom;
-import engine.world.Board;
 import engine.world.World;
-import engine.world.spatial.GridPartition;
-import demo.components.DotComponent;
-import demo.components.DotType;
-import demo.systems.DotSystem;
+import demos.dots.components.DotComponent;
+import demos.dots.components.DotType;
+import demos.dots.systems.DotSystem;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;

@@ -10,50 +10,64 @@ import engine.world.Board;
 
 /**
  * Implements elastic collision detection and response.
- * 
+ *
  * <p>Uses impulse-based collision resolution with mass-weighted separation.
  * Supports static objects (mass=0) which do not move during collision.</p>
- * 
+ *
  * <h3>Collision Response:</h3>
  * <ol>
  *   <li>Separate overlapping objects based on mass ratio</li>
  *   <li>Apply impulse to change velocities</li>
  *   <li>Respect restitution (bounciness) coefficient</li>
  * </ol>
- * 
+ *
  * @see Collision
  */
 public class ElasticCollision extends Collision {
-    /** Cached component ID for TransformComponent */
+    /**
+     * Cached component ID for TransformComponent
+     */
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
-    
-    /** Cached component ID for PhysicsComponent */
+
+    /**
+     * Cached component ID for PhysicsComponent
+     */
     private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
-    
-    /** Cached component ID for ColliderComponent */
+
+    /**
+     * Cached component ID for ColliderComponent
+     */
     private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
 
-    /** Reusable vector for relative velocity calculation (avoids GC) */
+    /**
+     * Reusable vector for relative velocity calculation (avoids GC)
+     */
     private final Vector2 tmpRelVel = new Vector2();
-    
-    /** Reusable vector for direction/normal (avoids GC) */
+
+    /**
+     * Reusable vector for direction/normal (avoids GC)
+     */
     private final Vector2 tmpDir = new Vector2();
+
+    private final PhysicsComponent DEFAULT_PHYSICS = new PhysicsComponent(0, 1, 0);
 
 
     /**
      * Separates two colliding objects based on their mass ratio.
      * Static objects (mass=0) do not move.
-     * 
-     * @param a                First game object
-     * @param b                Second game object
-     * @param directionNormal  Normal direction from A to B
-     * @param overlap          Penetration depth
+     *
+     * @param a               First game object
+     * @param b               Second game object
+     * @param directionNormal Normal direction from A to B
+     * @param overlap         Penetration depth
      */
     private void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
         PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+        aPhysics = (aPhysics == null) ? DEFAULT_PHYSICS : aPhysics;
         TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
 
         PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
+        bPhysics = (bPhysics == null) ? DEFAULT_PHYSICS : bPhysics;
         TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
 
         // Obtenemos la masa inversa (0 si es estático/pared)
@@ -61,7 +75,6 @@ public class ElasticCollision extends Collision {
         float imB = (bPhysics.getMass() == 0) ? 0 : 1 / bPhysics.getMass();
         float totalInvMass = imA + imB;
 
-        // Si ambos son estáticos (totalInvMass = 0), no hacer nada para evitar NaN
         if (totalInvMass <= 0) return;
 
         // Calculamos cuánto se mueve cada uno proporcionalmente a su "ligereza"
@@ -78,19 +91,21 @@ public class ElasticCollision extends Collision {
     /**
      * Applies elastic collision impulse to two objects.
      * Uses coefficient of restitution for bounciness.
-     * 
+     *
      * @param a               First game object
      * @param b               Second game object
      * @param directionNormal Normal direction from A to B
      */
     private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
         if (!a.checkSignature(PHYSICS_ID) || !b.checkSignature(PHYSICS_ID)) return;
-        
+
         // Handle static vs dynamic collisions
         PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+        aPhysics = (aPhysics == null) ? DEFAULT_PHYSICS : aPhysics;
         PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
-        
-        if (aPhysics.getMass() == 0 && bPhysics.getMass() == 0) {
+        bPhysics = (bPhysics == null) ? DEFAULT_PHYSICS : bPhysics;
+
+        if ((aPhysics.getMass() == 0) && (bPhysics.getMass() == 0)) {
             // Both static - no collision response needed
             return;
         }
@@ -99,8 +114,6 @@ public class ElasticCollision extends Collision {
         float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
         float imB = (bPhysics.getMass() == 0) ? 0 : 1 / bPhysics.getMass();
 
-        // Si ambos son masa infinita, no hay rebote
-        if (imA + imB == 0) return;
 
         // Usamos set y sub para reciclar el vector temporal y no generar Garbage Collection
         tmpRelVel.set(bPhysics.getVelocity()).sub(aPhysics.getVelocity());
@@ -124,7 +137,7 @@ public class ElasticCollision extends Collision {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>Resolves collision by separating objects and applying impulse.</p>
      */
     @Override
@@ -155,7 +168,7 @@ public class ElasticCollision extends Collision {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>Checks if distance between objects is less than sum of radii.</p>
      */
     @Override
@@ -168,6 +181,8 @@ public class ElasticCollision extends Collision {
 
         float dist2 = board.getDistance2(aTransform.getPosition(), bTransform.getPosition());
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
+
+        boolean result =dist2 < radiiSum * radiiSum;
 
         return (dist2 < radiiSum * radiiSum);
     }

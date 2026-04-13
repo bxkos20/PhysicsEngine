@@ -67,6 +67,10 @@ public class PhysicsComponent {
         this.velocity = velocity;
     }
 
+    public void setVelocity(float x, float y) {
+        this.velocity.set(x, y);
+    }
+
     public Vector2 getSumForces() {
         return sumForces;
     }

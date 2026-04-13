@@ -1,4 +1,4 @@
-package demo;
+package demos.dots;
 
 import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;

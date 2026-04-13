@@ -11,7 +11,7 @@ import engine.config.SimulationConfig;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.app.EngineSimulation;
-import demo.components.DotType;
+import demos.dots.components.DotType;
 
 /**
  * Main controller for the physics simulation, bridging LibGDX's game loop

@@ -1,9 +1,9 @@
-package demo.components;
+package demos.dots.components;
 
 /**
  * Component identifying a particle's type in the simulation.
  * 
- * <p>Used by {@link demo.systems.DotSystem} to determine
+ * <p>Used by {@link demos.dots.systems.DotSystem} to determine
  * interaction forces between different particle types.</p>
  * 
  * @see DotType

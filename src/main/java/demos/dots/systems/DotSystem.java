@@ -1,4 +1,4 @@
-package demo.systems;
+package demos.dots.systems;
 
 import engine.config.SimulationConfig;
 import engine.ecs.ComponentRegistry;
@@ -9,7 +9,7 @@ import engine.ecs.systems.System;
 import engine.math.Vector2;
 import engine.world.spatial.GridPartition;
 import engine.world.Board;
-import demo.components.DotComponent;
+import demos.dots.components.DotComponent;
 
 
 /**
@@ -26,7 +26,7 @@ import demo.components.DotComponent;
  *   <li>Distance >= MAX_DISTANCE: No force applied</li>
  * </ul>
  * 
- * @see demo.components.DotType
+ * @see demos.dots.components.DotType
  */
 public class DotSystem extends System {
     /** Cached component ID for TransformComponent */

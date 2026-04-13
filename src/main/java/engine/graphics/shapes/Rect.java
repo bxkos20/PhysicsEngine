@@ -8,7 +8,6 @@ import engine.graphics.Shape;
  * Renders as a hollow rectangle with configurable line width.
  * 
  * @see RectFilled
- * @see RawDataMeshFactory#createRectOutline(float, float, float)
  */
 public class Rect extends Shape {
     /** Width of the rectangle in world units */

@@ -60,31 +60,31 @@ public class RawDataMeshFactory {
      * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
      */
     public static RawDataMesh create(Rect rect) {
-        float width = rect.width;
-        float height = rect.height;
+
+        float deltaX = rect.width / 2;
+        float deltaY = rect.height / 2;
         float size = rect.size;
 
         float[] vertexes = new float[]{
-                0, 0,
-                width, 0,
-                width, height,
-                0, height,
-                size, size,
-                width - size, size,
-                width - size, height - size,
-                size, height - size
+                - deltaX, - deltaY,
+                deltaX, - deltaY,
+                deltaX, deltaY,
+                - deltaX, deltaY,
+                size - deltaX, size - deltaY,
+                deltaX - size, size - deltaY,
+                deltaX - size, deltaY - size,
+                size - deltaX, deltaY - size
         };
 
         short[] indexes = new short[]{
                 0, 4, 1,
-                1, 4, 5,
+                1, 4, 5, // Down wall
                 1, 5, 2,
-                2, 5, 6,
+                2, 5, 6, // Right wall
                 2, 6, 3,
-                3, 6, 7,
-                4, 8, 5,
-                5, 8, 6,
-                7, 8, 3
+                3, 6, 7, // Up wall
+                3, 7, 0,
+                0, 7, 4 //Left wall
         };
 
         return new RawDataMesh(vertexes, indexes);
@@ -140,6 +140,7 @@ public class RawDataMeshFactory {
         float radius = circle.radius;
         int quality = circle.quality;
         float size = circle.size;
+        float delta = radius / 2;
 
         int vertexCount = quality * 2;
         int indexCount = quality * 6; // quality * 2 triangles * 3 vertices
@@ -159,12 +160,12 @@ public class RawDataMeshFactory {
             float sin = MathUtils.sin(angle);
 
             // Outer ring vertex
-            vertexes[vIndex++] = cos * radius;
-            vertexes[vIndex++] = sin * radius;
+            vertexes[vIndex++] = cos * radius - delta;
+            vertexes[vIndex++] = sin * radius - delta;
 
             // Inner ring vertex
-            vertexes[vIndex++] = cos * innerRadius;
-            vertexes[vIndex++] = sin * innerRadius;
+            vertexes[vIndex++] = cos * innerRadius - delta;
+            vertexes[vIndex++] = sin * innerRadius - delta;
         }
 
         for (int i = 0; i < quality; i++) {

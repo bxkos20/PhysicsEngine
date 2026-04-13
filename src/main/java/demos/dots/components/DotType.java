@@ -1,4 +1,4 @@
-package demo.components;
+package demos.dots.components;
 
 import engine.config.SimulationConfig;
 import engine.graphics.Color;
