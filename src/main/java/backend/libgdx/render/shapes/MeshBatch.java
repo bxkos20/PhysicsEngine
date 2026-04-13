@@ -85,7 +85,7 @@ public class MeshBatch {
      * @param rawDataMesh Source mesh data
      * @param x           World X position
      * @param y           World Y position  
-     * @param color       RGBA color for all vertices
+     * @param colorBits   RGBA color for all vertices
      */
     public void draw(RawDataMesh rawDataMesh, float x, float y, float colorBits) {
         float[] rawVertices = rawDataMesh.vertexes;

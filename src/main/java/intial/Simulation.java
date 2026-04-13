@@ -36,33 +36,33 @@ public class Simulation implements ISimulationLogic {
     @Override
     public void start(World world) {
         player1.addComponent(new ColliderComponent(50)); //TODO: should be square
+        player1.addComponent(new PhysicsComponent(10, 1, 0));
         player1.addComponent(new TransformComponent((float) SimulationConfig.World.WORLD_WIDTH - 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
-        player1.addComponent(new PhysicsComponent(0, 1, 0));
         player1.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
-                new CircleFilled(50, 32)));
+                new Circle(50, 32, 10)));
 
         world.addEntity(player1);
 
 
         player2.addComponent(new ColliderComponent(50)); //TODO: should be square
-        player2.addComponent(new TransformComponent((float)  200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
-        player2.addComponent(new PhysicsComponent(100, 1, 0));
+        player2.addComponent(new TransformComponent((float) 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
         player2.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
-                new CircleFilled(50, 32)));
+                new Circle(50, 32, 10)));
+
 
         world.addEntity(player2);
 
         final int BALL_RADIUS = 20;
         ball.addComponent(new ColliderComponent(BALL_RADIUS));
         ball.addComponent(new PhysicsComponent(1, 1, 0));
-        ball.addComponent(new TransformComponent((float) 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
+        ball.addComponent(new TransformComponent((float) SimulationConfig.World.WORLD_WIDTH / 2, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
         ball.addComponent(new RenderComponent(PRIMARY_COLOR,
-                new CircleFilled(BALL_RADIUS, 32)));
+                new Circle(BALL_RADIUS, 32, 10)));
 
         PhysicsComponent physicsComponent = ball.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
-        physicsComponent.setVelocity(500, 0);
+        physicsComponent.setVelocity(200, 0);
 
                 world.addEntity(ball);
     }

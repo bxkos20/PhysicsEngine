@@ -16,9 +16,9 @@ import com.badlogic.gdx.math.MathUtils;
  *
  * <h3>Coordinate System:</h3>
  * <ul>
- *   <li>Origin at bottom-left</li>
- *   <li>X increases right</li>
- *   <li>Y increases up</li>
+ * <li>Origin at center (0,0)</li>
+ * <li>X increases right</li>
+ * <li>Y increases up</li>
  * </ul>
  */
 public class RawDataMeshFactory {
@@ -32,20 +32,20 @@ public class RawDataMeshFactory {
     }
 
     /**
-     * Creates a filled rect mesh using triangle fan from center.
+     * Creates a filled rect mesh centered at (0,0).
      *
-     * @param rectFilled Circle to create mesh from
-     * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
+     * @param rectFilled Rectangle to create mesh from
+     * @return RawMesh with 4 vertices and 6 indices
      */
     public static RawDataMesh create(RectFilled rectFilled) {
-        float width = rectFilled.width;
-        float height = rectFilled.height;
+        float hw = rectFilled.width / 2f;
+        float hh = rectFilled.height / 2f;
 
         float[] vertexes = new float[]{
-                0, 0,
-                width, 0,
-                width, height,
-                0, height
+                -hw, -hh,  // Bottom-Left
+                hw, -hh,  // Bottom-Right
+                hw,  hh,  // Top-Right
+                -hw,  hh   // Top-Left
         };
 
         short[] indexes = {0, 1, 3, 1, 2, 3};
@@ -54,26 +54,28 @@ public class RawDataMeshFactory {
     }
 
     /**
-     * Creates a filled circle mesh using triangle fan from center.
+     * Creates a hollow rect mesh centered at (0,0).
      *
-     * @param rect Circle to create mesh from
-     * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
+     * @param rect Rectangle to create mesh from
+     * @return RawMesh with 8 vertices and 24 indices
      */
     public static RawDataMesh create(Rect rect) {
-
-        float deltaX = rect.width / 2;
-        float deltaY = rect.height / 2;
-        float size = rect.size;
+        float hw = rect.width / 2f;
+        float hh = rect.height / 2f;
+        float size = rect.size; // Line thickness
 
         float[] vertexes = new float[]{
-                - deltaX, - deltaY,
-                deltaX, - deltaY,
-                deltaX, deltaY,
-                - deltaX, deltaY,
-                size - deltaX, size - deltaY,
-                deltaX - size, size - deltaY,
-                deltaX - size, deltaY - size,
-                size - deltaX, deltaY - size
+                // Outer rectangle
+                -hw, -hh,  // 0: Outer Bottom-Left
+                hw, -hh,  // 1: Outer Bottom-Right
+                hw,  hh,  // 2: Outer Top-Right
+                -hw,  hh,  // 3: Outer Top-Left
+
+                // Inner rectangle
+                -hw + size, -hh + size, // 4: Inner Bottom-Left
+                hw - size, -hh + size, // 5: Inner Bottom-Right
+                hw - size,  hh - size, // 6: Inner Top-Right
+                -hw + size,  hh - size  // 7: Inner Top-Left
         };
 
         short[] indexes = new short[]{
@@ -84,20 +86,19 @@ public class RawDataMeshFactory {
                 2, 6, 3,
                 3, 6, 7, // Up wall
                 3, 7, 0,
-                0, 7, 4 //Left wall
+                0, 7, 4  // Left wall
         };
 
         return new RawDataMesh(vertexes, indexes);
     }
 
     /**
-     * Creates a filled circle mesh using triangle fan from center.
+     * Creates a filled circle mesh using triangle fan centered at (0,0).
      *
      * @param circleFilled Circle to create mesh from
      * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
      */
-    public static RawDataMesh create(CircleFilled circleFilled)
-    {
+    public static RawDataMesh create(CircleFilled circleFilled) {
         float radius = circleFilled.radius;
         int quality = circleFilled.quality;
 
@@ -107,7 +108,7 @@ public class RawDataMeshFactory {
         int vIndex = 0;
         int iIndex = 0;
 
-        // The center
+        // The center (0,0)
         vertexes[vIndex++] = 0;
         vertexes[vIndex++] = 0;
 
@@ -131,16 +132,15 @@ public class RawDataMeshFactory {
     }
 
     /**
-     * Creates a filled circle mesh using triangle fan from center.
+     * Creates a hollow circle mesh centered at (0,0).
      *
      * @param circle Circle to create mesh from
-     * @return RawMesh with (quality + 1) vertices and (quality * 3) indices
+     * @return RawMesh with (quality * 2) vertices and (quality * 6) indices
      */
     public static RawDataMesh create(Circle circle) {
         float radius = circle.radius;
         int quality = circle.quality;
-        float size = circle.size;
-        float delta = radius / 2;
+        float size = circle.size; // Line thickness
 
         int vertexCount = quality * 2;
         int indexCount = quality * 6; // quality * 2 triangles * 3 vertices
@@ -160,12 +160,12 @@ public class RawDataMeshFactory {
             float sin = MathUtils.sin(angle);
 
             // Outer ring vertex
-            vertexes[vIndex++] = cos * radius - delta;
-            vertexes[vIndex++] = sin * radius - delta;
+            vertexes[vIndex++] = cos * radius;
+            vertexes[vIndex++] = sin * radius;
 
             // Inner ring vertex
-            vertexes[vIndex++] = cos * innerRadius - delta;
-            vertexes[vIndex++] = sin * innerRadius - delta;
+            vertexes[vIndex++] = cos * innerRadius;
+            vertexes[vIndex++] = sin * innerRadius;
         }
 
         for (int i = 0; i < quality; i++) {

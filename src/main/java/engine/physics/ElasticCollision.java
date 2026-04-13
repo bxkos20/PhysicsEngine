@@ -182,8 +182,8 @@ public class ElasticCollision extends Collision {
         float dist2 = board.getDistance2(aTransform.getPosition(), bTransform.getPosition());
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
 
-        boolean result =dist2 < radiiSum * radiiSum;
+        boolean result = dist2 < (radiiSum * radiiSum);
 
-        return (dist2 < radiiSum * radiiSum);
+        return (dist2 < (radiiSum * radiiSum));
     }
 }

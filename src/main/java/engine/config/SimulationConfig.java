@@ -9,6 +9,7 @@ package engine.config;
  * <p>Usage: {@code SimulationConfig.Display.SCREEN_WIDTH}</p>
  */
 public final class SimulationConfig { //TODO: Make json save method;
+    //TODO: Remove individual preferences
     /**
      * Display/viewport configuration.
      * Controls the application window dimensions.
@@ -26,9 +27,11 @@ public final class SimulationConfig { //TODO: Make json save method;
      */
     public static final class World {
         /** World width in simulation units */
-        public static final int WORLD_WIDTH = 2000;
+        public static final int WORLD_WIDTH = 1000;
         /** World height in simulation units */
-        public static final int WORLD_HEIGHT = 2000;
+        public static final int WORLD_HEIGHT = 1000;
+        /** World width / height ratio */
+        public static final float WORLD_ASPECT_RATIO = (float) WORLD_WIDTH / WORLD_HEIGHT;
     }
     
     /**
@@ -37,7 +40,7 @@ public final class SimulationConfig { //TODO: Make json save method;
      */
     public static final class Simulation {
         /** Total number of particles/entities in simulation */
-        public static final int TOTAL_DOTS = 2500;
+        public static final int TOTAL_DOTS = 1500;
         /** Number of distinct particle types */
         public static final int DOT_TYPES = 10;
         /** Particles per type (TOTAL_DOTS / DOT_TYPES) */
@@ -53,11 +56,11 @@ public final class SimulationConfig { //TODO: Make json save method;
         public static final float DEFAULT_TIMESCALE = 1.0f;
         
         /** Gravitational attraction strength between particles */
-        public static final float GRAVITY_CONSTANT = 25.0f;
+        public static final float GRAVITY_CONSTANT = 50.0f;
         /** Minimum distance for interaction calculations */
-        public static final float MIN_INTERACTION_DISTANCE = 25.0f;
+        public static final float MIN_INTERACTION_DISTANCE = 15.0f;
         /** Maximum distance for interaction calculations */
-        public static final float MAX_INTERACTION_DISTANCE = 75.0f;
+        public static final float MAX_INTERACTION_DISTANCE = 100.0f;
     }
     
     /**
@@ -82,7 +85,9 @@ public final class SimulationConfig { //TODO: Make json save method;
         /** Enable parallel processing for collision detection */
         public static final boolean ENABLE_MULTITHREADING = true;
         /** Grid cell size for spatial partitioning (pixels) */
-        public static final int GRID_CELL_SIZE = 50;
+        public static final int GRID_CELL_SIZE = 200;
+        /** Enable timing/profiling output */
+        public static final boolean ENABLE_PROFILING = true;
     }
     
     // Private constructor to prevent instantiation
