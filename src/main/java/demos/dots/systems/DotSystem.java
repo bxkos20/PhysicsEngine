@@ -61,10 +61,10 @@ public class DotSystem extends System {
      * @param board          World boundary handler
      */
     public DotSystem(boolean threading, GridPartition gridPartition, Board board) {
-        super(ComponentRegistry.idToBit(TRANSFORM_ID) |
-                        ComponentRegistry.idToBit(PHYSICS_ID) |
-                        ComponentRegistry.idToBit(DOT_ID),
-                threading
+        super(threading,
+                DotSystem.class,
+                PhysicsComponent.class,
+                TransformComponent.class
         );
         this.gridPartition = gridPartition;
         this.board = board;
