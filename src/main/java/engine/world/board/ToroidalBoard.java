@@ -1,4 +1,4 @@
-package engine.world;
+package engine.world.board;
 
 import engine.ecs.components.TransformComponent;
 import engine.math.Vector2;

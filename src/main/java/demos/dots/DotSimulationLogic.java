@@ -8,6 +8,7 @@ import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.RenderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.shapes.CircleFilled;
+import engine.inputs.IKeyInput;
 import engine.util.ThreadLocalRandom;
 import engine.world.World;
 import demos.dots.components.DotComponent;
@@ -29,7 +30,7 @@ public class DotSimulationLogic implements ISimulationLogic {
     private DotSystem dotSystem;
     
     @Override
-    public void start(World world) {
+    public void start(World world, IKeyInput keyInput) {
         dotSystem = new DotSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING,
                 world.gridPartition,
                 world.board);

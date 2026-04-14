@@ -7,15 +7,11 @@ import engine.ecs.GameObject;
 import engine.ecs.components.RenderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.interfaces.IRenderer;
+import engine.inputs.IKeyInput;
 import engine.physics.ElasticCollision;
-import engine.world.ToroidalBoard;
+import engine.world.board.ToroidalBoard;
 import engine.world.World;
 import engine.world.spatial.ToroidalGridPartition;
-
-import javax.naming.directory.InvalidAttributesException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Core simulation controller for particle physics.
@@ -62,7 +58,7 @@ public class EngineSimulation {
      *
      * @param renderer Renderer for drawing
      */
-    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic) {
+    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput) {
         if (renderer == null) throw new IllegalArgumentException("Renderer cannot be null");
 
         this.worldWidth = SimulationConfig.World.WORLD_WIDTH;
@@ -76,7 +72,7 @@ public class EngineSimulation {
                 new ToroidalGridPartition(worldWidth, worldHeight, SimulationConfig.Performance.GRID_CELL_SIZE)
         );
 
-        simulationLogic.start(world);
+        simulationLogic.start(world, keyInput);
     }
 
 

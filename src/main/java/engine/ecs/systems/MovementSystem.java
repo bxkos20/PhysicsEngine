@@ -4,7 +4,7 @@ import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
-import engine.world.Board;
+import engine.world.board.Board;
 
 /**
  * System that updates entity positions based on physics.

@@ -13,7 +13,11 @@ import engine.graphics.shapes.Circle;
 import engine.graphics.shapes.CircleFilled;
 import engine.graphics.shapes.Rect;
 import engine.graphics.shapes.RectFilled;
+import engine.inputs.IKeyInput;
+import engine.inputs.Key;
 import engine.world.World;
+import intial.components.PlayerComponent;
+import intial.systems.PlayerSystem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,26 +31,30 @@ import java.util.Queue;
  */
 public class Simulation implements ISimulationLogic {
 
-    static Color PRIMARY_COLOR = new Color(1,1,1,1); //White
+    final Color PRIMARY_COLOR = new Color(1,1,1,1); //White
+
+    PlayerSystem playerSystem;
 
     GameObject player1 = new GameObject();
     GameObject player2 = new GameObject();
     GameObject ball = new GameObject();
 
     @Override
-    public void start(World world) {
+    public void start(World world, IKeyInput keyInput) {
+        playerSystem = new PlayerSystem(keyInput);
+
+        player1.addComponent(new PlayerComponent(Key.W, Key.S));
         player1.addComponent(new ColliderComponent(50)); //TODO: should be square
-        player1.addComponent(new PhysicsComponent(10, 1, 0));
-        player1.addComponent(new TransformComponent((float) SimulationConfig.World.WORLD_WIDTH - 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
+        player1.addComponent(new TransformComponent((float) 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
         player1.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
                 new Circle(50, 32, 10)));
 
         world.addEntity(player1);
 
-
+        player2.addComponent(new PlayerComponent(Key.O, Key.L));
         player2.addComponent(new ColliderComponent(50)); //TODO: should be square
-        player2.addComponent(new TransformComponent((float) 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
+        player2.addComponent(new TransformComponent((float) SimulationConfig.World.WORLD_WIDTH - 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
         player2.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
                 new Circle(50, 32, 10)));
@@ -69,6 +77,7 @@ public class Simulation implements ISimulationLogic {
 
     @Override
     public void update(float deltaTime, List<GameObject> gameObjects) {
+        playerSystem.update(deltaTime, gameObjects);
     }
 
     /**

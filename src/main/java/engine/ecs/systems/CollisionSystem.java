@@ -6,7 +6,7 @@ import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.physics.Collision;
 import engine.world.spatial.GridPartition;
-import engine.world.Board;
+import engine.world.board.Board;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package engine.physics;
 
 import engine.ecs.GameObject;
-import engine.world.Board;
+import engine.world.board.Board;
 
 /**
  * Abstract base class for collision detection and resolution.

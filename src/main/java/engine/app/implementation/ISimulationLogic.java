@@ -1,6 +1,7 @@
 package engine.app.implementation;
 
 import engine.ecs.GameObject;
+import engine.inputs.IKeyInput;
 import engine.world.World;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface ISimulationLogic {
      * Called once during simulation initialization.
      * Should create all necessary entities and systems.
      */
-    void start(World world);
+    void start(World world, IKeyInput keyInput);
 
     /**
      * Called every update cycle during simulation runtime.

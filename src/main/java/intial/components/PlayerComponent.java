@@ -3,5 +3,11 @@ package intial.components;
 import engine.inputs.Key;
 
 public class PlayerComponent {
-    final Key[] keys = {Key.W, Key.D, Key.S, Key.A};
+    public Key keyUp;
+    public Key keyDown;
+
+    public PlayerComponent(Key keyUp, Key keyDown){
+        this.keyUp = keyUp;
+        this.keyDown = keyDown;
+    }
 }

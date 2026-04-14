@@ -6,7 +6,7 @@ import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
 import engine.math.Vector2;
-import engine.world.Board;
+import engine.world.board.Board;
 
 /**
  * Implements elastic collision detection and response.

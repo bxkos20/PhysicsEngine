@@ -1,5 +1,6 @@
 package backend.libgdx.app;
 
+import backend.libgdx.inputs.LibGDXKeyInputs;
 import backend.libgdx.render.Renderer;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.camera.LibGDXCamera;
@@ -12,6 +13,8 @@ import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.app.EngineSimulation;
 import demos.dots.components.DotType;
+import engine.inputs.IKeyInput;
+import engine.inputs.Key;
 
 /**
  * Main controller for the physics simulation, bridging LibGDX's game loop
@@ -118,9 +121,10 @@ public class BackendSimulation extends ApplicationAdapter {
 
         // Create renderer
         IRenderer renderer = new Renderer(camera);
+        IKeyInput keyInput = new LibGDXKeyInputs();
 
         //Create engineSimulation
-        this.engineSimulation = new EngineSimulation(renderer, simulationLogic);
+        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput);
 
         // Setup camera controls
         cameraController = new CameraController(camera);

@@ -4,8 +4,8 @@ import engine.config.SimulationConfig;
 import engine.ecs.GameObject;
 import engine.ecs.systems.CollisionSystem;
 import engine.ecs.systems.MovementSystem;
-import engine.ecs.systems.System;
 import engine.physics.Collision;
+import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
 
 import java.util.ArrayList;

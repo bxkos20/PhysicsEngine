@@ -8,7 +8,7 @@ import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.System;
 import engine.math.Vector2;
 import engine.world.spatial.GridPartition;
-import engine.world.Board;
+import engine.world.board.Board;
 import demos.dots.components.DotComponent;
 
 
