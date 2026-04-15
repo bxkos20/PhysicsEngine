@@ -100,6 +100,7 @@ public class Simulation implements ISimulationLogic {
     private final Queue<Float> executionTimes = new LinkedList<>();
 
     public float getLastExecutionTimeMs() {
+        executionTimes.add(playerSystem.getLastExecutionTimeMs());
         if (executionTimes.size() > EXECUTION_AVERAGING_SIZE) {
             executionTimes.poll();
         }
