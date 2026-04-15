@@ -62,7 +62,7 @@ public class DotSystem extends System {
      */
     public DotSystem(boolean threading, GridPartition gridPartition, Board board) {
         super(threading,
-                DotSystem.class,
+                DotComponent.class,
                 PhysicsComponent.class,
                 TransformComponent.class
         );

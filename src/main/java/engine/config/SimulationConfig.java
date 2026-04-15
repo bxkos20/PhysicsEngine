@@ -85,7 +85,7 @@ public final class SimulationConfig { //TODO: Make json save method;
         /** Enable parallel processing for collision detection */
         public static final boolean ENABLE_MULTITHREADING = true;
         /** Grid cell size for spatial partitioning (pixels) */
-        public static final int GRID_CELL_SIZE = 200;
+        public static final int GRID_CELL_SIZE = 50;
         /** Enable timing/profiling output */
         public static final boolean ENABLE_PROFILING = true;
     }
