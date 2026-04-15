@@ -8,8 +8,8 @@ package engine.config;
  * 
  * <p>Usage: {@code SimulationConfig.Display.SCREEN_WIDTH}</p>
  */
-public final class SimulationConfig { //TODO: Make json save method;
-    //TODO: Remove individual preferences
+public final class SimulationConfig { //TODO: Make json save method
+    //TODO: Make implementation configurable
     /**
      * Display/viewport configuration.
      * Controls the application window dimensions.
