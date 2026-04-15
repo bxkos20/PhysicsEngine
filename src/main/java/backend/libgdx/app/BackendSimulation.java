@@ -185,6 +185,5 @@ public class BackendSimulation extends ApplicationAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) pause = !pause;
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) DotType.randomizeInteraction();
     }
 }

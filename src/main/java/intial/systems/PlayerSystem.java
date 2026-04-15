@@ -11,21 +11,22 @@ import intial.components.PlayerComponent;
 
 public class PlayerSystem extends System {
 
-    /** Cached component ID for TransformComponent */
-    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
-
-    /** Cached component ID for PlayerComponent */
+    // Cached component ID for Components
     private static final int PLAYER_ID = ComponentRegistry.getId(PlayerComponent.class);
+    private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
+    private static final int FORCE = 100000000;
 
     private final IKeyInput keyInput;
 
     /**
      * Creates a system with the specified component signature.
+     *      Enable parallel processing
      */
     public PlayerSystem(IKeyInput keyInput) {
         super(false,
                 PlayerComponent.class,
-                TransformComponent.class
+                TransformComponent.class,
+                PhysicsComponent.class
         );
         this.keyInput = keyInput;
     }
@@ -33,15 +34,12 @@ public class PlayerSystem extends System {
     @Override
     protected void processGameObject(float dt, GameObject gameObject) {
         PlayerComponent playerComponent = gameObject.getComponent(PLAYER_ID);
-        TransformComponent transformComponent = gameObject.getComponent(TRANSFORM_ID);
-
-        Vector2 pos = transformComponent.getPosition();
+        PhysicsComponent physicsComponent = gameObject.getComponent(PHYSICS_ID);
 
         if (keyInput.isPress(playerComponent.keyUp)){
-            transformComponent.setPosition(pos.add(0,10));
+            physicsComponent.addForce(0, FORCE);
         } else if (keyInput.isPress(playerComponent.keyDown)){
-            transformComponent.setPosition(pos.add(0,-10));
+            physicsComponent.addForce(0, -FORCE);
         }
-
     }
 }

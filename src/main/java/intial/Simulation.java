@@ -46,6 +46,7 @@ public class Simulation implements ISimulationLogic {
         player1.addComponent(new PlayerComponent(Key.W, Key.S));
         player1.addComponent(new ColliderComponent(50)); //TODO: should be square
         player1.addComponent(new TransformComponent((float) 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
+        player1.addComponent(new PhysicsComponent(0, 1, 0.5f));
         player1.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
                 new Circle(50, 32, 10)));
@@ -55,6 +56,7 @@ public class Simulation implements ISimulationLogic {
         player2.addComponent(new PlayerComponent(Key.O, Key.L));
         player2.addComponent(new ColliderComponent(50)); //TODO: should be square
         player2.addComponent(new TransformComponent((float) SimulationConfig.World.WORLD_WIDTH - 200, (float) SimulationConfig.World.WORLD_HEIGHT / 2));
+        player2.addComponent(new PhysicsComponent(0, 1, 0.5f));
         player2.addComponent(new RenderComponent(PRIMARY_COLOR,
                 //new Rect(50, 150, 10)));
                 new Circle(50, 32, 10)));

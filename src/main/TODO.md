@@ -1,6 +1,6 @@
 # 📝 Physics Engine - TODO List
 
-## 🎯 Version 0.1 - Minimally Functional Engine
+## 🎯 Version 0.2
 - [ ] **Create version 0.1 with a minimally functional engine**
   - [X] Implement basic ECS system with entities and components
   - [ ] Create basic physics system with gravity and collisions
@@ -14,6 +14,7 @@
   - [ ] Modify project structure !!!
     - [ ] Injectate all the dependencies
     - [ ] Should be simulation configurable
+  - [ ] Make component an abstract class
 
 ## 🚀 Features
 - [ ] **Custom GUI:**

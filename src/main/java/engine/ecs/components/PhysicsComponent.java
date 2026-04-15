@@ -59,6 +59,18 @@ public class PhysicsComponent {
         sumForces.add(force);
     }
 
+
+    /**
+     * Adds a force to the accumulated force vector.
+     * Forces are cleared after each physics update.
+     *
+     * @param x Force vector on X axis to add
+     * @param y Force vector on Y axis to add
+     */
+    public void addForce(float x, float y) {
+        sumForces.add(x, y);
+    }
+
     public Vector2 getVelocity() {
         return velocity;
     }
