@@ -38,7 +38,7 @@ import engine.inputs.Key;
 public class BackendSimulation extends ApplicationAdapter {
 
     /**
-     * TODO
+     * Specific simulation logic, independent of the engine and backend
      */
     private ISimulationLogic simulationLogic;
 
@@ -51,6 +51,16 @@ public class BackendSimulation extends ApplicationAdapter {
      * Handles camera pan/zoom input
      */
     private CameraController cameraController;
+
+    /**
+     * Handles rendering
+     */
+    private IRenderer renderer;
+
+    /**
+     * Handles key inputs by the user
+     */
+    private IKeyInput keyInput;
 
     /**
      * Display dimensions in pixels
@@ -110,7 +120,6 @@ public class BackendSimulation extends ApplicationAdapter {
         this.displayHeight = SimulationConfig.Display.SCREEN_HEIGHT;
 
         this.simulationLogic = simulationLogic;
-
     }
 
     @Override
@@ -119,9 +128,9 @@ public class BackendSimulation extends ApplicationAdapter {
         ICamera camera = new LibGDXCamera(displayWidht, displayHeight);
         camera.setPosition(worldWidth / 2f, worldHeight / 2f);
 
-        // Create renderer
-        IRenderer renderer = new Renderer(camera);
-        IKeyInput keyInput = new LibGDXKeyInputs();
+        // Create renderer and keyInput
+        renderer = new Renderer(camera);
+        keyInput = new LibGDXKeyInputs();
 
         //Create engineSimulation
         this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput);
@@ -178,7 +187,7 @@ public class BackendSimulation extends ApplicationAdapter {
      * Processes keyboard input for simulation control.
      * Handles time scale adjustment, pause, render toggle, and interaction randomization.
      */
-    public void manageInputs() { //TODO: A inputClass
+    public void manageInputs() { //TODO: Move to engine simulation
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;

@@ -5,6 +5,9 @@ import com.badlogic.gdx.Input;
 import engine.inputs.IKeyInput;
 import engine.inputs.Key;
 
+/**
+ * TODO
+ */
 public class LibGDXKeyInputs implements IKeyInput {
 
     @Override
@@ -22,7 +25,7 @@ public class LibGDXKeyInputs implements IKeyInput {
     }
 
     /**
-     * Método auxiliar para convertir tu enum 'Key' a las constantes de LibGDX.
+     * TODO
      */
     private int getLibGDXKey(Key key) {
         if (key == null) return Input.Keys.UNKNOWN;

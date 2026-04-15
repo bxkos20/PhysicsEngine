@@ -29,7 +29,7 @@ import engine.world.spatial.ToroidalGridPartition;
 public class EngineSimulation {
 
     /**
-     * TODO
+     * Specific simulation logic, independent of the engine and backend
      */
     private final ISimulationLogic simulationLogic;
 
@@ -94,7 +94,7 @@ public class EngineSimulation {
      * Renders all entities in the world.
      * Uses the renderer's tick method for direct rendering.
      */
-    public void render() { //TODO: Implement a render system
+    public void render() {
         renderer.begin();
         world.forEachObject(obj -> {
             RenderComponent renderComponent = obj.getComponent(RENDERER_ID);

@@ -5,7 +5,7 @@ import engine.app.backend.LauncherType;
 
 public class Launcher {
     public static void main(String[] args) {
-        Simulation simulationLogic = new Simulation();
-        EngineLauncher.launch(LauncherType.LIBGDX, simulationLogic);
+        Simulation simulation = new Simulation();
+        EngineLauncher.launch(LauncherType.LIBGDX, simulation);
     }
 }
