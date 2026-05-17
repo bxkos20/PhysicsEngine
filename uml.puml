@@ -1,0 +1,547 @@
+@startuml
+class engine.spatial.ToroidalGridPartition {
+- ArrayList<GameObject>[] cells
+- ThreadLocal<ArrayList<GameObject>> nearbyThread
++ void clear()
+# int getCol(float)
+# int getRow(float)
++ List<GameObject> getNearby(TransformComponent,int)
++ void processNearby(TransformComponent,int,Consumer<GameObject>)
++ void add(GameObject)
++ void add(List<GameObject>)
+}
+
+
+class engine.ecs.components.ColliderComponent {
+- float radius
++ float getRadius()
++ void setRadius(float)
+}
+
+
+class backend.libgdx.render.primitives.RectFilled {
+- float width
+- float height
++ float getWidth()
++ void setWidth(float)
++ float getHeight()
++ void setHeight(float)
++ RawDataMesh createRawDataMesh()
++ float[] getParameters()
+}
+
+
+class engine.world.World {
+- List<GameObject> gameObjects
+- List<GameObject> objectsToAdd
++ Board board
++ Collision collision
++ GridPartition gridPartition
+~ MovementSystem movementSystem
+~ CollisionSystem collisionSystem
+~ DotSystem dotSystem
++ void addObject(GameObject)
++ List<GameObject> getGameObjects()
++ void update(float)
++ String getProfilingInfo()
++ void forEachObject(Consumer<GameObject>)
+}
+
+
+class engine.ecs.systems.CollisionSystem {
+- {static} int TRANSFORM_ID
+- {static} int COLLIDER_ID
+- ThreadLocal<List<GameObject>> pairsThread
+- GridPartition gridPartition
+- Board board
+- Collision collision
++ void update(float,List<GameObject>)
+# void processGameObject(float,GameObject)
+}
+
+
+class backend.libgdx.render.rawDataMesh.RawDataMeshFactory {
++ {static} RawDataMesh createRect(float,float)
++ {static} RawDataMesh createRectOutline(float,float,float)
++ {static} RawDataMesh createCircle(float,int)
++ {static} RawDataMesh createCircleOutline(float,int,float)
+}
+
+class backend.libgdx.app.SimulationController {
+- SimulationCore simulationCore
+- CameraController cameraController
+- int width
+- int height
+- int worldWidth
+- int worldHeight
++ float timeScale
++ boolean render
++ boolean pause
+- float simulationAccumulator
+- float renderAccumulator
++ void create()
++ void render()
++ void manageInputs()
+}
+
+
+class backend.libgdx.render.camera.LibGDXCamera {
+- OrthographicCamera orthoCamera
++ void update()
++ void setPosition(float,float)
++ void setPosition(Vector2)
++ void setZoom(float)
++ float getX()
++ float getY()
++ float getZoom()
++ Vector2 getPosition(Vector2)
++ engine.math.Matrix4 getCombinedMatrix()
++ OrthographicCamera getOrthographicCamera()
+}
+
+
+class engine.ecs.components.PhysicsComponent {
+- Vector2 velocity
+- Vector2 sumForces
+- float mass
+- float restitution
+- float friction
++ void addForce(Vector2)
++ Vector2 getVelocity()
++ void setVelocity(Vector2)
++ Vector2 getSumForces()
++ void setSumForces(Vector2)
++ float getMass()
++ void setMass(float)
++ float getRestitution()
++ void setRestitution(float)
++ float getFriction()
++ void setFriction(float)
+}
+
+
+class engine.ecs.components.TransformComponent {
+- Vector2 position
++ Vector2 getPosition()
++ void setPosition(Vector2)
++ void setPosition(float,float)
+}
+
+
+class backend.libgdx.render.primitives.Circle {
+- float radius
+- int quality
+- float size
++ float getRadius()
++ void setRadius(float)
++ int getQuality()
++ void setQuality(int)
++ RawDataMesh createRawDataMesh()
++ float[] getParameters()
+}
+
+
+abstract class engine.physics.Collision {
++ {abstract}void solveCollision(GameObject,GameObject,Board)
++ {abstract}boolean isColliding(GameObject,GameObject,Board)
+}
+
+class backend.libgdx.render.rawDataMesh.RawDataMesh {
++ float[] vertexes
++ short[] indexes
+}
+
+interface engine.graphics.interfaces.IShape {
+~ String getType()
+~ float[] getParameters()
+}
+
+class engine.physics.ElasticCollision {
+- {static} int TRANSFORM_ID
+- {static} int PHYSICS_ID
+- {static} int COLLIDER_ID
+- Vector2 tmpRelVel
+- Vector2 tmpDir
+- void disconnection(GameObject,GameObject,Vector2,float)
+- void elasticCollision(GameObject,GameObject,Vector2)
++ void solveCollision(GameObject,GameObject,Board)
++ boolean isColliding(GameObject,GameObject,Board)
+}
+
+
+class engine.graphics.Color {
++ float r
++ float g
++ float b
++ float a
++ float toFloatBits()
+}
+
+
+class backend.libgdx.render.primitives.CircleFilled {
+- float radius
+- int quality
++ float getRadius()
++ void setRadius(float)
++ int getQuality()
++ void setQuality(int)
++ RawDataMesh createRawDataMesh()
++ float[] getParameters()
+}
+
+
+class backend.libgdx.app.Launcher {
++ {static} void main(String[])
+}
+
+class engine.config.SimulationConfig {
+}
+class engine.config.SimulationConfig$Display {
++ {static} int SCREEN_WIDTH
++ {static} int SCREEN_HEIGHT
++ {static} float ASPECT_RATIO
+}
+
+class engine.config.SimulationConfig$World {
++ {static} int WORLD_WIDTH
++ {static} int WORLD_HEIGHT
++ {static} float WORLD_ASPECT_RATIO
+}
+
+class engine.config.SimulationConfig$Simulation {
++ {static} int TOTAL_DOTS
++ {static} int DOT_TYPES
++ {static} int DOTS_PER_TYPE
++ {static} float FIXED_TIMESTEP
++ {static} float MAX_FRAME_TIME
++ {static} float DEFAULT_TIMESCALE
++ {static} float GRAVITY_CONSTANT
++ {static} float MIN_INTERACTION_DISTANCE
++ {static} float MAX_INTERACTION_DISTANCE
+}
+
+class engine.config.SimulationConfig$Rendering {
++ {static} int BATCH_VERTICES
++ {static} int BATCH_INDICES
++ {static} float DEFAULT_DOT_RADIUS
++ {static} int DEFAULT_CIRCLE_SEGMENTS
++ {static} float DEFAULT_LINE_WIDTH
++ {static} float FIXED_TIMESTEP
+}
+
+class engine.config.SimulationConfig$Performance {
++ {static} boolean ENABLE_MULTITHREADING
++ {static} int GRID_CELL_SIZE
++ {static} boolean ENABLE_PROFILING
+}
+
+class engine.ecs.components.RenderComponent {
++ Color color
++ IShape shape
+}
+
+class simulation.systems.DotSystem {
+- {static} int TRANSFORM_ID
+- {static} int PHYSICS_ID
+- {static} int DOT_ID
+- GridPartition gridPartition
+- Board board
+- float G
+- float MIN_DISTANCE
+- float MAX_DISTANCE
+- ThreadLocal<Vector2> dirThread
+# void processGameObject(float,GameObject)
+}
+
+
+class backend.libgdx.render.shapes.MeshBatch {
+- Mesh mesh
+- float[] vertices
+- short[] indices
+- int vertexCount
+- int indexCount
+- int vertexOffset
++ void begin()
++ boolean isFull(RawDataMesh)
++ void draw(RawDataMesh,float,float,float)
++ Mesh end()
++ int getIndexCount()
+}
+
+
+class engine.ecs.systems.MovementSystem {
+- {static} int TRANSFORM_ID
+- {static} int PHYSICS_ID
+- Board board
+# void processGameObject(float,GameObject)
+}
+
+
+abstract class backend.libgdx.render.shapes.Shape {
+# String key
++ {abstract}RawDataMesh createRawDataMesh()
++ String getKey()
++ void inicializeKey()
++ String getType()
++ float[] getParameters()
+# float[] getShapeParameters()
+}
+
+
+class engine.ecs.GameObject {
+- {static} int nextId
+- int id
+- long signature
+- Object[] components
++ void addComponent(T)
++ T getComponent(int)
++ boolean hasComponent(int)
++ long getSignature()
++ boolean checkSignature(long)
++ int getId()
+}
+
+
+enum simulation.components.DotType {
++  RED
++  GREEN
++  BLUE
++  YELLOW
++  VIOLET
++  CYAN
++  ORANGE
++  MAGENTA
++  LIME
++  PINK
++ {static} int DOT_TYPES
++ {static} float[][] INTERACTION
++ Color COLOR
++ {static} void randomizeInteraction()
++ {static} void printInteraction()
++ float getInteraction(DotType)
+}
+
+
+class engine.simulation.SimulationCore {
+- World world
+- IRenderer renderer
+- int worldWidth
+- int worldHeight
+~ int TRANSFORM_ID
+~ int RENDERER_ID
++ void create()
++ void update(float)
++ void render()
++ void setWorld(World)
++ World getWorld()
++ String getProfilingInfo()
+}
+
+
+class engine.math.Vector3 {
++ float x
++ float y
++ float z
++ Vector3 set(float,float,float)
++ Vector3 set(Vector3)
+}
+
+
+class backend.libgdx.render.Renderer {
+- {static} String VERTEX_SHADER
+- {static} String FRAGMENT_SHADER
+- ShaderProgram shader
+- MeshBatch meshBatch
+- {static} int RENDER_DATA_ID
+- {static} int TRANSFORM_ID
+- {static} long REQUIRED_SIGNATURE
+~ ICamera camera
+- CameraController cameraController
+- long start
+- float lastExecutionTimeMs
+- int EXECUTION_AVERAGING_SIZE
+- Queue<Float> executionTimes
+- void flush()
++ String getProfilingInfo()
++ float getLastExecutionTimeMs()
++ void begin()
++ void end()
++ void draw(IShape,float,float,Color)
++ void setCamera(ICamera)
+}
+
+
+interface engine.graphics.interfaces.IRenderer {
+~ void begin()
+~ void end()
+~ void draw(IShape,float,float,Color)
+~ void setCamera(ICamera)
+~ String getProfilingInfo()
+}
+
+class backend.libgdx.render.camera.CameraController {
+- ICamera camera
+- Vector3 lastTouch
+- Vector2 tempVector
++ boolean scrolled(float,float)
++ boolean touchDown(int,int,int,int)
++ boolean touchDragged(int,int,int)
+}
+
+
+interface engine.graphics.interfaces.ICamera {
+~ void update()
+~ void setPosition(float,float)
+~ void setPosition(Vector2)
+~ void setZoom(float)
+~ float getX()
+~ float getY()
+~ float getZoom()
+~ Vector2 getPosition(Vector2)
+~ Matrix4 getCombinedMatrix()
+}
+
+abstract class engine.ecs.systems.System {
+# long REQUIRED_SIGNATURE
+# boolean THREADING
+# float lastExecutionTimeMs
+- int EXECUTION_AVERAGING_SIZE
+- Queue<Float> executionTimes
++ void update(float,List<GameObject>)
+# {abstract}void processGameObject(float,GameObject)
++ float getLastExecutionTimeMs()
+}
+
+
+abstract class engine.spatial.GridPartition {
+# int rows
+# int cols
+# float cellSize
+# float width
+# float height
++ int getRows()
++ int getCols()
++ float getCellSize()
++ float getWidth()
++ float getHeight()
+# {abstract}int getCol(float)
+# {abstract}int getRow(float)
++ {abstract}void clear()
++ {abstract}List<GameObject> getNearby(TransformComponent,int)
++ {abstract}void processNearby(TransformComponent,int,Consumer<GameObject>)
++ {abstract}void add(GameObject)
++ {abstract}void add(List<GameObject>)
+}
+
+
+class backend.libgdx.render.primitives.Rect {
+- float width
+- float height
+- float size
++ float getWidth()
++ void setWidth(float)
++ float getHeight()
++ void setHeight(float)
++ RawDataMesh createRawDataMesh()
++ float[] getParameters()
+}
+
+
+class engine.math.Vector2 {
++ float x
++ float y
++ Vector2 set(float,float)
++ Vector2 add(Vector2)
++ Vector2 add(float,float)
++ Vector2 mulAdd(Vector2,float)
++ Vector2 sub(Vector2)
++ float len()
++ float len2()
++ Vector2 nor()
++ float dot(Vector2)
++ Vector2 scl(float)
++ Vector2 set(Vector2)
+}
+
+
+class engine.world.ToroidalBoard {
++ void enforceBounds(TransformComponent)
++ float getDistance(Vector2,Vector2)
++ float getDistance2(Vector2,Vector2)
++ void getDirectionVector(Vector2,Vector2,Vector2)
++ void getMidPoint(Vector2,Vector2,Vector2)
+}
+
+class backend.libgdx.render.shapes.ShapeRegistry {
+- {static} Map<String,RawDataMesh> shapeCache
++ {static} RawDataMesh getRawDataMesh(Shape)
+}
+
+
+class engine.math.Matrix4 {
+- Object nativeMatrix
++ Object getNativeMatrix()
+}
+
+
+class engine.ecs.ComponentRegistry {
+- {static} int nextId
+- {static} Map<Class<?>,Integer> idMap
+- {static} Object lock
++ {static} int getId(Class<?>)
++ {static} long getBit(Class<?>)
++ {static} long idToBit(int)
++ {static} Map<Class<?>,Integer> getAllComponents()
+}
+
+
+class engine.util.ThreadLocalRandom {
+- {static} ThreadLocal<Random> random
++ {static} Random get()
++ {static} float nextFloat()
++ {static} float nextFloat(float,float)
++ {static} int nextInt(int)
++ {static} boolean nextBoolean()
+}
+
+
+abstract class engine.world.Board {
+# float width
+# float height
++ {abstract}float getDistance(Vector2,Vector2)
++ {abstract}float getDistance2(Vector2,Vector2)
++ {abstract}void getDirectionVector(Vector2,Vector2,Vector2)
++ {abstract}void getMidPoint(Vector2,Vector2,Vector2)
++ {abstract}void enforceBounds(TransformComponent)
+}
+
+
+class simulation.components.DotComponent {
+- DotType dotType
++ DotType getDotType()
+}
+
+
+
+
+engine.spatial.GridPartition <|-- engine.spatial.ToroidalGridPartition
+backend.libgdx.render.shapes.Shape <|-- backend.libgdx.render.primitives.RectFilled
+engine.ecs.systems.System <|-- engine.ecs.systems.CollisionSystem
+com.badlogic.gdx.ApplicationAdapter <|-- backend.libgdx.app.SimulationController
+engine.graphics.interfaces.ICamera <|.. backend.libgdx.render.camera.LibGDXCamera
+backend.libgdx.render.shapes.Shape <|-- backend.libgdx.render.primitives.Circle
+engine.physics.Collision <|-- engine.physics.ElasticCollision
+backend.libgdx.render.shapes.Shape <|-- backend.libgdx.render.primitives.CircleFilled
+engine.config.SimulationConfig +.. engine.config.SimulationConfig$Display
+engine.config.SimulationConfig +.. engine.config.SimulationConfig$World
+engine.config.SimulationConfig +.. engine.config.SimulationConfig$Simulation
+engine.config.SimulationConfig +.. engine.config.SimulationConfig$Rendering
+engine.config.SimulationConfig +.. engine.config.SimulationConfig$Performance
+engine.ecs.systems.System <|-- simulation.systems.DotSystem
+engine.ecs.systems.System <|-- engine.ecs.systems.MovementSystem
+engine.graphics.interfaces.IShape <|.. backend.libgdx.render.shapes.Shape
+engine.graphics.interfaces.IRenderer <|.. backend.libgdx.render.Renderer
+com.badlogic.gdx.InputAdapter <|-- backend.libgdx.render.camera.CameraController
+backend.libgdx.render.shapes.Shape <|-- backend.libgdx.render.primitives.Rect
+engine.world.Board <|-- engine.world.ToroidalBoard
+@enduml

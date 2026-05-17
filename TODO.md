@@ -11,6 +11,8 @@
 - [ ] **Dot Density Repulsion System**
 
 ## ⚡ Optimization & Refactoring
+- [ ] **Convert Component Classes to Records:**
+  - [ ] Change component classes to Java records for immutability and reduced boilerplate.
 - [ ] **Efficient Grid Update (Broad-phase):**
   - [ ] Add a `previousCells` array in `ToroidalGridPartition` to track entity positions.
   - [ ] Implement the `refresh(List<engine.gameObject>)` method to only update entities that cross cell boundaries.
