@@ -20,12 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ElasticCollisionTest {
 
-    private ElasticCollision collision;
+    private static final ElasticCollision collision = new ElasticCollision();
     private Board board;
 
     @BeforeEach
     void setUp() {
-        collision = new ElasticCollision();
+        ComponentRegistry.reset();
         board = new ToroidalBoard(1000, 1000);
     }
 

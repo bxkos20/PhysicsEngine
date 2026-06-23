@@ -2,6 +2,7 @@ package engine.world.spatial;
 
 import engine.ecs.GameObject;
 import engine.ecs.components.TransformComponent;
+import engine.ecs.systems.implementations.CollisionSystem;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
  * when entities are uniformly distributed.</p>
  * 
  * @see ToroidalGridPartition
- * @see engine.ecs.systems.CollisionSystem
+ * @see CollisionSystem
  */
 public abstract class GridPartition {
     /** Number of rows in the grid */

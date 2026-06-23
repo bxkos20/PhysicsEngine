@@ -1,5 +1,7 @@
 package demos.dots.components;
 
+import demos.dots.types.DotType;
+
 /**
  * Component identifying a particle's type in the simulation.
  * 

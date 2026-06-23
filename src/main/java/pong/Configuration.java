@@ -1,4 +1,4 @@
-package intial;
+package pong;
 
 public class Configuration {
 }

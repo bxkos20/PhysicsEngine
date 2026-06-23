@@ -167,7 +167,7 @@ El motor expone sus funcionalidades a través de clases e interfaces Java. A con
 | `getCoreCount()` | - | `int` (static) | Retorna número de núcleos CPU disponibles. |
 
 #### MovementSystem
-**Paquete:** `engine.ecs.systems.MovementSystem`
+**Paquete:** `engine.ecs.systems.implementations.MovementSystem`
 
 | Método | Parámetros | Retorno | Descripción |
 |--------|------------|---------|-------------|
@@ -175,7 +175,7 @@ El motor expone sus funcionalidades a través de clases e interfaces Java. A con
 | `processGameObject()` | `float dt`, `GameObject gameObject` | `void` (protected) | Procesa física de una entidad. |
 
 #### CollisionSystem
-**Paquete:** `engine.ecs.systems.CollisionSystem`
+**Paquete:** `engine.ecs.systems.implementations.CollisionSystem`
 
 | Método | Parámetros | Retorno | Descripción |
 |--------|------------|---------|-------------|

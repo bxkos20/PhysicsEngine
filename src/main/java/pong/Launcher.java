@@ -1,11 +1,9 @@
-package demos.dots;
+package pong;
 
-import demos.dots.settings.DotSettings;
 import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;
 import engine.config.Settings;
-import engine.config.implementations.PerformanceSettings;
-import engine.config.implementations.WorldSettings;
+import engine.config.implementations.*;
 import engine.physics.ElasticCollision;
 import engine.world.World;
 import engine.world.board.ToroidalBoard;
@@ -14,16 +12,12 @@ import engine.world.spatial.ToroidalGridPartition;
 public class Launcher {
     public static void main(String[] args) {
         Settings settings = Settings.createDefault();
-
         WorldSettings worldSettings = new WorldSettings(1000, 1000);
-        DotSettings dotSettings = new DotSettings();
-
-        settings.add(worldSettings)
-                .add(dotSettings);
+        settings.add(worldSettings);
 
         PerformanceSettings performanceSettings = settings.get(PerformanceSettings.class);
 
-        DotSimulationLogic simulationLogic = new DotSimulationLogic();
+        Simulation simulation = new Simulation();
         World world = new World(
                 new ToroidalBoard(worldSettings.width, worldSettings.height),
                 new ElasticCollision(),
@@ -31,6 +25,6 @@ public class Launcher {
                 performanceSettings.enableMultithreading
         );
 
-        EngineLauncher.launch(LauncherType.LIBGDX, simulationLogic, world, settings);
+        EngineLauncher.launch(LauncherType.LIBGDX, simulation, world, settings);
     }
 }

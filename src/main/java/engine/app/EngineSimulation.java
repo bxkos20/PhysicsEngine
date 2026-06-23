@@ -1,17 +1,15 @@
 package engine.app;
 
 import engine.app.implementation.ISimulationLogic;
-import engine.config.SimulationConfig;
+import engine.config.Settings;
+import engine.config.implementations.WorldSettings;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.RenderComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.interfaces.IRenderer;
 import engine.inputs.IKeyInput;
-import engine.physics.ElasticCollision;
-import engine.world.board.ToroidalBoard;
 import engine.world.World;
-import engine.world.spatial.ToroidalGridPartition;
 
 /**
  * Core simulation controller for particle physics.
@@ -58,21 +56,19 @@ public class EngineSimulation {
      *
      * @param renderer Renderer for drawing
      */
-    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput) {
+    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput, World world, Settings settings) {
         if (renderer == null) throw new IllegalArgumentException("Renderer cannot be null");
 
-        this.worldWidth = SimulationConfig.World.WORLD_WIDTH;
-        this.worldHeight = SimulationConfig.World.WORLD_HEIGHT;
+        WorldSettings worldSettings = settings.get(WorldSettings.class);
+
+        this.worldWidth = worldSettings.width;
+        this.worldHeight = worldSettings.height;
         this.renderer = renderer;
         this.simulationLogic = simulationLogic;
 
-        this.world = new World( //Idk if this should be created here
-                new ToroidalBoard(worldWidth, worldHeight),
-                new ElasticCollision(),
-                new ToroidalGridPartition(worldWidth, worldHeight, SimulationConfig.Performance.GRID_CELL_SIZE)
-        );
+        this.world = world;
 
-        simulationLogic.start(world, keyInput);
+        simulationLogic.start(world, keyInput, settings);
     }
 
 

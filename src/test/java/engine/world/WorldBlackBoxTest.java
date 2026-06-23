@@ -25,6 +25,7 @@ class WorldBlackBoxTest {
 
     @BeforeEach
     void setUp() {
+        ComponentRegistry.reset();
         world = new World(
                 new ToroidalBoard(1000, 1000),
                 new ElasticCollision(),

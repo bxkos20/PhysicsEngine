@@ -1,5 +1,6 @@
 package engine.app.implementation;
 
+import engine.config.Settings;
 import engine.ecs.GameObject;
 import engine.inputs.IKeyInput;
 import engine.world.World;
@@ -24,7 +25,7 @@ public interface ISimulationLogic {
      * Called once during simulation initialization.
      * Should create all necessary entities and systems.
      */
-    void start(World world, IKeyInput keyInput);
+    void start(World world, IKeyInput keyInput, Settings settings);
 
     /**
      * Called every update cycle during simulation runtime.

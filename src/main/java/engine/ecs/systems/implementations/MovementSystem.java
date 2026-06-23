@@ -1,9 +1,10 @@
-package engine.ecs.systems;
+package engine.ecs.systems.implementations;
 
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
+import engine.ecs.systems.System;
 import engine.world.board.Board;
 
 /**

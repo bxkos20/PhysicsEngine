@@ -1,12 +1,14 @@
 package engine.ecs.components;
 
+import engine.ecs.systems.implementations.CollisionSystem;
+import engine.ecs.systems.implementations.MovementSystem;
 import engine.math.Vector2;
 
 /**
  * Component for physics simulation (velocity, forces, mass, material properties).
  * 
- * <p>Used by {@link engine.ecs.systems.MovementSystem} to update entity positions
- * based on accumulated forces, and by {@link engine.ecs.systems.CollisionSystem}
+ * <p>Used by {@link MovementSystem} to update entity positions
+ * based on accumulated forces, and by {@link CollisionSystem}
  * for collision response.</p>
  * 
  * <h3>Physics Properties:</h3>

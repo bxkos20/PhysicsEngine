@@ -51,7 +51,7 @@ src/main/java/
 │   └── libgdx/         # Backend LibGDX
 ├── demos/              # Ejemplos de uso
 │   └── dots/           # Demo de partículas
-└── intial/             # Configuración inicial
+└── pong/             # Configuración inicial
     ├── Launcher.java
     ├── Simulation.java
     └── Configuration.java

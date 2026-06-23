@@ -1,6 +1,7 @@
 package engine.physics;
 
 import engine.ecs.GameObject;
+import engine.ecs.systems.implementations.CollisionSystem;
 import engine.world.board.Board;
 
 /**
@@ -11,7 +12,7 @@ import engine.world.board.Board;
  * (e.g., elastic collisions, inelastic collisions).</p>
  * 
  * @see ElasticCollision
- * @see engine.ecs.systems.CollisionSystem
+ * @see CollisionSystem
  */
 public abstract class Collision {
 

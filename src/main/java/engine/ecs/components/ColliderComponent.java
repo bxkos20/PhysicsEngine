@@ -1,13 +1,15 @@
 package engine.ecs.components;
 
+import engine.ecs.systems.implementations.CollisionSystem;
+
 /**
  * Component for collision detection using circular bounds.
  * 
  * <p>Defines a circular collision shape centered on the entity's transform position.
- * Used by {@link engine.ecs.systems.CollisionSystem} for broad-phase and narrow-phase
+ * Used by {@link CollisionSystem} for broad-phase and narrow-phase
  * collision detection.</p>
  * 
- * @see engine.ecs.systems.CollisionSystem
+ * @see CollisionSystem
  */
 public class ColliderComponent {
     /** Radius of the circular collision bounds */

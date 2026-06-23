@@ -1,6 +1,8 @@
 package demos.dots.systems;
 
-import engine.config.SimulationConfig;
+import demos.dots.settings.DotSettings;
+import demos.dots.types.DotInteractionManager;
+import demos.dots.types.DotType;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
@@ -26,7 +28,7 @@ import demos.dots.components.DotComponent;
  *   <li>Distance >= MAX_DISTANCE: No force applied</li>
  * </ul>
  * 
- * @see demos.dots.components.DotType
+ * @see DotType
  */
 public class DotSystem extends System {
     /** Cached component ID for TransformComponent */
@@ -45,10 +47,15 @@ public class DotSystem extends System {
     private final Board board;
 
     /** Gravitational constant for force scaling */
-    private final float G = SimulationConfig.Simulation.GRAVITY_CONSTANT;
+    private final float G;
 
-    private final float MIN_DISTANCE = SimulationConfig.Simulation.MIN_INTERACTION_DISTANCE;
-    private final float MAX_DISTANCE = SimulationConfig.Simulation.MAX_INTERACTION_DISTANCE;
+    private final float MIN_DISTANCE;
+    private final float MAX_DISTANCE;
+    
+    private final float MIN_DISTANCE_SQ;
+    private final float MAX_DISTANCE_SQ;
+
+    private final DotInteractionManager dotInteractionManager;
 
     /** ThreadLocal direction vector for parallel processing */
     private final ThreadLocal<Vector2> dirThread = ThreadLocal.withInitial(Vector2::new);
@@ -60,7 +67,7 @@ public class DotSystem extends System {
      * @param gridPartition  Spatial partitioning for neighbor queries
      * @param board          World boundary handler
      */
-    public DotSystem(boolean threading, GridPartition gridPartition, Board board) {
+    public DotSystem(boolean threading, GridPartition gridPartition, Board board, DotSettings settings) {
         super(threading,
                 DotComponent.class,
                 PhysicsComponent.class,
@@ -68,6 +75,15 @@ public class DotSystem extends System {
         );
         this.gridPartition = gridPartition;
         this.board = board;
+
+        this.G = settings.gravityConstant;
+        this.MIN_DISTANCE = settings.minInteractionDistance;
+        this.MAX_DISTANCE = settings.maxInteractionDistance;
+
+        this.MIN_DISTANCE_SQ = MIN_DISTANCE * MIN_DISTANCE;
+        this.MAX_DISTANCE_SQ = MAX_DISTANCE * MAX_DISTANCE;
+
+        this.dotInteractionManager = new DotInteractionManager(settings.dotTypes);
     }
 
 
@@ -77,7 +93,6 @@ public class DotSystem extends System {
      * <p>For each nearby particle:</p>
      * <ol>
      *   <li>Calculate distance</li>
-     *   <li>If too close: apply repulsion force</li>
      *   <li>If in interaction range: apply type-based attraction/repulsion</li>
      * </ol>
      * 
@@ -90,7 +105,9 @@ public class DotSystem extends System {
         TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
         DotComponent dot = gameObject.getComponent(DOT_ID);
 
-        int searchDistance = (int) Math.ceil(MIN_DISTANCE/ gridPartition.getCellSize());
+        // Intentionally left as MIN_DISTANCE for backward compatibility with previous logic if any,
+        // although MAX_DISTANCE might be more correct based on the force rules.
+        int searchDistance = (int) Math.ceil(MAX_DISTANCE / gridPartition.getCellSize());
 
         gridPartition.processNearby(transform, searchDistance, other -> {
             if (gameObject == other) return;
@@ -101,24 +118,21 @@ public class DotSystem extends System {
             TransformComponent otherTransform = other.getComponent(TRANSFORM_ID);
             DotComponent otherDot = other.getComponent(DOT_ID);
 
-            float dist = board.getDistance(transform.getPosition(), otherTransform.getPosition());
-            if (dist == 0) return;
+            Vector2 dir = dirThread.get();
+            // This calculates dx, dy with wrap-around and stores in dir
+            board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
+            
+            float distSq = dir.x * dir.x + dir.y * dir.y;
+            if (distSq == 0) return;
 
-
-            if (dist < MIN_DISTANCE) {
-                if (dot.getDotType() == otherDot.getDotType()) return;
-                Vector2 dir = dirThread.get();
-                board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
-                dir.scl(1 / dist);
-                float nearFactor = (MIN_DISTANCE / dist);
-                physics.addForce(dir.scl(-nearFactor * nearFactor * G * 2.5f)); //Find a nice MAGIC number
-
-            } else if (dist < MAX_DISTANCE) {
-                Vector2 dir = dirThread.get();
-                board.getDirectionVector(transform.getPosition(), otherTransform.getPosition(), dir);
-                dir.scl(1 / dist);
+            if (MIN_DISTANCE_SQ < distSq && distSq < MAX_DISTANCE_SQ) {
+                float dist = (float) Math.sqrt(distSq);
+                dir.scl(1 / dist); // Normalize direction vector
+                
                 float nearFactor = 1 - (Math.abs(dist - MAX_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE));
-                float forceMagnitude = (dot.getDotType().getInteraction(otherDot.getDotType()) * G) * nearFactor;
+                float interaction = dotInteractionManager.getInteraction(dot.getDotType(), otherDot.getDotType());
+                float forceMagnitude = interaction * G * nearFactor;
+                
                 physics.addForce(dir.scl(forceMagnitude));
             }
         });

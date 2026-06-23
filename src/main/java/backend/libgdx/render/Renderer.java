@@ -3,6 +3,7 @@ package backend.libgdx.render;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.rawDataMesh.RawDataMesh;
 import backend.libgdx.render.shapes.MeshBatch;
+import engine.config.implementations.RenderingSettings;
 import engine.graphics.Shape;
 import backend.libgdx.render.shapes.ShapeRegistry;
 import com.badlogic.gdx.Gdx;
@@ -10,7 +11,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.ScreenUtils;
-import engine.config.SimulationConfig;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.components.RenderComponent;
 import engine.ecs.components.TransformComponent;
@@ -94,7 +94,7 @@ public class Renderer implements IRenderer {
      *
      * @param camera Camera for view projection
      */
-    public Renderer(ICamera camera) {
+    public Renderer(ICamera camera, RenderingSettings renderingSettings) {
         ShaderProgram.pedantic = false; // Disable pedantic mode to allow unused shader variables
         shader = new ShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER);
         if (!shader.isCompiled()) {
@@ -103,8 +103,8 @@ public class Renderer implements IRenderer {
         
         // Initialize the batch with configuration size
         meshBatch = new MeshBatch(
-            SimulationConfig.Rendering.BATCH_VERTICES, 
-            SimulationConfig.Rendering.BATCH_INDICES
+            renderingSettings.batchVertices,
+            renderingSettings.batchIndices
         );
 
         this.camera = camera;

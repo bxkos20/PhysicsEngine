@@ -1,5 +1,6 @@
 package engine.ecs.components;
 
+import engine.ecs.systems.implementations.MovementSystem;
 import engine.math.Vector2;
 
 /**
@@ -8,7 +9,7 @@ import engine.math.Vector2;
  * <p>Every renderable or physics-simulated entity requires this component.
  * Defines the entity's position for rendering, collision detection, and physics.</p>
  * 
- * @see engine.ecs.systems.MovementSystem
+ * @see MovementSystem
  */
 public class TransformComponent {
     /** Position in 2D world coordinates */

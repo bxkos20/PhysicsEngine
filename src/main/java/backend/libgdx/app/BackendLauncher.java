@@ -4,7 +4,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import engine.app.backend.IBackendLauncher;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.SimulationConfig;
+import engine.config.Settings;
+import engine.config.implementations.ScreenSettings;
+import engine.world.World;
 
 /**
  * Application entry point for the LibGDX-based physics simulation.
@@ -14,21 +16,22 @@ import engine.config.SimulationConfig;
  * and the engine-agnostic simulation logic.</p>
  * 
  * @see BackendSimulation
- * @see SimulationConfig
  */
 public class BackendLauncher implements IBackendLauncher {
     /**
      * Application entry point.
      * Configures the LWJGL3 window and starts the simulation.
      */
-    public void launch(ISimulationLogic simulationLogic) {
+    public void launch(ISimulationLogic simulationLogic, World world, Settings settings) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+
+        ScreenSettings screenSettings = settings.get(ScreenSettings.class);
 
         // Use configuration constants
         config.setTitle("PlaceHolder");
         config.setWindowedMode(
-                SimulationConfig.Display.SCREEN_WIDTH,
-                SimulationConfig.Display.SCREEN_HEIGHT
+                screenSettings.width,
+                screenSettings.height
         );
         config.setForegroundFPS(60); // Lock to 60 FPS
         config.useVsync(false);
@@ -36,7 +39,7 @@ public class BackendLauncher implements IBackendLauncher {
 
         // Start simulation with pre-created simulation core
         new Lwjgl3Application(
-                new BackendSimulation(simulationLogic),
+                new BackendSimulation(simulationLogic, world, settings),
                 config
         );
     }

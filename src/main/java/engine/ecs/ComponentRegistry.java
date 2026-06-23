@@ -72,4 +72,13 @@ public class ComponentRegistry {
     public static synchronized Map<Class<?>, Integer> getAllComponents() {
         return new HashMap<>(idMap);
     }
+
+    /**
+     * Resets the component registry to its initial state.
+     * FOR TESTING PURPOSES ONLY.
+     */
+    public static synchronized void reset() {
+        nextId = 0;
+        idMap.clear();
+    }
 }

@@ -16,6 +16,9 @@ import engine.math.Vector2;
  * @see Board
  */
 public class ToroidalBoard extends Board {
+    private final float halfWidth;
+    private final float halfHeight;
+
     /**
      * Creates a toroidal board with specified dimensions.
      * 
@@ -24,6 +27,8 @@ public class ToroidalBoard extends Board {
      */
     public ToroidalBoard(float width, float height) {
         super(width, height);
+        this.halfWidth = width / 2f;
+        this.halfHeight = height / 2f;
     }
 
     /**
@@ -52,15 +57,18 @@ public class ToroidalBoard extends Board {
      * {@inheritDoc}
      * 
      * <p>Calculates shortest squared distance considering wrap-around.
-     * Uses: dx -= size * round(dx / size) for toroidal correction.</p>
+     * Uses conditional checks for toroidal correction for performance.</p>
      */
     @Override
     public float getDistance2(Vector2 origin, Vector2 target) {
         float dx = origin.x - target.x;
         float dy = origin.y - target.y;
 
-        dx -= width * Math.round(dx / width);
-        dy -= height * Math.round(dy / height);
+        if (dx > halfWidth) dx -= width;
+        else if (dx < -halfWidth) dx += width;
+
+        if (dy > halfHeight) dy -= height;
+        else if (dy < -halfHeight) dy += height;
 
         return dx * dx + dy * dy;
     }
@@ -76,8 +84,11 @@ public class ToroidalBoard extends Board {
         float dx = target.x - origin.x;
         float dy = target.y - origin.y;
 
-        dx -= width * Math.round(dx / width);
-        dy -= height * Math.round(dy / height);
+        if (dx > halfWidth) dx -= width;
+        else if (dx < -halfWidth) dx += width;
+
+        if (dy > halfHeight) dy -= height;
+        else if (dy < -halfHeight) dy += height;
 
         out.set(dx, dy);
     }

@@ -8,13 +8,16 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.SimulationConfig;
+import engine.config.Settings;
+import engine.config.implementations.RenderingSettings;
+import engine.config.implementations.ScreenSettings;
+import engine.config.implementations.SimulationSettings;
+import engine.config.implementations.WorldSettings;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.app.EngineSimulation;
-import demos.dots.components.DotType;
 import engine.inputs.IKeyInput;
-import engine.inputs.Key;
+import engine.world.World;
 
 /**
  * Main controller for the physics simulation, bridging LibGDX's game loop
@@ -61,14 +64,19 @@ public class BackendSimulation extends ApplicationAdapter {
      * Handles key inputs by the user
      */
     private IKeyInput keyInput;
+    
+    /**
+     * The simulation world
+     */
+    private World world;
 
     /**
-     * Display dimensions in pixels
+     * Screen dimensions in pixels
      */
     private final int displayWidht;
 
     /**
-     * Display dimensions in pixels
+     * Screen dimensions in pixels
      */
     private final int displayHeight;
 
@@ -85,7 +93,7 @@ public class BackendSimulation extends ApplicationAdapter {
     /**
      * Time multiplier for simulation speed control (default: 1.0)
      */
-    public float timeScale = SimulationConfig.Simulation.DEFAULT_TIMESCALE;
+    public float timeScale;
 
     /**
      * Toggle rendering on/off for performance testing
@@ -107,19 +115,36 @@ public class BackendSimulation extends ApplicationAdapter {
      */
     private float renderAccumulator = 0f;
 
+    private final float maxFrameRate;
+    private final float RENDERER_FIXED_TIME_STEP;
+    private final float SIMULATION_FIXED_TIME_STEP;
+
+    private final Settings settings;
+
     /**
      * Creates the simulation controller with a pre-configured simulation core.
      */
-    public BackendSimulation(ISimulationLogic simulationLogic) {
+    public BackendSimulation(ISimulationLogic simulationLogic, World world, Settings settings) {
+        this.settings = settings;
+
         // Extract dimensions from the simulation core
-        this.worldWidth = SimulationConfig.World.WORLD_WIDTH;
-        this.worldHeight = SimulationConfig.World.WORLD_HEIGHT;
+        WorldSettings worldSettings = settings.get(WorldSettings.class);
+        this.worldWidth = worldSettings.width;
+        this.worldHeight = worldSettings.height;
 
         // Use actual screen dimensions for camera
-        this.displayWidht = SimulationConfig.Display.SCREEN_WIDTH;
-        this.displayHeight = SimulationConfig.Display.SCREEN_HEIGHT;
+        ScreenSettings screenSettings = settings.get(ScreenSettings.class);
+        this.displayWidht = screenSettings.width;
+        this.displayHeight = screenSettings.height;
+
+        SimulationSettings simulationSettings = settings.get(SimulationSettings.class);
+        this.timeScale = simulationSettings.defaultTimescale;
+        this.maxFrameRate = simulationSettings.maxFrameTime;
+        this.RENDERER_FIXED_TIME_STEP = simulationSettings.fixedTimestepRendering;
+        this.SIMULATION_FIXED_TIME_STEP = simulationSettings.fixedTimestepSimulation;
 
         this.simulationLogic = simulationLogic;
+        this.world = world;
     }
 
     @Override
@@ -129,11 +154,11 @@ public class BackendSimulation extends ApplicationAdapter {
         camera.setPosition(worldWidth / 2f, worldHeight / 2f);
 
         // Create renderer and keyInput
-        renderer = new Renderer(camera);
+        renderer = new Renderer(camera, settings.get(RenderingSettings.class));
         keyInput = new LibGDXKeyInputs();
 
         //Create engineSimulation
-        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput);
+        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput, world, settings);
 
         // Setup camera controls
         cameraController = new CameraController(camera);
@@ -154,16 +179,14 @@ public class BackendSimulation extends ApplicationAdapter {
      */
     @Override
     public void render() {
-        manageInputs();
         // Show FPS in title
         Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
                 " | " + engineSimulation.getProfilingInfo());
 
-        float frameTime = Math.min(Gdx.graphics.getDeltaTime(), SimulationConfig.Simulation.MAX_FRAME_TIME);
+        float frameTime = Math.min(Gdx.graphics.getDeltaTime(), maxFrameRate);
 
         renderAccumulator += frameTime;
         if (render) {
-            float RENDERER_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP_RENDERING;
             while (renderAccumulator >= RENDERER_FIXED_TIME_STEP) {
                 engineSimulation.render();
                 renderAccumulator -= RENDERER_FIXED_TIME_STEP;
@@ -175,24 +198,10 @@ public class BackendSimulation extends ApplicationAdapter {
         // Fixed timestep with accumulator
         simulationAccumulator += frameTime * timeScale;
 
-        float SIMULATION_FIXED_TIME_STEP = SimulationConfig.Simulation.FIXED_TIMESTEP_SIMULATION;
         while (simulationAccumulator >= SIMULATION_FIXED_TIME_STEP) {
             engineSimulation.update(SIMULATION_FIXED_TIME_STEP);
             simulationAccumulator -= SIMULATION_FIXED_TIME_STEP;
         }
 
-    }
-
-    /**
-     * Processes keyboard input for simulation control.
-     * Handles time scale adjustment, pause, render toggle, and interaction randomization.
-     */
-    public void manageInputs() { //TODO: Move to engine simulation
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) timeScale *= 2;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) timeScale /= 2;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) timeScale += 1;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) timeScale -= 1;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) pause = !pause;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) render = !render;
     }
 }

@@ -1,7 +1,10 @@
 package demos.dots;
 
+import demos.dots.settings.DotSettings;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.SimulationConfig;
+import engine.config.Settings;
+import engine.config.implementations.PerformanceSettings;
+import engine.config.implementations.WorldSettings;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
@@ -12,7 +15,7 @@ import engine.inputs.IKeyInput;
 import engine.util.ThreadLocalRandom;
 import engine.world.World;
 import demos.dots.components.DotComponent;
-import demos.dots.components.DotType;
+import demos.dots.types.DotType;
 import demos.dots.systems.DotSystem;
 
 import java.util.LinkedList;
@@ -30,27 +33,31 @@ public class DotSimulationLogic implements ISimulationLogic {
     private DotSystem dotSystem;
     
     @Override
-    public void start(World world, IKeyInput keyInput) {
-        dotSystem = new DotSystem(SimulationConfig.Performance.ENABLE_MULTITHREADING,
+    public void start(World world, IKeyInput keyInput, Settings settings) {
+        DotSettings dotSettings = settings.get(DotSettings.class);
+
+        dotSystem = new DotSystem(settings.get(PerformanceSettings.class).enableMultithreading,
                 world.gridPartition,
-                world.board);
-        DotType.randomizeInteraction();
+                world.board,
+                dotSettings
+                );
 
-        int dotsPerType = SimulationConfig.Simulation.DOTS_PER_TYPE;
-        int dotTypes = SimulationConfig.Simulation.DOT_TYPES;
+        int dotTypes = dotSettings.dotTypes;
+        int dotsPerType = dotSettings.totalDots / dotTypes;
 
+        WorldSettings worldSettings = settings.get(WorldSettings.class);
         for (int i = 0; i < dotTypes; i++) {
             for (int j = 0; j < dotsPerType; j++) {
-                float x = ThreadLocalRandom.nextFloat() * SimulationConfig.World.WORLD_WIDTH;
-                float y = ThreadLocalRandom.nextFloat() * SimulationConfig.World.WORLD_HEIGHT;
+                float x = ThreadLocalRandom.nextFloat() * worldSettings.height;
+                float y = ThreadLocalRandom.nextFloat() * worldSettings.width;
 
                 GameObject dot = new GameObject();
-                dot.addComponent(new ColliderComponent(SimulationConfig.Rendering.DEFAULT_DOT_RADIUS));
+                dot.addComponent(new ColliderComponent(dotSettings.defaultDotRadius));
                 dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x, y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
                 dot.addComponent(new RenderComponent(DotType.values()[i].COLOR,
-                        new CircleFilled(SimulationConfig.Rendering.DEFAULT_DOT_RADIUS, 12)));
+                        new CircleFilled(dotSettings.defaultDotRadius, 12)));
 
                 world.addEntity(dot);
             }

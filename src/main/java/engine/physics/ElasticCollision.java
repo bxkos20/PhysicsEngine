@@ -24,32 +24,8 @@ import engine.world.board.Board;
  * @see Collision
  */
 public class ElasticCollision extends Collision {
-    /**
-     * Cached component ID for TransformComponent
-     */
-    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
 
-    /**
-     * Cached component ID for PhysicsComponent
-     */
-    private static final int PHYSICS_ID = ComponentRegistry.getId(PhysicsComponent.class);
-
-    /**
-     * Cached component ID for ColliderComponent
-     */
-    private static final int COLLIDER_ID = ComponentRegistry.getId(ColliderComponent.class);
-
-    /**
-     * Reusable vector for relative velocity calculation (avoids GC)
-     */
-    private final Vector2 tmpRelVel = new Vector2();
-
-    /**
-     * Reusable vector for direction/normal (avoids GC)
-     */
-    private final Vector2 tmpDir = new Vector2();
-
-    private final PhysicsComponent DEFAULT_PHYSICS = new PhysicsComponent(0, 1, 0);
+    private static final PhysicsComponent DEFAULT_PHYSICS = new PhysicsComponent(0, 1, 0);
 
 
     /**
@@ -61,14 +37,14 @@ public class ElasticCollision extends Collision {
      * @param directionNormal Normal direction from A to B
      * @param overlap         Penetration depth
      */
-    private void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
-        PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+    private static void disconnection(GameObject a, GameObject b, Vector2 directionNormal, float overlap) {
+        PhysicsComponent aPhysics = a.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
         aPhysics = (aPhysics == null) ? DEFAULT_PHYSICS : aPhysics;
-        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
+        TransformComponent aTransform = a.getComponent(ComponentRegistry.getId(TransformComponent.class));
 
-        PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
+        PhysicsComponent bPhysics = b.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
         bPhysics = (bPhysics == null) ? DEFAULT_PHYSICS : bPhysics;
-        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
+        TransformComponent bTransform = b.getComponent(ComponentRegistry.getId(TransformComponent.class));
 
         // Obtenemos la masa inversa (0 si es estático/pared)
         float imA = (aPhysics.getMass() == 0) ? 0 : 1 / aPhysics.getMass();
@@ -96,13 +72,13 @@ public class ElasticCollision extends Collision {
      * @param b               Second game object
      * @param directionNormal Normal direction from A to B
      */
-    private void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
-        if (!a.checkSignature(PHYSICS_ID) || !b.checkSignature(PHYSICS_ID)) return;
+    private static void elasticCollision(GameObject a, GameObject b, Vector2 directionNormal) {
+        if (!a.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class)) || !b.checkSignature(ComponentRegistry.getBit(PhysicsComponent.class))) return;
 
         // Handle static vs dynamic collisions
-        PhysicsComponent aPhysics = a.getComponent(PHYSICS_ID);
+        PhysicsComponent aPhysics = a.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
         aPhysics = (aPhysics == null) ? DEFAULT_PHYSICS : aPhysics;
-        PhysicsComponent bPhysics = b.getComponent(PHYSICS_ID);
+        PhysicsComponent bPhysics = b.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
         bPhysics = (bPhysics == null) ? DEFAULT_PHYSICS : bPhysics;
 
         if ((aPhysics.getMass() == 0) && (bPhysics.getMass() == 0)) {
@@ -116,6 +92,7 @@ public class ElasticCollision extends Collision {
 
 
         // Usamos set y sub para reciclar el vector temporal y no generar Garbage Collection
+        Vector2 tmpRelVel = new Vector2();
         tmpRelVel.set(bPhysics.getVelocity()).sub(aPhysics.getVelocity());
 
         float normalVelocity = tmpRelVel.dot(directionNormal);
@@ -142,25 +119,29 @@ public class ElasticCollision extends Collision {
      */
     @Override
     public void solveCollision(GameObject a, GameObject b, Board board) {
-        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
-        ColliderComponent aCollider = a.getComponent(COLLIDER_ID);
+        //Obtain components
+        TransformComponent aTransform = a.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        ColliderComponent aCollider = a.getComponent(ComponentRegistry.getId(ColliderComponent.class));
 
-        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
-        ColliderComponent bCollider = b.getComponent(COLLIDER_ID);
+        TransformComponent bTransform = b.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        ColliderComponent bCollider = b.getComponent(ComponentRegistry.getId(ColliderComponent.class));
 
+        Vector2 tmpDir = new Vector2();
         board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition(), tmpDir);
 
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
-
         float dist = tmpDir.len();
+        float overlap = radiiSum - dist;
 
-        // Evita división por cero al normalizar si están en el mismo pixel exacto
-        dist = Math.max(dist, 0.1f);
-
-        tmpDir.nor(); // Normalizamos
+        if (dist > 0) {
+            tmpDir.nor();
+        } else {
+            // Overlapping at the same position, choose a default separation vector
+            tmpDir.set(1, 0);
+        }
 
         // 1. Separar (Ahora respeta paredes estáticas)
-        disconnection(a, b, tmpDir, radiiSum - dist);
+        disconnection(a, b, tmpDir, overlap);
 
         // 2. Rebotar
         elasticCollision(a, b, tmpDir);
@@ -173,16 +154,14 @@ public class ElasticCollision extends Collision {
      */
     @Override
     public boolean isColliding(GameObject a, GameObject b, Board board) {
-        TransformComponent aTransform = a.getComponent(TRANSFORM_ID);
-        ColliderComponent aCollider = a.getComponent(COLLIDER_ID);
+        TransformComponent aTransform = a.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        ColliderComponent aCollider = a.getComponent(ComponentRegistry.getId(ColliderComponent.class));
 
-        TransformComponent bTransform = b.getComponent(TRANSFORM_ID);
-        ColliderComponent bCollider = b.getComponent(COLLIDER_ID);
+        TransformComponent bTransform = b.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        ColliderComponent bCollider = b.getComponent(ComponentRegistry.getId(ColliderComponent.class));
 
         float dist2 = board.getDistance2(aTransform.getPosition(), bTransform.getPosition());
         float radiiSum = aCollider.getRadius() + bCollider.getRadius();
-
-        boolean result = dist2 < (radiiSum * radiiSum);
 
         return (dist2 < (radiiSum * radiiSum));
     }
