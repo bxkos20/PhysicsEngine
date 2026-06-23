@@ -62,6 +62,20 @@ public class GameObject {
     }
 
     /**
+     * Retrieves a component by its class type.
+     * <p>Note: For performance-critical loops, it is better to use {@link #getComponent(int)}
+     * to avoid repeated class-to-ID lookups.</p>
+     *
+     * @param componentClass The class of the component to retrieve
+     * @param <T> Component type (unchecked cast)
+     * @return The component instance, or null if not present
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getComponent(Class<?> componentClass) {
+        return (T) components[ComponentRegistry.getId(componentClass)];
+    }
+
+    /**
      * Checks if this entity has a specific component.
      * 
      * @param componentId The component's registered ID
