@@ -1,7 +1,6 @@
 package demos.dots.types;
 
 import engine.graphics.Color;
-import engine.util.ThreadLocalRandom;
 
 /**
  * Enumeration of particle types in the simulation.

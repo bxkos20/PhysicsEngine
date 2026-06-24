@@ -1,5 +1,6 @@
 package demos.dots.systems;
 
+import demos.dots.components.DotComponent;
 import demos.dots.settings.DotSettings;
 import demos.dots.types.DotInteractionManager;
 import demos.dots.types.DotType;
@@ -9,9 +10,8 @@ import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.System;
 import engine.math.Vector2;
-import engine.world.spatial.GridPartition;
 import engine.world.board.Board;
-import demos.dots.components.DotComponent;
+import engine.world.spatial.GridPartition;
 
 
 /**

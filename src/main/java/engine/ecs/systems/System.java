@@ -2,28 +2,27 @@ package engine.ecs.systems;
 
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
+import engine.util.Profiler;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Abstract base class for ECS systems.
- * 
+ *
  * <p>Systems process entities that match a required component signature.
  * Supports both sequential and parallel processing modes.</p>
- * 
+ *
  * <h3>Processing Modes:</h3>
  * <ul>
  *   <li>Sequential: Simple for-loop iteration (threading=false)</li>
  *   <li>Parallel: Uses manual thread pool for multi-threaded processing (threading=true)</li>
  * </ul>
- * 
+ *
  * @see GameObject#checkSignature(long)
  */
 public abstract class System {
@@ -33,8 +32,7 @@ public abstract class System {
     /** Whether to use parallel processing */
     protected final boolean THREADING;
 
-    /** Last execution time in milliseconds (for profiling) */
-    protected float lastExecutionTimeMs;
+    private final Profiler profiler;
 
     /** Shared thread pool for all systems - utilizes all available CPU cores */
     private static final ExecutorService THREAD_POOL;
@@ -65,6 +63,16 @@ public abstract class System {
     public System(boolean threading, Class<?>... components) {
         this.REQUIRED_SIGNATURE = System.calculateSignature(components);
         this.THREADING = threading;
+        this.profiler = new Profiler(60);
+    }
+
+    /**
+     * Returns the simple name of the class for profiling purposes.
+     * e.g., "MovementSystem"
+     * @return The simple name of the class.
+     */
+    public String getName() {
+        return this.getClass().getSimpleName().replace("System","");
     }
 
     /**
@@ -80,9 +88,9 @@ public abstract class System {
      * @param gameObjects List of all game objects to process
      */
     public void update(float dt, List<GameObject> gameObjects) {
-        long start = java.lang.System.nanoTime();
+        profiler.startExecution();
         processUpdate(dt, gameObjects);
-        this.lastExecutionTimeMs = (java.lang.System.nanoTime() - start) / 1_000_000f;
+        profiler.endExecution();
     }
 
     /**
@@ -335,23 +343,13 @@ public abstract class System {
     public static int getCoreCount() {
         return CORE_COUNT;
     }
+
     /**
      * Returns the last execution time for profiling.
      *
      * @return Execution time in milliseconds
      */
-    private final int EXECUTION_AVERAGING_SIZE = 60;
-
-    private final Queue<Float> executionTimes = new LinkedList<>();
     public float getLastExecutionTimeMs() {
-        executionTimes.add(lastExecutionTimeMs);
-        if (executionTimes.size() > EXECUTION_AVERAGING_SIZE) {
-            executionTimes.poll();
-        }
-        float sum = 0;
-        for (float time : executionTimes) {
-            sum += time;
-        }
-        return sum / executionTimes.size();
+        return profiler.getExecutionAverageTimeMs();
     }
 }

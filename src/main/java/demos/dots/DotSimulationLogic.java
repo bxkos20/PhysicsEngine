@@ -1,6 +1,9 @@
 package demos.dots;
 
+import demos.dots.components.DotComponent;
 import demos.dots.settings.DotSettings;
+import demos.dots.systems.DotSystem;
+import demos.dots.types.DotType;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.PerformanceSettings;
@@ -8,15 +11,12 @@ import engine.config.implementations.WorldSettings;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
-import engine.ecs.components.RenderComponent;
+import engine.ecs.components.RendererComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.shapes.CircleFilled;
 import engine.inputs.IKeyInput;
 import engine.util.ThreadLocalRandom;
 import engine.world.World;
-import demos.dots.components.DotComponent;
-import demos.dots.types.DotType;
-import demos.dots.systems.DotSystem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class DotSimulationLogic implements ISimulationLogic {
                 dot.addComponent(new PhysicsComponent(1, 1f, 0.5f));
                 dot.addComponent(new TransformComponent(x, y));
                 dot.addComponent(new DotComponent(DotType.values()[i]));
-                dot.addComponent(new RenderComponent(DotType.values()[i].COLOR,
+                dot.addComponent(new RendererComponent(DotType.values()[i].COLOR,
                         new CircleFilled(dotSettings.defaultDotRadius, 12)));
 
                 world.addEntity(dot);

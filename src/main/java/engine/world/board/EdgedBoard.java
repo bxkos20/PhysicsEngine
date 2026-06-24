@@ -5,7 +5,6 @@ import engine.math.Vector2;
 
 /**
  * Board implementation with edged topology
- * TODO
  * 
  * @see Board
  */

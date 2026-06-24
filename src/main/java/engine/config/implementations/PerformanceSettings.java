@@ -4,7 +4,6 @@ import engine.config.ISettings;
 
 public class PerformanceSettings implements ISettings {
     public boolean enableMultithreading;
-    public int gridCellSize;
 
     /**
      * Default constructor.
@@ -12,16 +11,13 @@ public class PerformanceSettings implements ISettings {
      */
     public PerformanceSettings() {
         this.enableMultithreading = true;
-        this.gridCellSize = 25;
     }
 
     /**
      * Fully parameterized constructor.
      * @param enableMultithreading Whether to use multiple threads for system updates.
-     * @param gridCellSize The size of the cells in the spatial partitioning grid.
      */
-    public PerformanceSettings(boolean enableMultithreading, int gridCellSize) {
+    public PerformanceSettings(boolean enableMultithreading) {
         this.enableMultithreading = enableMultithreading;
-        this.gridCellSize = gridCellSize;
     }
 }

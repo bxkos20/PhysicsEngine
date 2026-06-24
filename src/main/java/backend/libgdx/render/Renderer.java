@@ -3,18 +3,18 @@ package backend.libgdx.render;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.rawDataMesh.RawDataMesh;
 import backend.libgdx.render.shapes.MeshBatch;
-import engine.config.implementations.RenderingSettings;
-import engine.graphics.Shape;
 import backend.libgdx.render.shapes.ShapeRegistry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.ScreenUtils;
+import engine.config.implementations.RenderingSettings;
 import engine.ecs.ComponentRegistry;
-import engine.ecs.components.RenderComponent;
+import engine.ecs.components.RendererComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.Color;
+import engine.graphics.Shape;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 
@@ -68,7 +68,7 @@ public class Renderer implements IRenderer {
     private final MeshBatch meshBatch;
 
     /** Component ID for RenderData, cached for performance */
-    private static final int RENDER_DATA_ID = ComponentRegistry.getId(RenderComponent.class);
+    private static final int RENDER_DATA_ID = ComponentRegistry.getId(RendererComponent.class);
     
     /** Component ID for TransformComponent, cached for performance */
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);

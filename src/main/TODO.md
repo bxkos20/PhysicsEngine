@@ -3,18 +3,17 @@
 ## 🎯 Version 0.2
 - [ ] **Create version 0.1 with a minimally functional engine**
   - [X] Implement basic ECS system with entities and components
-  - [ ] Create basic physics system with gravity and collisions
+  - [ ] Create basic pong game
   - [X] Implement spatial partitioning for collision optimization
-  - [ ] Create basic rendering system for visualization
+  - [x] Create basic rendering system for visualization
   - [X] Add basic simulation configuration
   - [X] Create simple demo with interacting dots
-  - [ ] Document basic API and usage examples
+  - [x] Document basic API and usage examples
   - [X] Create simple demo with pong game
   - [ ] Make configuration simulation configurable
   - [ ] Modify project structure !!!
     - [ ] Injectate all the dependencies
     - [ ] Should be simulation configurable
-  - [ ] Make component an abstract class
 
 ## 🚀 Features
 - [ ] **Custom GUI:**

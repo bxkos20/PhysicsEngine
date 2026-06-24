@@ -1,11 +1,11 @@
 package backend.libgdx.render.rawDataMesh;
 
+import com.badlogic.gdx.math.MathUtils;
+import engine.graphics.Shape;
 import engine.graphics.shapes.Circle;
 import engine.graphics.shapes.CircleFilled;
 import engine.graphics.shapes.Rect;
 import engine.graphics.shapes.RectFilled;
-import engine.graphics.Shape;
-import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Factory for creating raw mesh data for primitive shapes.

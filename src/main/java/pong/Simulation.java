@@ -7,7 +7,7 @@ import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
-import engine.ecs.components.RenderComponent;
+import engine.ecs.components.RendererComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.Color;
 import engine.graphics.shapes.Circle;
@@ -51,7 +51,7 @@ public class Simulation implements ISimulationLogic {
         player1.addComponent(new PlayerComponent(Key.W, Key.S, pongSettings.playerSpeed));
         player1.addComponent(new TransformComponent(pongSettings.playerXOffset, (float) worldSettings.height / 2));
         player1.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
-        player1.addComponent(new RenderComponent(PRIMARY_COLOR,
+        player1.addComponent(new RendererComponent(PRIMARY_COLOR,
                 new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
         world.addEntity(player1);
 
@@ -60,7 +60,7 @@ public class Simulation implements ISimulationLogic {
         player2.addComponent(new PlayerComponent(Key.O, Key.L, pongSettings.playerSpeed));
         player2.addComponent(new TransformComponent(worldSettings.width - pongSettings.playerXOffset, (float) worldSettings.height / 2));
         player2.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
-        player2.addComponent(new RenderComponent(PRIMARY_COLOR,
+        player2.addComponent(new RendererComponent(PRIMARY_COLOR,
                 new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
         world.addEntity(player2);
 
@@ -68,7 +68,7 @@ public class Simulation implements ISimulationLogic {
         ball.addComponent(new ColliderComponent(pongSettings.ballRadius));
         ball.addComponent(new PhysicsComponent(pongSettings.ballMass, 1, 0));
         ball.addComponent(new TransformComponent((float) worldSettings.width / 2, (float) worldSettings.height / 2));
-        ball.addComponent(new RenderComponent(PRIMARY_COLOR,
+        ball.addComponent(new RendererComponent(PRIMARY_COLOR,
                 new Circle(pongSettings.ballRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
 
         PhysicsComponent physicsComponent = ball.getComponent(ComponentRegistry.getId(PhysicsComponent.class));

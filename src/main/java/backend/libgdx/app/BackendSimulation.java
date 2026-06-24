@@ -6,7 +6,7 @@ import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.camera.LibGDXCamera;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import engine.app.EngineSimulation;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.RenderingSettings;
@@ -15,9 +15,7 @@ import engine.config.implementations.SimulationSettings;
 import engine.config.implementations.WorldSettings;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
-import engine.app.EngineSimulation;
 import engine.inputs.IKeyInput;
-import engine.world.World;
 
 /**
  * Main controller for the physics simulation, bridging LibGDX's game loop
@@ -64,11 +62,6 @@ public class BackendSimulation extends ApplicationAdapter {
      * Handles key inputs by the user
      */
     private IKeyInput keyInput;
-    
-    /**
-     * The simulation world
-     */
-    private World world;
 
     /**
      * Screen dimensions in pixels
@@ -124,7 +117,7 @@ public class BackendSimulation extends ApplicationAdapter {
     /**
      * Creates the simulation controller with a pre-configured simulation core.
      */
-    public BackendSimulation(ISimulationLogic simulationLogic, World world, Settings settings) {
+    public BackendSimulation(ISimulationLogic simulationLogic, Settings settings) {
         this.settings = settings;
 
         // Extract dimensions from the simulation core
@@ -144,7 +137,6 @@ public class BackendSimulation extends ApplicationAdapter {
         this.SIMULATION_FIXED_TIME_STEP = simulationSettings.fixedTimestepSimulation;
 
         this.simulationLogic = simulationLogic;
-        this.world = world;
     }
 
     @Override
@@ -158,7 +150,7 @@ public class BackendSimulation extends ApplicationAdapter {
         keyInput = new LibGDXKeyInputs();
 
         //Create engineSimulation
-        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput, world, settings);
+        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput, settings);
 
         // Setup camera controls
         cameraController = new CameraController(camera);
@@ -188,7 +180,7 @@ public class BackendSimulation extends ApplicationAdapter {
         renderAccumulator += frameTime;
         if (render) {
             while (renderAccumulator >= RENDERER_FIXED_TIME_STEP) {
-                engineSimulation.render();
+                engineSimulation.render(RENDERER_FIXED_TIME_STEP);
                 renderAccumulator -= RENDERER_FIXED_TIME_STEP;
             }
         }

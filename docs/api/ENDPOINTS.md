@@ -146,7 +146,7 @@ El motor expone sus funcionalidades a través de clases e interfaces Java. A con
 | `setRadius()` | `float radius` | `void` | Establece el radio de colisión. |
 
 #### RenderComponent
-**Paquete:** `engine.ecs.components.RenderComponent`
+**Paquete:** `engine.ecs.components.RendererComponent`
 
 | Método | Parámetros | Retorno | Descripción |
 |--------|------------|---------|-------------|

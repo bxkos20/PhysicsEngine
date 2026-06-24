@@ -6,7 +6,6 @@ import engine.app.backend.IBackendLauncher;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.ScreenSettings;
-import engine.world.World;
 
 /**
  * Application entry point for the LibGDX-based physics simulation.
@@ -22,7 +21,7 @@ public class BackendLauncher implements IBackendLauncher {
      * Application entry point.
      * Configures the LWJGL3 window and starts the simulation.
      */
-    public void launch(ISimulationLogic simulationLogic, World world, Settings settings) {
+    public void launch(ISimulationLogic simulationLogic, Settings settings) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 
         ScreenSettings screenSettings = settings.get(ScreenSettings.class);
@@ -39,7 +38,7 @@ public class BackendLauncher implements IBackendLauncher {
 
         // Start simulation with pre-created simulation core
         new Lwjgl3Application(
-                new BackendSimulation(simulationLogic, world, settings),
+                new BackendSimulation(simulationLogic, settings),
                 config
         );
     }

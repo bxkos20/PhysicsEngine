@@ -15,9 +15,9 @@ public class DotSettings implements ISettings {
      * Sets default values for an interesting and visually appealing dot simulation.
      */
     public DotSettings() {
-        this.defaultDotRadius = 5.0f;
-        this.totalDots = 2500;
-        this.dotTypes = 5;
+        this.defaultDotRadius = 2.5f;
+        this.totalDots = 1000;
+        this.dotTypes = 10;
         this.gravityConstant = 50.0f;
         this.minInteractionDistance = 15.0f;
         this.maxInteractionDistance = 100.0f;

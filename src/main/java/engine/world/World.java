@@ -1,15 +1,12 @@
 package engine.world;
 
 import engine.ecs.GameObject;
-import engine.ecs.systems.implementations.CollisionSystem;
-import engine.ecs.systems.implementations.MovementSystem;
 import engine.physics.Collision;
 import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Container for all game entities and systems.
@@ -21,9 +18,6 @@ import java.util.function.Consumer;
  * <ol>
  *   <li>Add pending entities to main list</li>
  *   <li>Clear and rebuild spatial grid</li>
- *   <li>Run custom logic system (if provided) - applies forces</li>
- *   <li>Run physics integration (MovementSystem) - updates positions</li>
- *   <li>Run collision detection (CollisionSystem) - resolves overlaps</li>
  * </ol>
  */
 public class World {
@@ -42,12 +36,6 @@ public class World {
     /** Spatial partitioning for neighbor queries */
     public final GridPartition gridPartition;
 
-    /** Physics integration system */
-    MovementSystem movementSystem;
-
-    /** Collision detection system */
-    CollisionSystem collisionSystem;
-
     /**
      * Creates a world with injected dependencies.
      *
@@ -55,16 +43,12 @@ public class World {
      * @param collision     Collision resolution strategy
      * @param gridPartition Spatial partitioning implementation
      */
-    public World(Board board, Collision collision, GridPartition gridPartition, boolean multithreading) {
+    public World(Board board, Collision collision, GridPartition gridPartition) {
         this.board = board;
         this.collision = collision;
         this.gridPartition = gridPartition;
         this.gameObjects = new ArrayList<>();
         this.objectsToAdd = new ArrayList<>();
-
-        //TODO: Move to EngineSimulation
-        this.movementSystem = new MovementSystem(multithreading, board);
-        this.collisionSystem = new CollisionSystem(multithreading, gridPartition, board, collision);
     }
 
     /**
@@ -99,30 +83,5 @@ public class World {
 
         gridPartition.clear();
         gridPartition.add(gameObjects);
-
-        // Phase 3: Physics integration - update positions
-        movementSystem.update(dt, gameObjects);
-
-        // Phase 4: Collision detection and resolution
-        collisionSystem.update(dt, gameObjects);
-    }
-
-
-    /**
-     * Returns profiling information for all systems.
-     *
-     * @return Formatted string with execution times
-     */
-    public String getProfilingInfo() {
-        StringBuilder customInfo = new StringBuilder();
-
-        return String.format("%sPhysics: %.2fms | Collisions: %.2fms",
-                customInfo.toString(),
-                movementSystem.getLastExecutionTimeMs(),
-                collisionSystem.getLastExecutionTimeMs());
-    }
-
-    public void forEachObject(Consumer<GameObject> action) {
-        gameObjects.forEach(action);
     }
 }

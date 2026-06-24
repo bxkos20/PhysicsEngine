@@ -6,7 +6,7 @@ import engine.graphics.Shape;
 /**
  * Component for storing renderable shape data using the OOP shape system.
  */
-public class RenderComponent {
+public class RendererComponent {
 
     /**
      * RGBA color used for rendering.
@@ -24,7 +24,7 @@ public class RenderComponent {
      * @param color       RGBA color
      * @param shape       Shape instance
      */
-    public RenderComponent(Color color, Shape shape) {
+    public RendererComponent(Color color, Shape shape) {
         this.color = color;
         this.shape = shape;
     }

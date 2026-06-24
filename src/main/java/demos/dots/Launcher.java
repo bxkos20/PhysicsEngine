@@ -5,32 +5,23 @@ import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;
 import engine.config.Settings;
 import engine.config.implementations.PerformanceSettings;
+import engine.config.implementations.ScreenSettings;
 import engine.config.implementations.WorldSettings;
-import engine.physics.ElasticCollision;
-import engine.world.World;
-import engine.world.board.ToroidalBoard;
-import engine.world.spatial.ToroidalGridPartition;
 
 public class Launcher {
     public static void main(String[] args) {
         Settings settings = Settings.createDefault();
 
-        WorldSettings worldSettings = new WorldSettings(1000, 1000);
-        DotSettings dotSettings = new DotSettings();
+        WorldSettings worldSettings = new WorldSettings(2500, 2500, WorldSettings.BoardType.TOROIDAL, WorldSettings.CollisionType.ELASTIC ,5);
+        DotSettings dotSettings = new DotSettings(2.5f, 5000, 10, 1, 10, 50);
+        ScreenSettings screenSettings = new ScreenSettings(1920, 1080);
 
         settings.add(worldSettings)
-                .add(dotSettings);
-
-        PerformanceSettings performanceSettings = settings.get(PerformanceSettings.class);
+                .add(dotSettings)
+                .add(screenSettings);
 
         DotSimulationLogic simulationLogic = new DotSimulationLogic();
-        World world = new World(
-                new ToroidalBoard(worldSettings.width, worldSettings.height),
-                new ElasticCollision(),
-                new ToroidalGridPartition(worldSettings.width, worldSettings.height, performanceSettings.gridCellSize),
-                performanceSettings.enableMultithreading
-        );
 
-        EngineLauncher.launch(LauncherType.LIBGDX, simulationLogic, world, settings);
+        EngineLauncher.launch(LauncherType.LIBGDX, simulationLogic, settings);
     }
 }
