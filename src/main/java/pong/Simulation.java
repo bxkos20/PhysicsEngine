@@ -15,6 +15,7 @@ import engine.inputs.IKeyInput;
 import engine.inputs.Key;
 import engine.world.World;
 import pong.components.PlayerComponent;
+import pong.settings.PongSettings;
 import pong.systems.PlayerSystem;
 
 import java.util.LinkedList;
@@ -22,14 +23,11 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Simulation logic implementation for the particle demo.
- * 
- * <p>Creates particles with different types and sets up the DotSystem
- * for particle interaction forces.</p>
+ * Simulation logic implementation for a game of Pong.
  */
 public class Simulation implements ISimulationLogic {
 
-    final Color PRIMARY_COLOR = new Color(1,1,1,1); //White
+    final Color PRIMARY_COLOR = new Color(1, 1, 1, 1); //White
 
     PlayerSystem playerSystem;
 
@@ -40,42 +38,42 @@ public class Simulation implements ISimulationLogic {
     @Override
     public void start(World world, IKeyInput keyInput, Settings settings) {
         WorldSettings worldSettings = settings.get(WorldSettings.class);
+        PongSettings pongSettings = settings.get(PongSettings.class);
+
+        if (worldSettings == null || pongSettings == null) {
+            throw new IllegalStateException("Pong simulation requires both WorldSettings and PongSettings.");
+        }
 
         playerSystem = new PlayerSystem(keyInput);
 
-        player1.addComponent(new ColliderComponent(50));
-        player1.addComponent(new PlayerComponent(Key.W, Key.S, 200));
-        player1.addComponent(new TransformComponent((float) 200, (float) worldSettings.height / 2));
-        player1.addComponent(new PhysicsComponent(100, 1, 0.5f));
+        // Player 1
+        player1.addComponent(new ColliderComponent(pongSettings.playerRadius));
+        player1.addComponent(new PlayerComponent(Key.W, Key.S, pongSettings.playerSpeed));
+        player1.addComponent(new TransformComponent(pongSettings.playerXOffset, (float) worldSettings.height / 2));
+        player1.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
         player1.addComponent(new RenderComponent(PRIMARY_COLOR,
-                //new Rect(50, 150, 10)));
-                new Circle(50, 32, 10)));
-
-
+                new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
         world.addEntity(player1);
 
-        player2.addComponent(new ColliderComponent(50));
-        player2.addComponent(new PlayerComponent(Key.O, Key.L, worldSettings.width - 200));
-        player2.addComponent(new TransformComponent(worldSettings.width - 200, (float) worldSettings.height / 2));
-        player2.addComponent(new PhysicsComponent(100, 1, 0.5f));
+        // Player 2
+        player2.addComponent(new ColliderComponent(pongSettings.playerRadius));
+        player2.addComponent(new PlayerComponent(Key.O, Key.L, pongSettings.playerSpeed));
+        player2.addComponent(new TransformComponent(worldSettings.width - pongSettings.playerXOffset, (float) worldSettings.height / 2));
+        player2.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
         player2.addComponent(new RenderComponent(PRIMARY_COLOR,
-                //new Rect(50, 150, 10)));
-                new Circle(50, 32, 10)));
-
-
+                new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
         world.addEntity(player2);
 
-        final int BALL_RADIUS = 20;
-        ball.addComponent(new ColliderComponent(BALL_RADIUS));
-        ball.addComponent(new PhysicsComponent(1, 1, 0));
+        // Ball
+        ball.addComponent(new ColliderComponent(pongSettings.ballRadius));
+        ball.addComponent(new PhysicsComponent(pongSettings.ballMass, 1, 0));
         ball.addComponent(new TransformComponent((float) worldSettings.width / 2, (float) worldSettings.height / 2));
         ball.addComponent(new RenderComponent(PRIMARY_COLOR,
-                new Circle(BALL_RADIUS, 32, 10)));
+                new Circle(pongSettings.ballRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
 
         PhysicsComponent physicsComponent = ball.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
-        physicsComponent.setVelocity(200, 0);
-
-                world.addEntity(ball);
+        physicsComponent.setVelocity(pongSettings.ballInitialSpeedX, pongSettings.ballInitialSpeedY);
+        world.addEntity(ball);
     }
 
     @Override
