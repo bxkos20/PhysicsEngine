@@ -24,9 +24,6 @@ public class ComponentRegistry {
     /** Map from component class to assigned ID */
     private static final Map<Class<?>, Integer> idMap = new HashMap<>();
 
-    /** Lock for thread-safe ID assignment */
-    private static final Object lock = new Object();
-
     /**
      * Gets or assigns a unique ID for a component class.
      * Thread-safe - uses synchronized access.

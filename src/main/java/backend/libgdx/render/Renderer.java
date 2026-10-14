@@ -1,25 +1,23 @@
 package backend.libgdx.render;
 
-import backend.libgdx.render.camera.CameraController;
-import backend.libgdx.render.rawDataMesh.RawDataMesh;
-import backend.libgdx.render.shapes.MeshBatch;
-import backend.libgdx.render.shapes.ShapeRegistry;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import backend.libgdx.render.camera.CameraController;
+import backend.libgdx.render.rawDataMesh.RawDataMesh;
+import backend.libgdx.render.shapes.MeshBatch;
+import backend.libgdx.render.shapes.ShapeRegistry;
 import engine.config.implementations.RenderingSettings;
-import engine.ecs.ComponentRegistry;
-import engine.ecs.components.RendererComponent;
-import engine.ecs.components.TransformComponent;
 import engine.graphics.Color;
 import engine.graphics.Shape;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * LibGDX-based renderer implementing GPU-accelerated shape batching.
@@ -42,40 +40,32 @@ import java.util.Queue;
 public class Renderer implements IRenderer {
     /** Vertex shader: transforms vertex positions using projection matrix */
     private static final String VERTEX_SHADER =
-            "attribute vec4 a_position;\n" +
-                    "attribute vec4 a_color;\n" +
-                    "uniform mat4 u_projTrans;\n" +
-                    "varying vec4 v_color;\n" +
-                    "void main() {\n" +
-                    "   v_color = a_color;\n" +
-                    "   gl_Position = u_projTrans * a_position;\n" +
-                    "}";
+            """
+            attribute vec4 a_position;
+            attribute vec4 a_color;
+            uniform mat4 u_projTrans;
+            varying vec4 v_color;
+            void main() {
+               v_color = a_color;
+               gl_Position = u_projTrans * a_position;
+            }""";
 
     // Fragment Shader: Pinta el píxel con el color interpolado
     private static final String FRAGMENT_SHADER =
-            "#ifdef GL_ES\n" +
-                    "precision mediump float;\n" +
-                    "#endif\n" +
-                    "varying vec4 v_color;\n" +
-                    "void main() {\n" +
-                    "   gl_FragColor = v_color;\n" +
-                    "}";
+            """
+            #ifdef GL_ES
+            precision mediump float;
+            #endif
+            varying vec4 v_color;
+            void main() {
+               gl_FragColor = v_color;
+            }""";
 
     /** Compiled shader program for GPU rendering */
     private final ShaderProgram shader;
     
     /** Batch collector for efficient mesh rendering */
     private final MeshBatch meshBatch;
-
-    /** Component ID for RenderData, cached for performance */
-    private static final int RENDER_DATA_ID = ComponentRegistry.getId(RendererComponent.class);
-    
-    /** Component ID for TransformComponent, cached for performance */
-    private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
-    
-    /** Signature bitmask for entities with both render and transform components */
-    private static final long REQUIRED_SIGNATURE = ComponentRegistry.idToBit(RENDER_DATA_ID) |
-            ComponentRegistry.idToBit(TRANSFORM_ID);
 
     /** Active camera for view projection */
     ICamera camera;
@@ -128,6 +118,7 @@ public class Renderer implements IRenderer {
      *
      * @return Formatted string with render time in milliseconds
      */
+    @Override 
     public String getProfilingInfo() {
         return String.format("Render: %.2fms", getLastExecutionTimeMs());
     }

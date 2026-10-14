@@ -1,16 +1,17 @@
 package engine.world.spatial;
 
-import engine.ecs.ComponentRegistry;
-import engine.ecs.GameObject;
-import engine.ecs.components.ColliderComponent;
-import engine.ecs.components.TransformComponent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
+import engine.ecs.components.TransformComponent;
 
 /**
  * Black-box tests for ToroidalGridPartition.
@@ -25,10 +26,6 @@ class ToroidalGridPartitionBlackBoxTest {
     private static final float HEIGHT = 1000f;
     private static final float CELL_SIZE = 200f;
 
-    @BeforeEach
-    void setUp() {
-        grid = new ToroidalGridPartition(WIDTH, HEIGHT, CELL_SIZE);
-    }
 
     private GameObject createEntity(float x, float y) {
         GameObject obj = new GameObject();

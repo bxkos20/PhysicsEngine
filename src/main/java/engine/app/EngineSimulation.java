@@ -1,5 +1,8 @@
 package engine.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.PerformanceSettings;
@@ -15,9 +18,6 @@ import engine.util.Profiler;
 import engine.world.World;
 import engine.world.WorldFactory;
 import engine.world.board.Board;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Core simulation controller for particle physics.
@@ -36,8 +36,6 @@ public class EngineSimulation {
 
     private final ISimulationLogic simulationLogic;
     private final World world;
-    private final IRenderer renderer;
-    private final IKeyInput keyInput;
     private final RendererSystem rendererSystem;
     private final ArrayList<System> systems = new ArrayList<>();
 
@@ -52,9 +50,7 @@ public class EngineSimulation {
     public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput, Settings settings) {
         if (renderer == null) throw new IllegalArgumentException("Renderer cannot be null");
 
-        this.renderer = renderer;
         this.simulationLogic = simulationLogic;
-        this.keyInput = keyInput;
         this.rendererSystem = new RendererSystem(renderer);
 
         // Inicializamos los nuevos profilers
