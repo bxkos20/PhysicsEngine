@@ -31,7 +31,7 @@ public class ToroidalGridPartition extends GridPartition {
      * @param height   World height
      * @param cellSize Cell size
      */
-    @SuppressWarnings("unchecked")
+
     public ToroidalGridPartition(float width, float height, float cellSize) {
         super(width, height, cellSize);
         this.cells = (List<GameObject>[]) new List<?>[rows * cols];
