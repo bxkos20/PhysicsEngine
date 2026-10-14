@@ -1,19 +1,23 @@
 package engine.physics;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.implementations.CollisionSystem;
-import engine.math.Vector2;
 import engine.world.board.Board;
 import engine.world.board.ToroidalBoard;
 import engine.world.spatial.ToroidalGridPartition;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * White-box tests for ElasticCollision.

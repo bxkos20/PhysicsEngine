@@ -1,12 +1,12 @@
 package engine.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import engine.ecs.GameObject;
 import engine.physics.Collision;
 import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Container for all game entities and systems.

@@ -1,11 +1,11 @@
 package engine.world.spatial;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import engine.ecs.GameObject;
 import engine.ecs.components.TransformComponent;
 import engine.ecs.systems.implementations.CollisionSystem;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Abstract base class for spatial partitioning grids.
