@@ -1,5 +1,10 @@
 package engine.ecs.systems.implementations;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
@@ -8,9 +13,6 @@ import engine.ecs.systems.System;
 import engine.physics.Collision;
 import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * System for detecting and resolving collisions between entities.
@@ -36,6 +38,7 @@ public class CollisionSystem extends System {
     
     /** ThreadLocal list for parallel collision pair collection */
     private final ThreadLocal<List<GameObject>> pairsThread = ThreadLocal.withInitial(ArrayList::new);
+    private final ThreadLocal<Set<Integer>> nearbyIdsThread = ThreadLocal.withInitial(HashSet::new);
 
     /** Spatial partitioning for broad-phase collision detection */
     private final GridPartition gridPartition;
@@ -78,18 +81,34 @@ public class CollisionSystem extends System {
      */
     @Override
     protected void processUpdate(float dt, List<GameObject> gameObjects) {
+        float maximumReach = getMaximumReach(gameObjects);
         if (THREADING) {
-            processParallelCollisionDetection(gameObjects);
+            processParallelCollisionDetection(gameObjects, maximumReach);
         } else {
-            processSequentialCollisionDetection(gameObjects);
+            processSequentialCollisionDetection(gameObjects, maximumReach);
         }
+    }
+
+    private float getMaximumReach(List<GameObject> gameObjects) {
+        float maximumReach = 0;
+        for (GameObject gameObject : gameObjects) {
+            if (!gameObject.checkSignature(REQUIRED_SIGNATURE)) continue;
+            ColliderComponent collider = gameObject.getComponent(COLLIDER_ID);
+            maximumReach = Math.max(maximumReach, collider.getBroadphaseReach());
+        }
+        return maximumReach;
+    }
+
+    private int getSearchDistance(ColliderComponent collider, float maximumReach) {
+        float reach = collider.getBroadphaseReach() + maximumReach;
+        return Math.max(1, (int) Math.ceil(reach / gridPartition.getCellSize()));
     }
     
     /**
      * Parallel collision detection using base class helper methods.
      * Eliminates GC pressure from parallelStream() and lambda allocations.
      */
-    private void processParallelCollisionDetection(List<GameObject> gameObjects) {
+    private void processParallelCollisionDetection(List<GameObject> gameObjects, float maximumReach) {
         // Collect collision pairs from all threads
         List<GameObject> allCollisions = new ArrayList<>();
         
@@ -103,10 +122,14 @@ public class CollisionSystem extends System {
                 if (!gameObject.checkSignature(REQUIRED_SIGNATURE)) continue;
                 
                 TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+                ColliderComponent collider = gameObject.getComponent(COLLIDER_ID);
+                Set<Integer> nearbyIds = nearbyIdsThread.get();
+                nearbyIds.clear();
                 
-                gridPartition.processNearby(transform, 1, other -> {
+                gridPartition.processNearby(transform, getSearchDistance(collider, maximumReach), other -> {
                     // Skip duplicates and non-colliding entities
-                    if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
+                    if (gameObject.getId() >= other.getId() || !nearbyIds.add(other.getId())
+                            || !other.checkSignature(REQUIRED_SIGNATURE)) return;
                     
                     if (collision.isColliding(gameObject, other, board)) {
                         threadCollisions.add(gameObject);
@@ -132,15 +155,19 @@ public class CollisionSystem extends System {
     /**
      * Sequential collision detection and resolution.
      */
-    private void processSequentialCollisionDetection(List<GameObject> gameObjects) {
+    private void processSequentialCollisionDetection(List<GameObject> gameObjects, float maximumReach) {
         for (GameObject gameObject : gameObjects) {
 
             if (gameObject.checkSignature(REQUIRED_SIGNATURE)) {
                 TransformComponent transform = gameObject.getComponent(TRANSFORM_ID);
+                ColliderComponent collider = gameObject.getComponent(COLLIDER_ID);
+                Set<Integer> nearbyIds = nearbyIdsThread.get();
+                nearbyIds.clear();
 
-                gridPartition.processNearby(transform, 1, other -> {
+                gridPartition.processNearby(transform, getSearchDistance(collider, maximumReach), other -> {
                     // Skip duplicates and check signatures
-                    if (gameObject.getId() >= other.getId() || !other.checkSignature(REQUIRED_SIGNATURE)) return;
+                    if (gameObject.getId() >= other.getId() || !nearbyIds.add(other.getId())
+                            || !other.checkSignature(REQUIRED_SIGNATURE)) return;
 
                     if (collision.isColliding(gameObject, other, board))
                         collision.solveCollision(gameObject, other, board);

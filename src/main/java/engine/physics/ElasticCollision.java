@@ -26,6 +26,7 @@ import engine.world.board.Board;
 public class ElasticCollision extends Collision {
 
     private static final PhysicsComponent DEFAULT_PHYSICS = new PhysicsComponent(0, 1, 0);
+    private static final ThreadLocal<Vector2> DELTA_THREAD = ThreadLocal.withInitial(Vector2::new);
 
 
     /**
@@ -119,32 +120,16 @@ public class ElasticCollision extends Collision {
      */
     @Override
     public void solveCollision(GameObject a, GameObject b, Board board) {
-        //Obtain components
-        TransformComponent aTransform = a.getComponent(ComponentRegistry.getId(TransformComponent.class));
-        ColliderComponent aCollider = a.getComponent(ComponentRegistry.getId(ColliderComponent.class));
+        CollisionData contact = getCollisionData(a, b, board);
+        if (contact == null) return;
 
-        TransformComponent bTransform = b.getComponent(ComponentRegistry.getId(TransformComponent.class));
-        ColliderComponent bCollider = b.getComponent(ComponentRegistry.getId(ColliderComponent.class));
-
-        Vector2 tmpDir = new Vector2();
-        board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition(), tmpDir);
-
-        float radiiSum = aCollider.getRadius() + bCollider.getRadius();
-        float dist = tmpDir.len();
-        float overlap = radiiSum - dist;
-
-        if (dist > 0) {
-            tmpDir.nor();
-        } else {
-            // Overlapping at the same position, choose a default separation vector
-            tmpDir.set(1, 0);
-        }
+        Vector2 direction = new Vector2(contact.normalX, contact.normalY);
 
         // 1. Separar (Ahora respeta paredes estáticas)
-        disconnection(a, b, tmpDir, overlap);
+        disconnection(a, b, direction, contact.penetration);
 
         // 2. Rebotar
-        elasticCollision(a, b, tmpDir);
+        elasticCollision(a, b, direction);
     }
 
     /**
@@ -154,15 +139,92 @@ public class ElasticCollision extends Collision {
      */
     @Override
     public boolean isColliding(GameObject a, GameObject b, Board board) {
+        return getCollisionData(a, b, board) != null;
+    }
+
+    private static CollisionData getCollisionData(GameObject a, GameObject b, Board board) {
         TransformComponent aTransform = a.getComponent(ComponentRegistry.getId(TransformComponent.class));
         ColliderComponent aCollider = a.getComponent(ComponentRegistry.getId(ColliderComponent.class));
-
         TransformComponent bTransform = b.getComponent(ComponentRegistry.getId(TransformComponent.class));
         ColliderComponent bCollider = b.getComponent(ComponentRegistry.getId(ColliderComponent.class));
 
-        float dist2 = board.getDistance2(aTransform.getPosition(), bTransform.getPosition());
-        float radiiSum = aCollider.getRadius() + bCollider.getRadius();
+        Vector2 delta = DELTA_THREAD.get();
+        board.getDirectionVector(aTransform.getPosition(), bTransform.getPosition(), delta);
+        float deltaX = delta.x;
+        float deltaY = delta.y;
 
-        return (dist2 < (radiiSum * radiiSum));
+        if (aCollider.isCircle() && bCollider.isCircle()) {
+            float radiiSum = aCollider.getRadius() + bCollider.getRadius();
+            float distance2 = deltaX * deltaX + deltaY * deltaY;
+            if (distance2 >= radiiSum * radiiSum) return null;
+
+            float distance = (float) Math.sqrt(distance2);
+            if (distance == 0) return new CollisionData(1, 0, radiiSum);
+            return new CollisionData(deltaX / distance, deltaY / distance, radiiSum - distance);
+        }
+
+        if (!aCollider.isCircle() && !bCollider.isCircle()) {
+            float overlapX = (aCollider.getWidth() + bCollider.getWidth()) / 2f - Math.abs(deltaX);
+            float overlapY = (aCollider.getHeight() + bCollider.getHeight()) / 2f - Math.abs(deltaY);
+            if (overlapX <= 0 || overlapY <= 0) return null;
+
+            if (overlapX < overlapY) {
+                return new CollisionData(deltaX < 0 ? -1 : 1, 0, overlapX);
+            }
+            return new CollisionData(0, deltaY < 0 ? -1 : 1, overlapY);
+        }
+
+        if (aCollider.isCircle()) {
+            return circleAabbContact(deltaX, deltaY, aCollider, bCollider);
+        }
+
+        CollisionData contact = circleAabbContact(-deltaX, -deltaY, bCollider, aCollider);
+        if (contact == null) return null;
+        return new CollisionData(-contact.normalX, -contact.normalY, contact.penetration);
+    }
+
+    /** delta points from the circle center to the AABB center. */
+    private static CollisionData circleAabbContact(float deltaX, float deltaY, ColliderComponent circle, ColliderComponent box) {
+        float halfWidth = box.getWidth() / 2f;
+        float halfHeight = box.getHeight() / 2f;
+        float localCircleX = -deltaX;
+        float localCircleY = -deltaY;
+        float closestX = Math.max(-halfWidth, Math.min(halfWidth, localCircleX));
+        float closestY = Math.max(-halfHeight, Math.min(halfHeight, localCircleY));
+        float contactX = deltaX + closestX;
+        float contactY = deltaY + closestY;
+        float distance2 = contactX * contactX + contactY * contactY;
+        float radius = circle.getRadius();
+
+        if (distance2 >= radius * radius) return null;
+
+        if (distance2 > 0) {
+            float distance = (float) Math.sqrt(distance2);
+            return new CollisionData(contactX / distance, contactY / distance, radius - distance);
+        }
+
+        float distanceToLeft = localCircleX + halfWidth;
+        float distanceToRight = halfWidth - localCircleX;
+        float distanceToBottom = localCircleY + halfHeight;
+        float distanceToTop = halfHeight - localCircleY;
+        float nearestFace = Math.min(Math.min(distanceToLeft, distanceToRight),
+                Math.min(distanceToBottom, distanceToTop));
+
+        if (nearestFace == distanceToLeft) return new CollisionData(1, 0, radius + nearestFace);
+        if (nearestFace == distanceToRight) return new CollisionData(-1, 0, radius + nearestFace);
+        if (nearestFace == distanceToBottom) return new CollisionData(0, 1, radius + nearestFace);
+        return new CollisionData(0, -1, radius + nearestFace);
+    }
+
+    private static final class CollisionData {
+        private final float normalX;
+        private final float normalY;
+        private final float penetration;
+
+        private CollisionData(float normalX, float normalY, float penetration) {
+            this.normalX = normalX;
+            this.normalY = normalY;
+            this.penetration = penetration;
+        }
     }
 }

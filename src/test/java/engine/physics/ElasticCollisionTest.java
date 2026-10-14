@@ -5,9 +5,12 @@ import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
+import engine.ecs.systems.implementations.CollisionSystem;
 import engine.math.Vector2;
 import engine.world.board.Board;
 import engine.world.board.ToroidalBoard;
+import engine.world.spatial.ToroidalGridPartition;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +36,14 @@ class ElasticCollisionTest {
         GameObject obj = new GameObject();
         obj.addComponent(new TransformComponent(x, y));
         obj.addComponent(new ColliderComponent(radius));
+        obj.addComponent(new PhysicsComponent(mass, restitution, 0));
+        return obj;
+    }
+
+    private GameObject createBox(float x, float y, float width, float height, float mass, float restitution) {
+        GameObject obj = new GameObject();
+        obj.addComponent(new TransformComponent(x, y));
+        obj.addComponent(new ColliderComponent(width, height));
         obj.addComponent(new PhysicsComponent(mass, restitution, 0));
         return obj;
     }
@@ -67,6 +78,39 @@ class ElasticCollisionTest {
         GameObject a = createCircle(100, 100, 10, 1, 1);
         GameObject b = createCircle(100, 100, 10, 1, 1);
         // Same position => distance=0, radiiSum=20 => colliding
+        assertTrue(collision.isColliding(a, b, board));
+    }
+
+    @Test
+    void isCollidingOverlappingAabbs() {
+        GameObject a = createBox(100, 100, 20, 10, 1, 1);
+        GameObject b = createBox(115, 100, 20, 10, 1, 1);
+        assertTrue(collision.isColliding(a, b, board));
+    }
+
+    @Test
+    void isCollidingTouchingAabbs() {
+        GameObject a = createBox(100, 100, 20, 10, 1, 1);
+        GameObject b = createBox(120, 100, 20, 10, 1, 1);
+        assertFalse(collision.isColliding(a, b, board));
+    }
+
+    @Test
+    void isCollidingCircleAndAabb() {
+        GameObject circle = createCircle(100, 100, 5, 1, 1);
+        GameObject box = createBox(109, 100, 10, 10, 0, 1);
+        assertTrue(collision.isColliding(circle, box, board));
+        assertTrue(collision.isColliding(box, circle, board));
+
+        GameObject separatedCircle = createCircle(100, 100, 5, 1, 1);
+        GameObject separatedBox = createBox(110, 100, 10, 10, 0, 1);
+        assertFalse(collision.isColliding(separatedCircle, separatedBox, board));
+    }
+
+    @Test
+    void isCollidingAabbAcrossToroidalBoundary() {
+        GameObject a = createBox(5, 100, 10, 10, 1, 1);
+        GameObject b = createBox(96, 100, 10, 10, 1, 1);
         assertTrue(collision.isColliding(a, b, board));
     }
 
@@ -181,5 +225,57 @@ class ElasticCollisionTest {
         // The normalVelocity > 0 check in elasticCollision should skip impulse
         assertTrue(pA.getVelocity().x <= 0, "A should still be moving left");
         assertTrue(pB.getVelocity().x >= 0, "B should still be moving right");
+    }
+
+    @Test
+    void solveCollisionSeparatesAndBouncesCircleFromStaticAabb() {
+        GameObject box = createBox(109, 100, 10, 10, 0, 1);
+        GameObject circle = createCircle(100, 100, 5, 1, 1);
+        PhysicsComponent circlePhysics = circle.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
+        circlePhysics.setVelocity(5, 0);
+
+        collision.solveCollision(box, circle, board);
+
+        assertTrue(circlePhysics.getVelocity().x < 0);
+        assertTrue(circle.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().x < 100);
+    }
+
+    @Test
+    void solveCollisionSeparatesAndBouncesAabbs() {
+        GameObject fixedBox = createBox(100, 100, 20, 10, 0, 1);
+        GameObject movingBox = createBox(115, 100, 20, 10, 1, 1);
+        PhysicsComponent movingPhysics = movingBox.getComponent(ComponentRegistry.getId(PhysicsComponent.class));
+        movingPhysics.setVelocity(-5, 0);
+
+        collision.solveCollision(fixedBox, movingBox, board);
+
+        assertTrue(movingPhysics.getVelocity().x > 0);
+        assertTrue(movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().x > 115);
+    }
+
+    @Test
+    void solveCollisionSeparatesCircleStartingInsideAabb() {
+        GameObject box = createBox(100, 100, 20, 20, 0, 1);
+        GameObject circle = createCircle(100, 100, 2, 1, 1);
+
+        collision.solveCollision(box, circle, board);
+
+        assertFalse(collision.isColliding(box, circle, board));
+    }
+
+    @Test
+    void collisionSystemSearchesCellsCoveredByLargeAabbs() {
+        ToroidalGridPartition grid = new ToroidalGridPartition(100, 100, 10);
+        GameObject fixedBox = createBox(5, 50, 30, 10, 0, 1);
+        GameObject movingBox = createBox(25, 50, 30, 10, 1, 1);
+        List<GameObject> objects = List.of(fixedBox, movingBox);
+        grid.add(objects);
+        CollisionSystem system = new CollisionSystem(false, grid, board, collision);
+
+        system.update(0, objects);
+
+        assertNotEquals(50f,
+                movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().y,
+                0.001f);
     }
 }
