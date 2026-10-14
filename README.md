@@ -96,12 +96,16 @@ cd Physicengine
 ## ▶️ Ejecutar la Aplicación
 
 ```bash
-# Ejecutar la aplicación
+# Ejecutar la aplicación por defecto (pong.Launcher)
 ./gradlew run
 
-# O ejecutar directamente con Java
-./gradlew build
-java -jar build/libs/physics-engine-1.0.jar
+# Ejecutar otra clase Launcher del proyecto
+./gradlew run -PmainClass=pong.Launcher
+./gradlew run -PmainClass=demos.dots.Launcher
+
+# O bien con la tarea explícita
+./gradlew runLauncher -PmainClass=pong.Launcher
+./gradlew runLauncher -PmainClass=demos.dots.Launcher
 ```
 
 ## ⚙️ Configuración

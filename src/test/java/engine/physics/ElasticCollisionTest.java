@@ -237,7 +237,8 @@ class ElasticCollisionTest {
         collision.solveCollision(box, circle, board);
 
         assertTrue(circlePhysics.getVelocity().x < 0);
-        assertTrue(circle.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().x < 100);
+        TransformComponent circleTransform = circle.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        assertTrue(circleTransform.getPosition().x < 100);
     }
 
     @Test
@@ -250,7 +251,8 @@ class ElasticCollisionTest {
         collision.solveCollision(fixedBox, movingBox, board);
 
         assertTrue(movingPhysics.getVelocity().x > 0);
-        assertTrue(movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().x > 115);
+        TransformComponent movingBoxTransform = movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        assertTrue(movingBoxTransform.getPosition().x > 115);
     }
 
     @Test
@@ -274,8 +276,7 @@ class ElasticCollisionTest {
 
         system.update(0, objects);
 
-        assertNotEquals(50f,
-                movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class)).getPosition().y,
-                0.001f);
+        TransformComponent movingBoxTransform = movingBox.getComponent(ComponentRegistry.getId(TransformComponent.class));
+        assertNotEquals(50f, movingBoxTransform.getPosition().y, 0.001f);
     }
 }

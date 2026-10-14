@@ -44,6 +44,10 @@ public abstract class GridPartition {
      * @param cellSize Size of each cell
      */
     public GridPartition(float width, float height, float cellSize) {
+        if (cellSize <= 0f) {
+            throw new IllegalArgumentException("GridPartition cellSize must be > 0. Received: " + cellSize);
+        }
+
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;

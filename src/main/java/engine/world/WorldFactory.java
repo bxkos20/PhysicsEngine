@@ -12,34 +12,25 @@ import engine.world.spatial.ToroidalGridPartition;
 public class WorldFactory {
 
     public static World createWorldWhitSettings(WorldSettings settings){
-        Board board = null;
-        Collision collision = null;
-        GridPartition gridPartition = null;
+        Board board;
+        Collision collision;
+        GridPartition gridPartition;
 
-        if (settings.gridPartitionSize <= 0){
-            switch (settings.boardType){
-                case EDGED -> {
-                    board = new EdgedBoard(settings.width, settings.height);
-                    gridPartition = new ToroidalGridPartition(settings.width, settings.height, settings.gridPartitionSize);
-                    //TODO EdgedGridPartition
-                }
-                case TOROIDAL -> {
-                    board = new ToroidalBoard(settings.width, settings.height);
-                    gridPartition = new ToroidalGridPartition(settings.width, settings.height, settings.gridPartitionSize);
-                }
-            }
+        float safeGridSize = settings.gridPartitionSize > 0
+                ? settings.gridPartitionSize
+                : Math.max(10f, Math.max(settings.width, settings.height) / 25f);
+
+        switch (settings.boardType){
+            case EDGED -> board = new EdgedBoard(settings.width, settings.height);
+            case TOROIDAL -> board = new ToroidalBoard(settings.width, settings.height);
+            default -> throw new IllegalArgumentException("Unsupported board type: " + settings.boardType);
         }
-        else {
-            //TODO NullGridPartition
-            gridPartition = new ToroidalGridPartition(settings.width, settings.height, settings.gridPartitionSize);
-            switch (settings.boardType){
-                case EDGED -> board = new EdgedBoard(settings.width, settings.height);
-                case TOROIDAL -> board = new ToroidalBoard(settings.width, settings.height);
-            }
-        }
+
+        gridPartition = new ToroidalGridPartition(settings.width, settings.height, safeGridSize);
 
         switch (settings.collisionType){
             case ELASTIC -> collision = new ElasticCollision();
+            default -> throw new IllegalArgumentException("Unsupported collision type: " + settings.collisionType);
         }
 
         return new World(board, collision, gridPartition);

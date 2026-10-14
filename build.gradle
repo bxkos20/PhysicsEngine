@@ -12,14 +12,23 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
 }
 
-// CORRECCIÓN 1: Configuración de Java dentro del bloque 'java'
 java {
-    sourceCompatibility = '21' // Usa '17', no '1.17'
-    targetCompatibility = '21'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 application {
-    mainClass = 'src/main/java/pong/Launcher.java'
+    mainClass = project.findProperty('mainClass') ?: 'pong.Launcher'
+}
+
+tasks.register('runLauncher', JavaExec) {
+    group = 'application'
+    description = 'Runs the selected Launcher class. Use -PmainClass=package.Launcher'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = project.findProperty('mainClass') ?: 'pong.Launcher'
 }
 
 ext {

@@ -84,4 +84,8 @@ public class World {
         gridPartition.clear();
         gridPartition.add(gameObjects);
     }
+
+    public String getProfilingInfo() {
+        return "World{entities=" + gameObjects.size() + ", gridCellSize=" + gridPartition.getCellSize() + "}";
+    }
 }
