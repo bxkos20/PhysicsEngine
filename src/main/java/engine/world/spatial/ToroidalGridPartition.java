@@ -1,12 +1,12 @@
 package engine.world.spatial;
 
-import engine.ecs.ComponentRegistry;
-import engine.ecs.GameObject;
-import engine.ecs.components.TransformComponent;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import engine.ecs.ComponentRegistry;
+import engine.ecs.GameObject;
+import engine.ecs.components.TransformComponent;
 
 /**
  * Spatial grid partition with toroidal (wrap-around) topology.
@@ -24,10 +24,6 @@ public class ToroidalGridPartition extends GridPartition {
     /** Cell storage array - each cell contains a list of game objects */
     private final List<GameObject>[] cells;
     
-    /** ThreadLocal neighbor list for parallel processing */
-    private final ThreadLocal<ArrayList<GameObject>> nearbyThread = ThreadLocal.withInitial(ArrayList::new);
-
-
     /**
      * Creates a toroidal grid partition.
      * 
@@ -35,12 +31,11 @@ public class ToroidalGridPartition extends GridPartition {
      * @param height   World height
      * @param cellSize Cell size
      */
+    @SuppressWarnings("unchecked")
     public ToroidalGridPartition(float width, float height, float cellSize) {
         super(width, height, cellSize);
-        @SuppressWarnings("unchecked")
-        List<GameObject>[] cells = new List[rows * cols];
-        this.cells = cells;
-        for (int i = 0; i < cells.length; i++) cells[i] = new ArrayList<>();
+        this.cells = (List<GameObject>[]) new List<?>[rows * cols];
+        for (int i = 0; i < this.cells.length; i++) this.cells[i] = new ArrayList<>();
     }
 
     /**
