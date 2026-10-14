@@ -18,9 +18,8 @@ java {
     targetCompatibility = '21'
 }
 
-// CORRECCIÓN 2: Configuración de la aplicación dentro del bloque 'application'
 application {
-    mainClass = 'Launcher' // 'mainClassName' está obsoleto, ahora es 'mainClass'
+    mainClass = 'src/main/java/pong/Launcher.java'
 }
 
 ext {
