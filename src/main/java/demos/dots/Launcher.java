@@ -4,7 +4,6 @@ import demos.dots.settings.DotSettings;
 import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;
 import engine.config.Settings;
-import engine.config.implementations.PerformanceSettings;
 import engine.config.implementations.ScreenSettings;
 import engine.config.implementations.WorldSettings;
 
