@@ -1,163 +1,114 @@
 # Physics Engine
 
-Un motor de física 2D escrito en Java que implementa una arquitectura Entity-Component-System (ECS) con soporte para simulación de partículas, detección de colisiones y renderizado optimizado.
+A 2D physics and simulation engine written in Java 21. The project combines a small Entity-Component-System (ECS) core, configurable world geometry, collision processing, and a LibGDX desktop renderer. It is both an engine-learning project and a runnable sandbox with particle and Pong simulations.
 
-## 📋 Descripción
+## Current Capabilities
 
-Este proyecto es un motor de física educativo y de alto rendimiento diseñado para simulaciones de partículas en 2D. Utiliza una arquitectura ECS (Entity-Component-System) para maximizar la flexibilidad y el rendimiento, permitiendo procesar miles de entidades en paralelo mediante multithreading.
+- ECS entities use registered component IDs and bitmask signatures for system filtering.
+- Physics movement uses semi-implicit Euler integration, accumulated forces, friction damping, and board boundary handling.
+- Elastic circle collisions use overlap separation and impulse-based velocity response, including zero-mass static objects.
+- A grid partition narrows collision candidates. Its benefit depends on entity distribution and grid sizing; it is not a strict O(n) worst-case guarantee.
+- Worlds support edged boundaries and toroidal wrap-around distance and movement behavior.
+- Systems can process work in parallel using a shared fixed thread pool. Collision detection can run in parallel; collision resolution is sequential to avoid concurrent mutation of the same bodies.
+- The renderer is abstracted behind `IRenderer`; the integrated backend uses LibGDX and batched drawing.
+- Settings are passed as typed objects rather than read from a global static configuration.
 
-### Características Principales
+## Technology
 
-- **Arquitectura ECS**: Sistema de componentes flexible para composición de entidades
-- **Física Realista**: Integración semi-implícita de Euler con colisiones elásticas
-- **Particionamiento Espacial**: Grid hashing toroidal para detección de colisiones eficiente (O(n) vs O(n²))
-- **Multithreading**: Procesamiento paralelo utilizando todos los núcleos CPU disponibles
-- **Topología Toroidal**: Mundo con wrap-around (sin bordes físicos)
-- **Renderizado Optimizado**: Batch rendering con LibGDX
-- **Configuración Centralizada**: Parámetros de simulación ajustables vía `SimulationConfig`
+| Technology | Version | Role |
+|---|---:|---|
+| Java | 21 | Engine and simulations |
+| Gradle Wrapper | Repository-pinned | Build and dependency management |
+| LibGDX | 1.12.1 | Desktop window, input, camera, and rendering backend |
+| JUnit Jupiter | 5.10.2 | Unit and black-box tests |
 
-## 🛠 Stack Tecnológico
+## Source Layout
 
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| Java | 21 | Lenguaje principal |
-| Gradle | - | Gestión de dependencias y build |
-| LibGDX | 1.12.1 | Renderizado y backend de gráficos |
-| JUnit | 5.10.2 | Testing |
-
-## 📦 Estructura del Proyecto
-
-```
+```text
 src/main/java/
-├── engine/              # Núcleo del motor
-│   ├── ecs/            # Entity-Component-System
-│   │   ├── GameObject.java
-│   │   ├── ComponentRegistry.java
-│   │   ├── components/ # Transform, Physics, Collider, Render
-│   │   └── systems/    # Movement, Collision, System base
-│   ├── physics/        # Física y colisiones
-│   │   ├── Collision.java
-│   │   └── ElasticCollision.java
-│   ├── world/          # Mundo y particionamiento
-│   │   ├── World.java
-│   │   ├── board/      # Board, ToroidalBoard
-│   │   └── spatial/    # GridPartition, ToroidalGridPartition
-│   ├── math/           # Vector2, Matrix4, Vector3
-│   ├── graphics/       # Renderizado y formas
-│   ├── inputs/         # Input handling
-│   ├── config/         # SimulationConfig
-│   └── app/            # EngineSimulation, EngineLauncher
-├── backend/            # Implementaciones de backend
-│   └── libgdx/         # Backend LibGDX
-├── demos/              # Ejemplos de uso
-│   └── dots/           # Demo de partículas
-└── pong/             # Configuración inicial
-    ├── Launcher.java
-    ├── Simulation.java
-    └── Configuration.java
+    engine/
+        app/                 Simulation controller and backend abstractions
+        config/              Typed settings and setting implementations
+        ecs/                 GameObject, component registry, components, systems
+        graphics/            Colors, shapes, renderer and camera interfaces
+        inputs/              Backend-independent keyboard input
+        math/                Vector and matrix primitives
+        physics/             Collision strategies
+        util/                Profiling and random utilities
+        world/               World, factory, boards, and spatial partition
+    backend/libgdx/         LibGDX launcher, input, camera, and renderer
+    demos/dots/             Interacting-particle simulation
+    pong/                   Pong simulation
+src/test/java/engine/     ECS, math, physics, board, and world tests
+docs/                     Architecture, API, operations, and project context
 ```
 
-## 🚀 Prerrequisitos
+## Requirements and Build
 
-- **Java 21** o superior
-- **Gradle** (incluido con el proyecto via Gradle Wrapper)
-- Sistema operativo: Windows, macOS o Linux
-
-## 📥 Instalación
+Install a Java 21 JDK. Gradle is provided through the wrapper, so a separate Gradle installation is not required.
 
 ```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd Physicengine
-
-# El proyecto incluye Gradle Wrapper, no es necesario instalar Gradle por separado
-```
-
-## 🔧 Compilación
-
-```bash
-# Compilar el proyecto
 ./gradlew build
-
-# Limpiar y compilar
-./gradlew clean build
-```
-
-## 🧪 Ejecutar Tests
-
-```bash
-# Ejecutar todos los tests
 ./gradlew test
-
-# Ejecutar tests con cobertura
-./gradlew test jacocoTestReport
 ```
 
-## ▶️ Ejecutar la Aplicación
+The graphical applications require a desktop environment that can create a LibGDX/LWJGL3 window.
+
+## Run a Simulation
+
+Pong is the default application entry point:
 
 ```bash
-# Ejecutar la aplicación por defecto (pong.Launcher)
 ./gradlew run
+```
 
-# Ejecutar otra clase Launcher del proyecto
-./gradlew run -PmainClass=pong.Launcher
+Select the particle demo explicitly:
+
+```bash
 ./gradlew run -PmainClass=demos.dots.Launcher
+```
 
-# O bien con la tarea explícita
+The repository also defines a dedicated launcher task:
+
+```bash
 ./gradlew runLauncher -PmainClass=pong.Launcher
 ./gradlew runLauncher -PmainClass=demos.dots.Launcher
 ```
 
-## ⚙️ Configuración
+## Architecture and Update Flow
 
-La configuración se centraliza en `engine/config/SimulationConfig.java`. Parámetros principales:
+`EngineLauncher` selects a backend. The LibGDX backend creates the renderer, input adapter, and `EngineSimulation`; each simulation implements `ISimulationLogic` so demo-specific entity setup and behavior remain outside the core engine.
 
-- **Display**: Dimensiones de pantalla (1280x720 por defecto)
-- **World**: Dimensiones del mundo de simulación (1000x1000)
-- **Simulation**: Número de partículas, timestep, constantes de gravedad
-- **Rendering**: Tamaño de batch, radio de partículas
-- **Performance**: Habilitar multithreading, tamaño de grid, profiling
+An `EngineSimulation.update(dt)` performs the following work:
 
-## 📚 Arquitectura ECS
+1. `World.update` moves queued entities into the active list, clears the spatial grid, and rebuilds it from the current entity positions.
+2. `MovementSystem` processes entities with transform and physics components.
+3. `CollisionSystem` finds candidates through the grid and checks/resolves collisions.
+4. The custom simulation logic updates its own behavior and systems.
 
-El motor utiliza un patrón Entity-Component-System:
+Rendering is a separate call. `RendererSystem` draws entities that have both transform and renderer components. The LibGDX backend drives update and render using fixed-step accumulators and the values in `SimulationSettings`.
 
-- **Entity (GameObject)**: Contenedor único con ID y bitmask de componentes
-- **Component**: Datos puros (Transform, Physics, Collider, Render)
-- **System**: Lógica de procesamiento que opera sobre entidades con componentes específicos
+An entity is a `GameObject` with components such as `TransformComponent`, `PhysicsComponent`, `ColliderComponent`, and `RendererComponent`. Components hold state; systems own processing. `World.addEntity` queues additions until the next world update. The current world API does not provide entity removal.
 
-### Pipeline de Actualización
+## Configuration
 
-1. **Phase 0**: Añadir entidades pendientes
-2. **Phase 1**: Reconstruir grid espacial
-3. **Phase 2**: Lógica personalizada (ISimulationLogic)
-4. **Phase 3**: Integración física (MovementSystem)
-5. **Phase 4**: Detección y resolución de colisiones (CollisionSystem)
+`Settings.createDefault()` creates `PerformanceSettings`, `RenderingSettings`, `ScreenSettings`, `SimulationSettings`, and `WorldSettings`. A launcher can replace any setting by adding another instance of the same class, and can add simulation-specific settings such as `DotSettings` or `PongSettings`.
 
-## 🔬 Documentación
+The dots launcher currently configures a 2500 x 2500 toroidal world, elastic collisions, a 5000-dot simulation with 10 types, and a 1920 x 1080 window. Pong configures a 1000 x 500 edged world. See [Configuration and Operations](docs/operaciones/CONFIGURACION.md) for default values and details.
 
-- [ADR-001: Stack Tecnológico](docs/arquitectura/ADR-001-stack-tecnologico.md)
-- [Documentación de APIs](docs/api/ENDPOINTS.md)
-- [Configuración Operativa](docs/operaciones/CONFIGURACION.md)
-- [Guía de Contribución](CONTRIBUTING.md)
+## Known Limitations
 
-## 🐛 Bugs Conocidos
+- `ColliderComponent` has a rectangular AABB constructor, but the only collision strategy, `ElasticCollision`, currently performs circle-based calculations using collider radii. Rectangular collider response is therefore not implemented end to end.
+- Dense, highly compressed contact scenarios can produce jitter or residual overlap.
+- The spatial grid is cleared and rebuilt on every world update; incremental cell updates are not implemented.
+- Settings are currently supplied in Java code. Environment-variable and file-based configuration are not implemented.
+- The integrated runtime backend is desktop LibGDX/LWJGL3; other LibGDX target backends are not configured here.
+- No HTTP service, Docker setup, or declared project license is present.
 
-- **Jitter/Overlap bajo compresión**: Cuando múltiples objetos se empujan simultáneamente en un espacio confinado, la resolución de colisiones puede causar superposición o vibración de entidades.
+## Documentation
 
-## 💡 Ideas Futuras
-
-- GUI personalizada con detección de clicks
-- Soporte para colisiones rectangulares (AABB)
-- Sistema de repulsión por densidad de puntos
-- Spawning dinámico durante runtime
-- Capas de colisión con bitmask filtering
-- Reemplazar LibGDX con código propio
-
-## 📄 Licencia
-
-[Specifique la licencia aquí]
-
-## 👥 Autores
-
-[Specifique los autores aquí]
+- [Project context for AI assistants](docs/PROJECT_CONTEXT.md)
+- [Architecture decision record: technology stack](docs/arquitectura/ADR-001-stack-tecnologico.md)
+- [Programmatic API reference](docs/api/ENDPOINTS.md)
+- [Configuration and operations](docs/operaciones/CONFIGURACION.md)
+- [Project TODO and roadmap](TODO.md)

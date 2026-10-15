@@ -1,274 +1,104 @@
-# Documentación de APIs - Physics Engine
+# Programmatic API Reference
 
-## ⚠️ Nota Importante
+This project exposes Java classes and interfaces. It does not provide HTTP endpoints, a REST service, Spring controllers, or an OpenAPI specification. The filename is retained for existing links; this document describes the engine's Java API.
 
-Este proyecto es un **motor de física 2D** (Physics Engine), no una API REST. No expone endpoints HTTP ni servicios web. En su lugar, proporciona una **API programática en Java** que se utiliza directamente en el código.
+## Simulation Entry Points
 
-## 📚 API Programática
+### `EngineLauncher`
 
-El motor expone sus funcionalidades a través de clases e interfaces Java. A continuación se documentan los puntos de entrada principales.
+`engine.app.EngineLauncher.launch(LauncherType, ISimulationLogic, Settings)` selects a backend and starts the supplied simulation. The current launcher type used by the demos is `LauncherType.LIBGDX`.
 
-## 🎯 Puntos de Entrada Principales
+### `EngineSimulation`
 
-### 1. EngineSimulation
-
-**Paquete:** `engine.app.EngineSimulation`
-
-**Propósito:** Controlador principal de la simulación de física.
-
-**Métodos Públicos:**
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `EngineSimulation()` | `IRenderer renderer`, `ISimulationLogic simulationLogic`, `IKeyInput keyInput` | - | Constructor. Inicializa el mundo con dimensiones configuradas. |
-| `update()` | `float deltaTime` | `void` | Actualiza la simulación por un timestep. |
-| `render()` | - | `void` | Renderiza todas las entidades del mundo. |
-| `addEntity()` | `GameObject entity` | `void` | Añade una entidad al mundo. |
-| `getWorld()` | - | `World` | Retorna la instancia del mundo. |
-| `getProfilingInfo()` | - | `String` | Retorna información de profiling en formato string. |
-
-**Excepciones:**
-- `IllegalArgumentException`: Si el renderer es null en el constructor.
-
----
-
-### 2. World
-
-**Paquete:** `engine.world.World`
-
-**Propósito:** Contenedor de todas las entidades y sistemas del mundo.
-
-**Métodos Públicos:**
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `World()` | `Board board`, `Collision collision`, `GridPartition gridPartition` | - | Constructor con inyección de dependencias. |
-| `addEntity()` | `GameObject gameObject` | `void` | Encola una entidad para añadir (se añade al inicio del siguiente update). |
-| `getGameObjects()` | - | `List<GameObject>` | Retorna la lista principal de entidades. |
-| `update()` | `float dt` | `void` | Actualiza todos los sistemas por un frame. |
-| `getProfilingInfo()` | - | `String` | Retorna información de profiling de sistemas. |
-| `forEachObject()` | `Consumer<GameObject> action` | `void` | Ejecuta una acción sobre cada entidad. |
-
----
-
-### 3. GameObject (Entity)
-
-**Paquete:** `engine.ecs.GameObject`
-
-**Propósito:** Contenedor de entidad en arquitectura ECS.
-
-**Métodos Públicos:**
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `GameObject()` | - | - | Constructor. Crea entidad con ID único. |
-| `addComponent()` | `T component` | `void` | Añade un componente a la entidad. |
-| `getComponent()` | `int componentId` | `T` | Retorna un componente por su ID registrado. |
-| `hasComponent()` | `int componentId` | `boolean` | Verifica si la entidad tiene un componente. |
-| `getSignature()` | - | `long` | Retorna el bitmask de componentes de la entidad. |
-| `checkSignature()` | `long otherSignature` | `boolean` | Verifica si la entidad tiene todos los componentes del mask. |
-| `getId()` | - | `int` | Retorna el ID único de la entidad. |
-
----
-
-### 4. ComponentRegistry
-
-**Paquete:** `engine.ecs.ComponentRegistry`
-
-**Propósito:** Registro de IDs de tipos de componentes.
-
-**Métodos Estáticos Públicos:**
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `getId()` | `Class<?> componentClass` | `int` | Obtiene o asigna ID único para una clase de componente. Thread-safe. |
-| `getBit()` | `Class<?> componentClass` | `long` | Retorna el bitmask para una clase de componente. |
-| `idToBit()` | `int id` | `long` | Convierte un ID de componente a su bitmask. |
-| `getAllComponents()` | - | `Map<Class<?>, Integer>` | Retorna copia de todos los mapeos de componentes. |
-
----
-
-### 5. ISimulationLogic
-
-**Paquete:** `engine.app.implementation.ISimulationLogic`
-
-**Propósito:** Interfaz para lógica de simulación personalizada.
-
-**Métodos:**
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `start()` | `World world`, `IKeyInput keyInput` | `void` | Llamado una vez durante inicialización. Debe crear entidades y sistemas. |
-| `update()` | `float deltaTime`, `List<GameObject> gameObjects` | `void` | Llamado cada ciclo de actualización. Maneja lógica específica de simulación. |
-| `getProfilingInfo()` | - | `String` | Retorna información de profiling del último ciclo. |
-
----
-
-### 6. Componentes Principales
-
-#### TransformComponent
-**Paquete:** `engine.ecs.components.TransformComponent`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `TransformComponent()` | `float x`, `float y` | - | Constructor con posición inicial. |
-| `getPosition()` | - | `Vector2` | Retorna el vector de posición (mutable). |
-| `setPosition()` | `Vector2 position` | `void` | Establece posición desde vector. |
-| `setPosition()` | `float x`, `float y` | `void` | Establece posición desde coordenadas. |
-
-#### PhysicsComponent
-**Paquete:** `engine.ecs.components.PhysicsComponent`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `PhysicsComponent()` | `float mass`, `float restitution`, `float friction` | - | Constructor con propiedades físicas. |
-| `addForce()` | `Vector2 force` | `void` | Añade fuerza al acumulador. |
-| `addForce()` | `float x`, `float y` | `void` | Añade fuerza desde componentes. |
-| `getVelocity()` | - | `Vector2` | Retorna velocidad actual. |
-| `setVelocity()` | `Vector2 velocity` | `void` | Establece velocidad desde vector. |
-| `setVelocity()` | `float x`, `float y` | `void` | Establece velocidad desde componentes. |
-| `getSumForces()` | - | `Vector2` | Retorna fuerzas acumuladas. |
-| `setSumForces()` | `Vector2 sumForces` | `void` | Establece fuerzas acumuladas. |
-| `getMass()` | - | `float` | Retorna masa. |
-| `setMass()` | `float mass` | `void` | Establece masa. |
-| `getRestitution()` | - | `float` | Retorna coeficiente de restitución. |
-| `setRestitution()` | `float restitution` | `void` | Establece coeficiente de restitución. |
-| `getFriction()` | - | `float` | Retorna coeficiente de fricción. |
-| `setFriction()` | `float friction` | `void` | Establece coeficiente de fricción. |
-
-#### ColliderComponent
-**Paquete:** `engine.ecs.components.ColliderComponent`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `ColliderComponent()` | `float radius` | - | Constructor con radio de colisión. |
-| `getRadius()` | - | `float` | Retorna el radio de colisión. |
-| `setRadius()` | `float radius` | `void` | Establece el radio de colisión. |
-
-#### RenderComponent
-**Paquete:** `engine.ecs.components.RendererComponent`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `RenderComponent()` | `Color color`, `Shape shape` | - | Constructor con color y forma. |
-
----
-
-### 7. Systems
-
-#### System (Base Abstract)
-**Paquete:** `engine.ecs.systems.System`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `System()` | `boolean threading`, `Class<?>... components` | - | Constructor con configuración de threading y componentes requeridos. |
-| `update()` | `float dt`, `List<GameObject> gameObjects` | `void` | Actualiza todas las entidades que coinciden con la firma. |
-| `shutdown()` | - | `void` (static) | Cierra el thread pool compartido. |
-| `getCoreCount()` | - | `int` (static) | Retorna número de núcleos CPU disponibles. |
-
-#### MovementSystem
-**Paquete:** `engine.ecs.systems.implementations.MovementSystem`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `MovementSystem()` | `boolean threading`, `Board board` | - | Constructor. |
-| `processGameObject()` | `float dt`, `GameObject gameObject` | `void` (protected) | Procesa física de una entidad. |
-
-#### CollisionSystem
-**Paquete:** `engine.ecs.systems.implementations.CollisionSystem`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `CollisionSystem()` | `boolean threading`, `GridPartition gridPartition`, `Board board`, `Collision collision` | - | Constructor. |
-| `processUpdate()` | `float dt`, `List<GameObject> gameObjects` | `void` (protected) | Sobrescribe update para lógica personalizada de colisiones. |
-
----
-
-### 8. Matemáticas
-
-#### Vector2
-**Paquete:** `engine.math.Vector2`
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `Vector2()` | `float x`, `float y` | - | Constructor con componentes. |
-| `Vector2()` | - | - | Constructor cero. |
-| `set()` | `float x`, `float y` | `Vector2` | Establece componentes. Retorna this para chaining. |
-| `add()` | `Vector2 other` | `Vector2` | Suma vector. Retorna this. |
-| `add()` | `float x`, `float y` | `Vector2` | Suma escalares. Retorna this. |
-| `mulAdd()` | `Vector2 vec`, `float scalar` | `Vector2` | Añade vector escalado. Retorna this. |
-| `sub()` | `Vector2 other` | `Vector2` | Resta vector. Retorna this. |
-| `len()` | - | `float` | Retorna longitud (magnitud). |
-| `len2()` | - | `float` | Retorna longitud al cuadrado (evita sqrt). |
-| `nor()` | - | `Vector2` | Normaliza a longitud unitaria. Retorna this. |
-| `dot()` | `Vector2 other` | `float` | Producto punto. |
-| `scl()` | `float f` | `Vector2` | Escala vector. Retorna this. |
-| `set()` | `Vector2 vector` | `Vector2` | Copia valores de otro vector. Retorna this. |
-
----
-
-## 🔌 Integración con Backend
-
-### IRenderer
-**Paquete:** `engine.graphics.interfaces.IRenderer`
-
-Interfaz para implementaciones de renderizado (LibGDX, custom, etc.).
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `begin()` | - | `void` | Inicia batch de renderizado. |
-| `draw()` | `Shape shape`, `float x`, `float y`, `Color color` | `void` | Dibuja una forma en posición específica. |
-| `end()` | - | `void` | Finaliza batch de renderizado. |
-| `getProfilingInfo()` | - | `String` | Retorna información de profiling. |
-
-### IKeyInput
-**Paquete:** `engine.inputs.IKeyInput`
-
-Interfaz para input de teclado.
-
-| Método | Parámetros | Retorno | Descripción |
-|--------|------------|---------|-------------|
-| `isPress()` | `Key key` | `boolean` | Verifica si una tecla está presionada. |
-
----
-
-## 📝 Ejemplo de Uso
+`engine.app.EngineSimulation` is the engine-side simulation controller. Its constructor is:
 
 ```java
-// 1. Crear simulación
-EngineSimulation simulation = new EngineSimulation(
-    renderer, 
-    new MySimulationLogic(), 
-    keyInput
-);
-
-// 2. Crear entidad
-GameObject entity = new GameObject();
-entity.addComponent(new TransformComponent(x, y));
-entity.addComponent(new PhysicsComponent(mass, restitution, friction));
-entity.addComponent(new ColliderComponent(radius));
-entity.addComponent(new RenderComponent(color, shape));
-
-// 3. Añadir al mundo
-simulation.addEntity(entity);
-
-// 4. Game loop
-while (running) {
-    float deltaTime = getDeltaTime();
-    simulation.update(deltaTime);
-    simulation.render();
-}
+EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic,
+                 IKeyInput keyInput, Settings settings)
 ```
 
----
+Public operations:
 
-## 🚫 No Aplicable
+| Method | Behavior |
+|---|---|
+| `update(float dt)` | Updates the world, movement and collision systems, then custom simulation logic. `dt` is in seconds. |
+| `render(float dt)` | Renders entities through `RendererSystem`. |
+| `getWorld()` | Returns the simulation's `World`. |
+| `getProfilingInfo()` | Returns timing information from engine systems and custom simulation logic. |
 
-Este proyecto **NO** utiliza:
-- Spring Boot
-- REST Controllers
-- OpenAPI/Swagger
-- Endpoints HTTP
-- APIs web
+The controller does not expose `addEntity`; add entities through `simulation.start(...)` using the supplied `World`.
 
-Es una **librería/engine de física** que se integra directamente en aplicaciones Java.
+### `ISimulationLogic`
+
+Implement `engine.app.implementation.ISimulationLogic` to make a simulation reusable with the engine:
+
+```java
+void start(World world, IKeyInput keyInput, Settings settings);
+void update(float deltaTime, List<GameObject> gameObjects);
+String getProfilingInfo();
+```
+
+`start` is called during engine initialization. It is typically used to create and enqueue entities and initialize demo-specific systems. `update` is called after the core movement and collision systems on each simulation step.
+
+## World and Entity API
+
+### `World`
+
+The constructor receives its collaborators:
+
+```java
+World(Board board, Collision collision, GridPartition gridPartition)
+```
+
+`addEntity(GameObject)` queues an entity for insertion at the next `World.update(float dt)`. That update also clears and rebuilds the spatial grid. `getGameObjects()` returns the active internal list, not a defensive copy; direct modifications can bypass the intended queue and spatial-index lifecycle. There is currently no entity-removal API.
+
+### `GameObject` and `ComponentRegistry`
+
+`GameObject` provides a unique integer ID and stores components by registered type ID. Its primary operations are `addComponent(T)`, `getComponent(int)` or `getComponent(Class<?>)`, `hasComponent(int)`, `getSignature()`, `checkSignature(long)`, and `getId()`.
+
+`ComponentRegistry.getId(Class<?>)` assigns an ID to a component class. `getBit(Class<?>)` and `idToBit(int)` provide signature masks. A `GameObject` has a fixed component array of 32 entries; component IDs must remain within that storage capacity.
+
+## Components and Systems
+
+| Type | Purpose and current behavior |
+|---|---|
+| `TransformComponent` | Mutable 2D position used by movement, collision, and rendering. |
+| `PhysicsComponent` | Velocity, accumulated force, mass, restitution, and friction. `MovementSystem` integrates forces and clears them after each update. |
+| `ColliderComponent` | Provides circle construction (`ColliderComponent(float radius)`) and AABB construction (`ColliderComponent(float width, float height)`). See the collision limitation below. |
+| `RendererComponent` | Holds a `Color` and `Shape` for drawing. |
+| `MovementSystem` | Processes entities with transform and physics components and applies the configured board bounds. |
+| `CollisionSystem` | Uses the spatial partition for broad-phase candidates and a `Collision` strategy for collision checks and response. |
+| `RendererSystem` | Draws entities with transform and renderer components through `IRenderer`. |
+
+The base `engine.ecs.systems.System` filters entities by required component signature. It can process eligible work sequentially or use a shared fixed thread pool when threading is enabled. `CollisionSystem` gathers candidate pairs in parallel when configured to do so and resolves them sequentially.
+
+### Collision limitation
+
+Although `ColliderComponent` can represent AABBs, the only current strategy, `ElasticCollision`, uses circle radii for narrow-phase detection and resolution. Rectangular collision behavior is not implemented end to end. Use circle colliders with the current strategy.
+
+## Backend Interfaces
+
+- `IRenderer` defines `begin()`, `draw(Shape, float x, float y, Color)`, `end()`, `setCamera(ICamera)`, and `getProfilingInfo()`.
+- `IKeyInput.isPress(Key)` abstracts keyboard state from the engine.
+- `Board` abstracts world-boundary handling and distance/direction calculations. The factory can create `EdgedBoard` or `ToroidalBoard`.
+- `Collision` abstracts collision tests and response. Only `ElasticCollision` is currently provided.
+- `GridPartition` abstracts spatial insertion and nearby-entity queries. The factory currently constructs `ToroidalGridPartition`.
+
+## Configuration API
+
+`Settings` maps each concrete `ISettings` class to one instance. `Settings.createDefault()` creates `PerformanceSettings`, `RenderingSettings`, `ScreenSettings`, `SimulationSettings`, and `WorldSettings`. Calling `add` with the same concrete class replaces the previous value; `get` returns `null` if that class was not registered.
+
+Simulations may add their own settings types, as the demos do with `DotSettings` and `PongSettings`. The API and defaults are described in [Configuration and Operations](../operaciones/CONFIGURACION.md).
+
+## Minimal Entity Example
+
+```java
+GameObject particle = new GameObject();
+particle.addComponent(new TransformComponent(100f, 100f));
+particle.addComponent(new PhysicsComponent(1f, 1f, 0.5f));
+particle.addComponent(new ColliderComponent(5f));
+particle.addComponent(new RendererComponent(color, shape));
+world.addEntity(particle);
+```
+
+The entity becomes active at the next world update. For a complete runnable setup, start from `pong.Launcher` or `demos.dots.Launcher`, which assemble settings and invoke `EngineLauncher`.

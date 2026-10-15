@@ -1,86 +1,47 @@
-# 📝 Physics Engine - TODO List
+# Physics Engine Roadmap
 
-## 🎯 Version 0.1
-- [ ] **Create version 0.1 with a minimally functional engine**
-  - [X] Implement basic ECS system with entities and components
-  - [ ] Create basic pong game
-  - [X] Implement spatial partitioning for collision optimization
-  - [X] Create basic rendering system for visualization
-  - [X] Add basic simulation configuration
-  - [X] Create simple demo with interacting dots
-  - [X] Document basic API and usage examples
-  - [X] Create simple demo with pong game
-  - [X] Make configuration simulation configurable
-  - [X] Injectate all the dependencies
+This file tracks implemented milestones and remaining work. Completion refers to behavior in the current source tree, not only to a component or API stub existing.
 
-## 🚀 Features
-- [ ] **Custom GUI:**
-  - [ ] Create a basic rendering system for UI boxes and text/buttons.
-  - [ ] Implement mouse click detection (Raycasting/AABB) for GUI interactions.
-  - [ ] Create a debug panel to modify global variables (e.g., gravity `G`, Dot size) in real-time.
-- [X] **Advanced Collision System:**
-  - [X] Add support for rect/rectangular colliders (AABB - Axis-Aligned Bounding Box).
-  - [X] Implement mixed collision resolution (Circle vs. AABB).
+## Implemented
 
-## ⚡ Optimization & Refactoring
-- [ ] **Efficient Grid Update (Broad-phase):**
-  - [ ] Add a `previousCells` array in `ToroidalGridPartition` to track entity positions.
-  - [ ] Implement the `refresh(List<engine.gameObject>)` method to only update entities that cross cell boundaries.
+- [x] ECS entities, component registry, signatures, and component-based systems.
+- [x] Typed settings passed through launchers and simulation logic.
+- [x] World construction through `WorldFactory` with injected board, collision strategy, and spatial partition.
+- [x] Movement integration, friction damping, and board boundary handling.
+- [x] Elastic circle collision detection and response, including static bodies.
+- [x] Grid-based broad-phase candidate queries.
+- [x] Renderer abstraction and `RendererSystem`.
+- [x] LibGDX desktop backend with fixed-step simulation/render loops.
+- [x] Interacting-particle demo and basic Pong simulation.
+- [x] Java API and project documentation in English.
 
-## 📖 Documentation & Code Quality
-- [ ] **Javadoc & Code Comments:**
-  - [ ] Translate all existing inline comments from Spanish to English.
-  - [ ] Write standard Javadoc for engine ECS classes (`engine.gameObject`, `System`, `ComponentRegistry`).
-  - [ ] Add detailed inline comments explaining the complex math in `CollisionSystem` and `DotSystem`.
-- [ ] **Project Documentation (README / Wiki):**
-  - [ ] Write a comprehensive `README.md` explaining the engine's purpose and features.
-  - [ ] Document the custom Entity-Component-System (ECS) architecture and workflow.
-  - [ ] Explain the underlying logic of the Toroidal Spatial Hashing (Grid Partitioning).
+## Correctness and Physics
 
-## 🐛 Known Bugs
-- [ ] **Jitter / Overlap under compression:** When multiple objects push each other simultaneously in a confined space, the collision resolution struggles, causing entities to overlap or vibrate.
+- [ ] Implement end-to-end AABB collision detection and response. `ColliderComponent` has an AABB constructor, but `ElasticCollision` currently uses circle radii only.
+- [ ] Add mixed circle/AABB collision tests and response once the implementation exists.
+- [ ] Investigate jitter and residual overlap under dense compression; add reproducible regression tests.
+- [ ] Validate physics settings and reject invalid dimensions, masses, time steps, and interaction ranges where appropriate.
 
-## 💡 Future Ideas
-- [ ] **Dynamic Spawning:** Allow adding and removing entities via mouse clicks during runtime.
-- [ ] **Collision Layers:** Implement bitmask filtering to define which objects are allowed to collide with each other (e.g., UI vs. Physics objects).
-- [ ] **Replace LibGDX with my own code** To have all control of the behavior of the code
+## Performance and Lifecycle
 
-## 🏛️ Architecture Refactoring (SOLID)
+- [ ] Add incremental spatial-grid updates so entities that remain in the same cell do not require full-grid rebuilding each world update.
+- [ ] Define and implement entity removal and runtime spawning lifecycle APIs.
+- [ ] Benchmark sequential and threaded processing across representative entity counts and distributions before changing threading thresholds.
 
-### 1. Decouple from Global Static Configuration (`SimulationConfig`)
+## Features
 
-**Problem:** The use of a `SimulationConfig` class with static members creates a global state. This prevents running multiple, independent simulations with different settings and tightly couples all engine components to a single source of truth.
+- [ ] Add collision layers or masks to filter candidate pairs.
+- [ ] Add optional runtime particle spawning and removal.
+- [ ] Add a lightweight in-app debug UI for simulation settings and profiling.
+- [ ] Consider additional backends only when a concrete target requires them; the engine already has renderer and input abstractions.
 
-**Violated Principle:** **Modularity** and **Testability**. Prevents simulations from being self-contained.
+## Documentation and Code Quality
 
-**Tasks:**
-- [x] Convert `SimulationConfig` into a non-static Plain Old Java Object (POJO), e.g., `SimulationSettings`.
-- [x] The application entry point (e.g., `EngineLauncher`) should be responsible for creating an instance of `SimulationSettings` (e.g., from a file or with default values).
-- [x] Inject the `SimulationSettings` instance into `EngineSimulation`'s constructor.
-- [x] `EngineSimulation` will then own the configuration and pass relevant parts down to the systems and logic that need it (e.g., passing world dimensions to `World`, or simulation parameters to `ISimulationLogic`).
-- [x] Refactor all classes that currently read from the static `SimulationConfig` to receive these values via their constructor or an `init` method.
+- [ ] Translate remaining Spanish source comments and normalize terminology.
+- [ ] Complete and standardize Javadocs for ECS, collision, and simulation contracts.
+- [ ] Document the spatial-grid query algorithm and its workload-dependent performance characteristics.
+- [ ] Keep documentation aligned with source signatures and verified behavior.
 
-### 2. Apply Single Responsibility Principle to `EngineSimulation`
+## Known Issue
 
-**Problem:** The `EngineSimulation` class is responsible for orchestrating the main simulation loop AND it contains the specific logic for how to render entities.
-
-**Violated Principles:**
-- **Single Responsibility Principle (SRP):** The class has two distinct responsibilities (orchestration and rendering logic), giving it more than one reason to change.
-- **Open/Closed Principle (OCP):** To add a new rendering requirement (e.g., rendering rotation), the core `EngineSimulation` class must be modified.
-
-**Tasks:**
-- [ ] Create a new `RenderSystem` class in the `engine.ecs.systems` package.
-- [ ] This system will be responsible for iterating over entities that have both a `RenderComponent` and a `TransformComponent`.
-- [ ] Move the rendering logic from `EngineSimulation.render()` into the new `RenderSystem`.
-- [ ] `EngineSimulation` will now simply hold an instance of `RenderSystem` and call its `update()` method within the main loop.
-
-### 3. Apply Dependency Inversion to `World` Class
-
-**Problem:** The `World` class creates its own dependencies, specifically `MovementSystem` and `CollisionSystem`. This couples the `World` to concrete implementations of these systems.
-
-**Violated Principle:** **Dependency Inversion Principle (DIP).** High-level modules (`World`) should not depend on low-level modules (`MovementSystem`); both should depend on abstractions.
-
-**Tasks:**
-- [ ] Modify the `World` constructor to accept its required systems (e.g., `MovementSystem`, `CollisionSystem`) as parameters.
-- [ ] Remove the `new MovementSystem(...)` and `new CollisionSystem(...)` calls from inside the `World` class.
-- [ ] The responsibility for creating these systems should move up to a higher-level "composition root," likely `EngineSimulation`. `EngineSimulation` will create the systems and then inject them into the `World` when it is constructed.
+- Dense, highly compressed contacts can jitter or leave entities slightly overlapping. The root cause and a robust correction are still open.
