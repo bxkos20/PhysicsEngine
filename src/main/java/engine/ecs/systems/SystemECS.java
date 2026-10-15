@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @see GameObject#checkSignature(long)
  */
-public abstract class System {
+public abstract class SystemECS {
     /** Bitmask of required components for entities processed by this system */
     protected final long REQUIRED_SIGNATURE;
 
@@ -60,8 +60,8 @@ public abstract class System {
      * @param threading          Enable parallel processing
      * @param components         A list of components required for run the system
      */
-    public System(boolean threading, Class<?>... components) {
-        this.REQUIRED_SIGNATURE = System.calculateSignature(components);
+    public SystemECS(boolean threading, Class<?>... components) {
+        this.REQUIRED_SIGNATURE = SystemECS.calculateSignature(components);
         this.THREADING = threading;
         this.profiler = new Profiler(60);
     }

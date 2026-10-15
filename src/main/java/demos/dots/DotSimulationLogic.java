@@ -1,5 +1,9 @@
 package demos.dots;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import demos.dots.components.DotComponent;
 import demos.dots.settings.DotSettings;
 import demos.dots.systems.DotSystem;
@@ -17,10 +21,6 @@ import engine.graphics.shapes.CircleFilled;
 import engine.inputs.IKeyInput;
 import engine.util.ThreadLocalRandom;
 import engine.world.World;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 /**
  * Simulation logic implementation for the particle demo.

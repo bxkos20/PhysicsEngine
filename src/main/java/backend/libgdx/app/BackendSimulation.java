@@ -1,11 +1,12 @@
 package backend.libgdx.app;
 
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+
 import backend.libgdx.inputs.LibGDXKeyInputs;
 import backend.libgdx.render.Renderer;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.camera.LibGDXCamera;
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 import engine.app.EngineSimulation;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;

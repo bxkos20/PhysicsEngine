@@ -8,7 +8,7 @@ import engine.config.Settings;
 import engine.config.implementations.PerformanceSettings;
 import engine.config.implementations.WorldSettings;
 import engine.ecs.GameObject;
-import engine.ecs.systems.System;
+import engine.ecs.systems.SystemECS;
 import engine.ecs.systems.implementations.CollisionSystem;
 import engine.ecs.systems.implementations.MovementSystem;
 import engine.ecs.systems.implementations.RendererSystem;
@@ -37,7 +37,7 @@ public class EngineSimulation {
     private final ISimulationLogic simulationLogic;
     private final World world;
     private final RendererSystem rendererSystem;
-    private final ArrayList<System> systems = new ArrayList<>();
+    private final ArrayList<SystemECS> systems = new ArrayList<>();
 
     private final Profiler worldUpdateProfiler;
     private final Profiler simLogicUpdateProfiler;
@@ -114,7 +114,7 @@ public class EngineSimulation {
         StringBuilder info = new StringBuilder();
 
         // Sistemas de lógica (Movement, Collision)
-        for (System system : systems) {
+        for (SystemECS system : systems) {
             info.append(String.format("%s: %.2fms | ",
                     system.getName(),
                     system.getLastExecutionTimeMs()));

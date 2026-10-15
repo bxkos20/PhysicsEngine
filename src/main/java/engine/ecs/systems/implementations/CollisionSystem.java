@@ -9,7 +9,7 @@ import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.ColliderComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.systems.System;
+import engine.ecs.systems.SystemECS;
 import engine.physics.Collision;
 import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
@@ -29,7 +29,7 @@ import engine.world.spatial.GridPartition;
  * @see Collision
  * @see GridPartition
  */
-public class CollisionSystem extends System {
+public class CollisionSystem extends SystemECS {
     /** Cached component ID for TransformComponent */
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     

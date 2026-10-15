@@ -8,7 +8,7 @@ import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.systems.System;
+import engine.ecs.systems.SystemECS;
 import engine.math.Vector2;
 import engine.world.board.Board;
 import engine.world.spatial.GridPartition;
@@ -30,7 +30,7 @@ import engine.world.spatial.GridPartition;
  * 
  * @see DotType
  */
-public class DotSystem extends System {
+public class DotSystem extends SystemECS {
     /** Cached component ID for TransformComponent */
     private static final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
     

@@ -1,15 +1,15 @@
 package engine.ecs.systems.implementations;
 
+import java.util.List;
+
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.RendererComponent;
 import engine.ecs.components.TransformComponent;
-import engine.ecs.systems.System;
+import engine.ecs.systems.SystemECS;
 import engine.graphics.interfaces.IRenderer;
 
-import java.util.List;
-
-public class RendererSystem extends System {
+public class RendererSystem extends SystemECS {
 
     private final IRenderer renderer;
     final int TRANSFORM_ID = ComponentRegistry.getId(TransformComponent.class);
