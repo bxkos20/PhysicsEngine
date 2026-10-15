@@ -1,5 +1,9 @@
 package pong;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.WorldSettings;
@@ -11,16 +15,13 @@ import engine.ecs.components.RendererComponent;
 import engine.ecs.components.TransformComponent;
 import engine.graphics.Color;
 import engine.graphics.shapes.Circle;
+import engine.graphics.shapes.Rect;
 import engine.inputs.IKeyInput;
 import engine.inputs.Key;
 import engine.world.World;
 import pong.components.PlayerComponent;
 import pong.settings.PongSettings;
 import pong.systems.PlayerSystem;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 /**
  * Simulation logic implementation for a game of Pong.
@@ -47,21 +48,21 @@ public class Simulation implements ISimulationLogic {
         playerSystem = new PlayerSystem(keyInput);
 
         // Player 1
-        player1.addComponent(new ColliderComponent(pongSettings.playerRadius));
+        player1.addComponent(new ColliderComponent(pongSettings.playerSize, pongSettings.playerSize));
         player1.addComponent(new PlayerComponent(Key.W, Key.S, pongSettings.playerSpeed));
         player1.addComponent(new TransformComponent(pongSettings.playerXOffset, (float) worldSettings.height / 2));
         player1.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
         player1.addComponent(new RendererComponent(PRIMARY_COLOR,
-                new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
+                new Rect(pongSettings.playerSize, pongSettings.playerSize, pongSettings.circleLineWidth)));
         world.addEntity(player1);
 
         // Player 2
-        player2.addComponent(new ColliderComponent(pongSettings.playerRadius));
+        player2.addComponent(new ColliderComponent(pongSettings.playerSize, pongSettings.playerSize));
         player2.addComponent(new PlayerComponent(Key.O, Key.L, pongSettings.playerSpeed));
         player2.addComponent(new TransformComponent(worldSettings.width - pongSettings.playerXOffset, (float) worldSettings.height / 2));
         player2.addComponent(new PhysicsComponent(pongSettings.playerMass, 1, 0.5f));
         player2.addComponent(new RendererComponent(PRIMARY_COLOR,
-                new Circle(pongSettings.playerRadius, pongSettings.circleSegments, pongSettings.circleLineWidth)));
+                new Rect(pongSettings.playerSize, pongSettings.playerSize, pongSettings.circleLineWidth)));
         world.addEntity(player2);
 
         // Ball

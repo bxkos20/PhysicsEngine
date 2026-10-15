@@ -9,7 +9,7 @@ public class PongSettings implements ISettings {
 
     // Player settings
     public float playerSpeed;
-    public float playerRadius;
+    public float playerSize;
     public float playerMass;
     public float playerXOffset;
 
@@ -29,7 +29,7 @@ public class PongSettings implements ISettings {
      */
     public PongSettings() {
         this.playerSpeed = 200f;
-        this.playerRadius = 50f;
+        this.playerSize = 50f;
         this.playerMass = 100f;
         this.playerXOffset = 100f;
         this.ballRadius = 20f;
@@ -43,11 +43,11 @@ public class PongSettings implements ISettings {
     /**
      * Fully parameterized constructor.
      */
-    public PongSettings(float playerSpeed, float playerRadius, float playerMass, float playerXOffset,
+    public PongSettings(float playerSpeed, float playerSize, float playerMass, float playerXOffset,
                         float ballRadius, float ballMass, float ballInitialSpeedX, float ballInitialSpeedY,
                         int circleSegments, int circleLineWidth) {
         this.playerSpeed = playerSpeed;
-        this.playerRadius = playerRadius;
+        this.playerSize = playerSize;
         this.playerMass = playerMass;
         this.playerXOffset = playerXOffset;
         this.ballRadius = ballRadius;
