@@ -2,6 +2,8 @@
 
 PhysicsEngine is a reusable 2D physics engine written in Java 21, with additional simulation and rendering capabilities intended to support many kinds of applications. The engine is the main product; the particle and Pong demos are examples of how projects can use it.
 
+**Current version:** `0.1.0` (early development; not a stable 1.0 release).
+
 ## Current Capabilities
 
 - ECS entities use registered component IDs and bitmask signatures for system filtering.
@@ -110,7 +112,11 @@ The dots launcher currently configures a 2500 x 2500 toroidal world, elastic col
 - The spatial grid is cleared and rebuilt on every world update; incremental cell updates are not implemented.
 - Settings are currently supplied in Java code. Environment-variable and file-based configuration are not implemented.
 - The integrated runtime backend is desktop LibGDX/LWJGL3; other LibGDX target backends are not configured here.
-- No HTTP service, Docker setup, or declared project license is present.
+- No HTTP service or Docker setup is present.
+
+## License
+
+This project is licensed under [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/). You may copy, redistribute, and adapt the project with appropriate credit, a link to the license, and an indication of changes. Commercial use is not permitted without separate permission from the rights holder. See [LICENSE](LICENSE) and the [full legal code](https://creativecommons.org/licenses/by-nc/4.0/legalcode.en).
 
 ## Documentation
 
@@ -121,3 +127,4 @@ The dots launcher currently configures a 2500 x 2500 toroidal world, elastic col
 - [Programmatic API reference](docs/api/ENDPOINTS.md)
 - [Configuration and operations](docs/operaciones/CONFIGURACION.md)
 - [Project TODO and roadmap](TODO.md)
+- [License](LICENSE)

@@ -2,6 +2,8 @@
 
 The primary goal is a reusable physics engine with additional capabilities that can host different kinds of projects. `demos/dots` and `demos/pong` are examples of engine usage; the reserved `src/main/java/yourproject` directory is for actual projects. This file tracks engine milestones and remaining work. Completion refers to behavior in the current source tree, not only to a component or API stub existing.
 
+Current release designation: `0.1.0` (early development; not a stable 1.0 release).
+
 ## Version 1.0 Roadmap
 
 Target: a stable, documented 2D physics engine that projects can use through a clear API. Version 1.0 does not need every item in the general backlog; it must meet the release criteria below within a deliberately limited scope.
@@ -43,7 +45,7 @@ Target: a stable, documented 2D physics engine that projects can use through a c
 
 - [ ] Run `./gradlew clean build` and `./gradlew test` on Java 21 in CI.
 - [ ] Verify documented launch/setup examples against the selected delivery model.
-- [ ] Choose and add a project license.
+- [x] Choose and add a project license (CC BY-NC 4.0).
 - [ ] Publish a 1.0 changelog/release note with supported features, known limitations, and migration guidance if needed.
 
 **Exit criteria:** clean CI build and tests pass, release documentation matches the implementation, and the license and artifact/setup path are explicit.

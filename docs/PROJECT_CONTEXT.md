@@ -8,6 +8,8 @@ PhysicsEngine's primary goal is to provide a reusable 2D physics engine, with ad
 
 The project aims to make simulation behavior configurable and separable from the rendering backend. It is an evolving engine; its current implementation and limitations are described in this document and the linked architecture guide.
 
+The current Gradle version is `0.1.0`, an early-development release rather than a stable 1.0. The repository declares CC BY-NC 4.0; see the root `LICENSE` file and README for terms.
+
 ## Repository Map
 
 ```text
