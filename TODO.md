@@ -2,6 +2,64 @@
 
 The primary goal is a reusable physics engine with additional capabilities that can host different kinds of projects. `demos/dots` and `demos/pong` are examples of engine usage; the reserved `src/main/java/yourproject` directory is for actual projects. This file tracks engine milestones and remaining work. Completion refers to behavior in the current source tree, not only to a component or API stub existing.
 
+## Version 1.0 Roadmap
+
+Target: a stable, documented 2D physics engine that projects can use through a clear API. Version 1.0 does not need every item in the general backlog; it must meet the release criteria below within a deliberately limited scope.
+
+### Milestone 1: Define Scope and Delivery
+
+- [ ] Confirm the supported 1.0 feature set: 2D worlds, edged and toroidal boundaries, movement integration, and elastic circle collisions.
+- [ ] Explicitly list unsupported features, including end-to-end AABB collision handling, unless the scope is intentionally expanded.
+- [ ] Decide whether 1.0 is consumed from this repository's single Gradle project or delivered as a separate engine library/artifact; document the chosen setup.
+
+**Exit criteria:** a new project can identify the supported physics behavior, limitations, and dependency/setup path without relying on assumptions from the demos.
+
+### Milestone 2: Physics Correctness
+
+- [ ] Reproduce the dense-contact jitter/overlap issue with a deterministic test, then fix it or define and document an acceptable bounded limitation before release.
+- [ ] Add focused tests for movement integration, elastic circle collisions, static bodies, and both board boundary modes.
+- [ ] Add regression tests for any physics defects found during this milestone.
+
+**Exit criteria:** all behavior inside the declared 1.0 scope has automated tests, and there are no untriaged correctness defects in that scope.
+
+### Milestone 3: Public API and Lifecycle
+
+- [ ] Validate required settings and reject invalid world dimensions, time steps, and physics values with clear errors.
+- [ ] Decide and document entity lifecycle guarantees, including whether entity removal is supported in 1.0.
+- [ ] Review mutable collections and runtime controls so projects do not need to depend on engine internals to use supported features.
+- [ ] Document system ordering, threading behavior, and which state systems may safely modify.
+
+**Exit criteria:** public contracts and failure behavior are documented and have focused tests; projects can use the engine without depending on demo or backend implementation classes.
+
+### Milestone 4: Performance and Runtime Verification
+
+- [ ] Benchmark representative entity counts with sequential and threaded processing; record the tested workload and results.
+- [ ] Verify repeated simulation startup, update, and shutdown behavior, including renderer and worker-thread resource cleanup.
+- [ ] Optimize spatial-grid rebuilding only if benchmarks show it is necessary for the declared 1.0 workload.
+
+**Exit criteria:** performance claims match measured workloads, and repeated runs do not leak resources or leave engine state unusable.
+
+### Milestone 5: Release Readiness
+
+- [ ] Run `./gradlew clean build` and `./gradlew test` on Java 21 in CI.
+- [ ] Verify documented launch/setup examples against the selected delivery model.
+- [ ] Choose and add a project license.
+- [ ] Publish a 1.0 changelog/release note with supported features, known limitations, and migration guidance if needed.
+
+**Exit criteria:** clean CI build and tests pass, release documentation matches the implementation, and the license and artifact/setup path are explicit.
+
+### Not Required for 1.0 by Default
+
+These remain optional unless the supported 1.0 scope is deliberately expanded:
+
+- End-to-end AABB and mixed-shape collision handling.
+- Debug GUI and collision layers.
+- Camera movement implemented as an engine system.
+- General-purpose system access to modify runtime variables such as simulation time scale.
+- Incremental grid updates and additional rendering backends.
+
+The general backlog below continues to track these and other future improvements. A 1.0 release should not be delayed merely to complete every optional item.
+
 ## Implemented
 
 - [x] ECS entities, component registry, signatures, and component-based systems.
