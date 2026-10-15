@@ -1,9 +1,12 @@
-package pong;
+package demos.pong;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import demos.pong.components.PlayerComponent;
+import demos.pong.settings.PongSettings;
+import demos.pong.systems.PlayerSystem;
 import engine.app.implementation.ISimulationLogic;
 import engine.config.Settings;
 import engine.config.implementations.WorldSettings;
@@ -19,9 +22,6 @@ import engine.graphics.shapes.Rect;
 import engine.inputs.IKeyInput;
 import engine.inputs.Key;
 import engine.world.World;
-import pong.components.PlayerComponent;
-import pong.settings.PongSettings;
-import pong.systems.PlayerSystem;
 
 /**
  * Simulation logic implementation for a game of Pong.

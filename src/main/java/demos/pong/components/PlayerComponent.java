@@ -1,4 +1,4 @@
-package pong.components;
+package demos.pong.components;
 
 import engine.inputs.Key;
 

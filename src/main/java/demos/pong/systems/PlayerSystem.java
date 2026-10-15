@@ -1,11 +1,11 @@
-package pong.systems;
+package demos.pong.systems;
 
+import demos.pong.components.PlayerComponent;
 import engine.ecs.ComponentRegistry;
 import engine.ecs.GameObject;
 import engine.ecs.components.PhysicsComponent;
 import engine.ecs.systems.SystemECS;
 import engine.inputs.IKeyInput;
-import pong.components.PlayerComponent;
 
 public class PlayerSystem extends SystemECS {
 

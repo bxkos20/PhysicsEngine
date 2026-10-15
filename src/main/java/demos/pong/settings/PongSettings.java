@@ -1,4 +1,4 @@
-package pong.settings;
+package demos.pong.settings;
 
 import engine.config.ISettings;
 
