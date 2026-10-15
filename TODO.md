@@ -1,29 +1,26 @@
 # 📝 Physics Engine - TODO List
 
-## 🎯 Version 0.2
+## 🎯 Version 0.1
 - [ ] **Create version 0.1 with a minimally functional engine**
   - [X] Implement basic ECS system with entities and components
   - [ ] Create basic pong game
   - [X] Implement spatial partitioning for collision optimization
-  - [x] Create basic rendering system for visualization
+  - [X] Create basic rendering system for visualization
   - [X] Add basic simulation configuration
   - [X] Create simple demo with interacting dots
-  - [x] Document basic API and usage examples
+  - [X] Document basic API and usage examples
   - [X] Create simple demo with pong game
-  - [ ] Make configuration simulation configurable
-  - [ ] Modify project structure !!!
-    - [ ] Injectate all the dependencies
-    - [ ] Should be simulation configurable
+  - [X] Make configuration simulation configurable
+  - [X] Injectate all the dependencies
 
 ## 🚀 Features
 - [ ] **Custom GUI:**
   - [ ] Create a basic rendering system for UI boxes and text/buttons.
   - [ ] Implement mouse click detection (Raycasting/AABB) for GUI interactions.
   - [ ] Create a debug panel to modify global variables (e.g., gravity `G`, Dot size) in real-time.
-- [ ] **Advanced Collision System:**
-  - [ ] Add support for rect/rectangular colliders (AABB - Axis-Aligned Bounding Box).
-  - [ ] Implement mixed collision resolution (Circle vs. AABB).
-- [ ] **Dot Density Repulsion System**
+- [X] **Advanced Collision System:**
+  - [X] Add support for rect/rectangular colliders (AABB - Axis-Aligned Bounding Box).
+  - [X] Implement mixed collision resolution (Circle vs. AABB).
 
 ## ⚡ Optimization & Refactoring
 - [ ] **Efficient Grid Update (Broad-phase):**
