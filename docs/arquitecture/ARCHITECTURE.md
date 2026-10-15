@@ -1,6 +1,6 @@
 # Layered Architecture and Execution Flow
 
-PhysicsEngine separates demo-specific behavior, engine rules, and platform code. The main boundary is interface-based: simulation logic depends on engine contracts and the engine uses renderer/input interfaces instead of depending on LibGDX classes. A layer should depend on the contract it needs, not on the concrete implementation behind that contract.
+PhysicsEngine is intended to be a reusable engine for projects with different application goals. It separates engine rules, project/demo behavior, and platform code. The main boundary is interface-based: application logic depends on engine contracts and the engine uses renderer/input interfaces instead of depending on LibGDX classes. A layer should depend on the contract it needs, not on the concrete implementation behind that contract.
 
 This is an architectural direction, not a claim that every dependency is fully inverted today. In particular, `WorldFactory` currently chooses concrete board, collision, and grid-partition implementations, and `EngineSimulation` constructs its core systems.
 
@@ -8,7 +8,8 @@ This is an architectural direction, not a claim that every dependency is fully i
 
 | Layer | Main packages | Responsibility | May depend on |
 |---|---|---|---|
-| Demo/application | `demos.*` | Choose settings, create initial entities, and implement simulation-specific behavior. Each demo has a launcher and an `ISimulationLogic` implementation. | Public engine APIs, engine components, and engine interfaces. |
+| Engine-based projects | `yourproject.*` | Host application-specific behavior and compose a project using the engine. The top-level `yourproject` package is currently reserved and empty. | Public engine APIs, components, systems, and interfaces. |
+| Reference demos | `demos.*` | Show example uses of the engine. Current examples are the particle simulation and Pong; neither defines the engine's product scope. | Public engine APIs, components, systems, and interfaces. |
 | Engine orchestration | `engine.app` | Launch a simulation, construct its world and core systems, and coordinate updates and rendering. | Engine contracts and abstract backend-launcher types, not LibGDX implementation classes. |
 | Engine core/domain | `engine.ecs`, `engine.world`, `engine.physics`, `engine.math` | Hold entity state and implement simulation, geometry, and collision rules. | Core contracts and math. The current `WorldFactory` is a known concrete-binding point. |
 | Ports/contracts | `engine.app.implementation`, `engine.graphics.interfaces`, `engine.inputs` | Define how custom simulations, renderers, cameras, and key input connect to the engine. | Domain types used in the contracts. |
@@ -16,7 +17,7 @@ This is an architectural direction, not a claim that every dependency is fully i
 
 ### Dependency rule
 
-- A demo should not import LibGDX classes. It describes simulation behavior using `ISimulationLogic`, `Settings`, ECS components, and systems.
+- A project or demo should not import LibGDX classes. It describes application behavior using `ISimulationLogic`, `Settings`, ECS components, and systems.
 - The engine's rendering boundary is `IRenderer`; input is exposed through `IKeyInput`. The LibGDX adapter implements these boundaries.
 - The backend can call engine abstractions, but physics and ECS rules should not rely on backend classes.
 - Concrete choices belong near a composition point: a launcher/backend selector chooses the platform adapter, and `WorldFactory` currently chooses supported world collaborators.
@@ -34,8 +35,8 @@ System order matters because systems can mutate shared component data. In the co
 
 ```mermaid
 flowchart TD
-    DemoLauncher[Demo Launcher] --> Settings[Create Settings]
-    DemoLauncher --> EngineLauncher[EngineLauncher.launch]
+    AppLauncher[Project or demo launcher] --> Settings[Create Settings]
+    AppLauncher --> EngineLauncher[EngineLauncher.launch]
     Settings --> Backend[Selected Backend Launcher]
     EngineLauncher --> Backend
     Backend --> BackendSimulation[LibGDX BackendSimulation]
@@ -61,7 +62,7 @@ flowchart TD
     Pending --> Rebuild[Clear and rebuild spatial grid]
     Rebuild --> Movement[MovementSystem]
     Movement --> Collision[CollisionSystem: candidate detection and response]
-    Collision --> DemoUpdate[ISimulationLogic.update and demo systems]
+    Collision --> DemoUpdate[ISimulationLogic.update and application systems]
     DemoUpdate --> Accumulate
     More -- No --> RenderDue{Render interval available?}
     RenderDue -- Yes --> RenderSystem[RendererSystem via IRenderer]
@@ -82,4 +83,4 @@ flowchart TD
 
 The current collision strategy is `ElasticCollision` and handles circles end to end. `ColliderComponent` can represent an AABB, but rectangular collision checks and response are not yet implemented. `WorldFactory` also currently constructs `ToroidalGridPartition` for either board type; the selected `Board` determines boundary and distance behavior.
 
-For adding a simulation inside this repository, follow [Creating a New Demo](../NEW_DEMO.md) and use `src/main/java/demos/yourproject` as the starter scaffold.
+For the distinction between the empty project area and reference examples, see [Projects and Reference Demos](../NEW_DEMO.md). The `src/main/java/yourproject` directory is intentionally reserved for actual engine-based projects; `src/main/java/demos` remains example code.

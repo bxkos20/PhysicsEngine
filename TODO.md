@@ -1,6 +1,6 @@
 # Physics Engine Roadmap
 
-This file tracks implemented milestones and remaining work. Completion refers to behavior in the current source tree, not only to a component or API stub existing.
+The primary goal is a reusable physics engine with additional capabilities that can host different kinds of projects. `demos/dots` and `demos/pong` are examples of engine usage; the reserved `src/main/java/yourproject` directory is for actual projects. This file tracks engine milestones and remaining work. Completion refers to behavior in the current source tree, not only to a component or API stub existing.
 
 ## Implemented
 
@@ -12,7 +12,7 @@ This file tracks implemented milestones and remaining work. Completion refers to
 - [x] Grid-based broad-phase candidate queries.
 - [x] Renderer abstraction and `RendererSystem`.
 - [x] LibGDX desktop backend with fixed-step simulation/render loops.
-- [x] Interacting-particle demo and basic Pong simulation.
+- [x] Interacting-particle demo and Pong reference demo.
 - [x] Java API and project documentation in English.
 
 ## Correctness and Physics

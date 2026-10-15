@@ -1,6 +1,6 @@
 # Physics Engine
 
-A 2D physics and simulation engine written in Java 21. The project combines a small Entity-Component-System (ECS) core, configurable world geometry, collision processing, and a LibGDX desktop renderer. It is both an engine-learning project and a runnable sandbox with particle and Pong demos.
+PhysicsEngine is a reusable 2D physics engine written in Java 21, with additional simulation and rendering capabilities intended to support many kinds of applications. The engine is the main product; the particle and Pong demos are examples of how projects can use it.
 
 ## Current Capabilities
 
@@ -37,9 +37,9 @@ src/main/java/
         util/                Profiling and random utilities
         world/               World, factory, boards, and spatial partition
     backend/libgdx/         LibGDX launcher, input, camera, and renderer
-    demos/dots/             Interacting-particle demo
-    demos/pong/             Pong demo
-    demos/yourproject/      Runnable starter demo scaffold
+    demos/dots/             Particle example using the engine
+    demos/pong/             Pong example using the engine
+    yourproject/             Reserved package for projects hosted on the engine (currently empty)
 src/test/java/engine/     ECS, math, physics, board, and world tests
 docs/                     Architecture, API, operations, and project context
 ```
@@ -91,15 +91,15 @@ Rendering is a separate call. `RendererSystem` draws entities that have both tra
 
 An entity is a `GameObject` with components such as `TransformComponent`, `PhysicsComponent`, `ColliderComponent`, and `RendererComponent`. Components hold state; systems own processing. `World.addEntity` queues additions until the next world update. The current world API does not provide entity removal.
 
-The code is organized in layers: demo/application code depends on engine contracts; the engine core owns ECS, world, math, and physics rules; backend adapters implement rendering and input interfaces. Higher-level simulation code should depend on abstractions rather than LibGDX implementations. This boundary is in place for renderer and input, while `WorldFactory` still chooses concrete board, collision, and partition implementations. See [Layered Architecture and Execution Flow](docs/arquitecture/ARCHITECTURE.md).
+The code is organized in layers: project and demo code depends on engine contracts; the engine core owns ECS, world, math, and physics rules; backend adapters implement rendering and input interfaces. Higher-level simulation code should depend on abstractions rather than LibGDX implementations. This boundary is in place for renderer and input, while `WorldFactory` still chooses concrete board, collision, and partition implementations. See [Layered Architecture and Execution Flow](docs/arquitecture/ARCHITECTURE.md).
 
-## Add a Demo
+## Projects and Demos
 
-In this repository, a new project means a new runnable simulation under `src/main/java/demos/<lowercase-name>/`, not a separate Gradle build. The starter implementation lives in `demos/yourproject`; setup steps and package responsibilities are in [Creating a New Demo](docs/NEW_DEMO.md).
+The engine is designed to host different projects under `src/main/java/yourproject/`. That directory is intentionally empty: it is a place for engine consumers, not a runnable template. `src/main/java/demos/` contains reference examples only. Pong is one such demo, alongside the particle demo. See [Projects and Reference Demos](docs/NEW_DEMO.md) for package boundaries and setup guidance.
 
 ## Configuration
 
-`Settings.createDefault()` creates `PerformanceSettings`, `RenderingSettings`, `ScreenSettings`, `SimulationSettings`, and `WorldSettings`. A launcher can replace any setting by adding another instance of the same class, and can add simulation-specific settings such as `DotSettings` or `PongSettings`.
+`Settings.createDefault()` creates `PerformanceSettings`, `RenderingSettings`, `ScreenSettings`, `SimulationSettings`, and `WorldSettings`. A project launcher can replace any setting by adding another instance of the same class, and can add project-specific settings. The demos illustrate this with `DotSettings` and `PongSettings`.
 
 The dots launcher currently configures a 2500 x 2500 toroidal world, elastic collisions, a 5000-dot simulation with 10 types, and a 1920 x 1080 window. Pong configures a 1000 x 500 edged world. See [Configuration and Operations](docs/operaciones/CONFIGURACION.md) for default values and details.
 
@@ -116,7 +116,7 @@ The dots launcher currently configures a 2500 x 2500 toroidal world, elastic col
 
 - [Project context for AI assistants](docs/PROJECT_CONTEXT.md)
 - [Layered architecture and execution flow](docs/arquitecture/ARCHITECTURE.md)
-- [Creating a new demo](docs/NEW_DEMO.md)
+- [Projects and reference demos](docs/NEW_DEMO.md)
 - [Architecture decision record: technology stack](docs/arquitecture/ADR-001-stack-tecnologico.md)
 - [Programmatic API reference](docs/api/ENDPOINTS.md)
 - [Configuration and operations](docs/operaciones/CONFIGURACION.md)

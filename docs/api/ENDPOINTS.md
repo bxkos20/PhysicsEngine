@@ -101,4 +101,4 @@ particle.addComponent(new RendererComponent(color, shape));
 world.addEntity(particle);
 ```
 
-The entity becomes active at the next world update. For a complete runnable setup, start from `demos.pong.Launcher`, `demos.dots.Launcher`, or the `demos.yourproject` starter scaffold; these assemble settings and invoke `EngineLauncher`.
+The entity becomes active at the next world update. For runnable examples, inspect `demos.pong.Launcher` or `demos.dots.Launcher`. Both are reference demos; actual projects belong under `src/main/java/yourproject` and should create their own launcher and `ISimulationLogic` implementation.

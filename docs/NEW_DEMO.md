@@ -1,45 +1,47 @@
-# Creating a New Demo
+# Projects and Reference Demos
 
-In this repository, a "new project" usually means adding another runnable simulation to the existing Gradle project. It is not a separate Gradle module. The starter package is `src/main/java/demos/yourproject`; copy it to a lowercase package name such as `demos/orbit` and rename `YourProject*` classes to match.
+## Project Goal
 
-## Package Structure
+The main product in this repository is the reusable physics engine, with simulation, ECS, rendering, input, and world capabilities. It is intended to provide a foundation that can host different kinds of projects. Projects define their own goals and behavior while depending on the engine's public APIs.
 
-```text
-src/main/java/demos/yourproject/
-  Launcher.java                 Settings and application entry point
-  YourProjectSimulation.java    ISimulationLogic implementation
-  components/                    Demo-specific component data
-  settings/                      Demo-specific ISettings values
-  systems/                       Demo-specific SystemECS behavior
-  types/                         Demo-specific enums and value types
-```
+The directory `src/main/java/yourproject/` is reserved for those actual projects. It is currently empty by design. Do not treat it as an engine demo or assume it contains a runnable starter implementation.
 
-Keep the ownership boundaries clear:
+## Projects Versus Demos
 
-- `Launcher` composes generic engine settings with demo settings and starts the selected backend.
-- `YourProjectSimulation` creates initial entities in `start` and updates custom systems in `update`.
-- Components contain demo-specific data; systems implement behavior over entities with required components.
-- Demo code should depend on engine contracts, not on LibGDX. Put platform-specific code in `backend/libgdx` or behind an engine interface.
+- `src/main/java/engine/` contains reusable engine code. It should not depend on project or demo packages.
+- `src/main/java/backend/libgdx/` adapts LibGDX to engine interfaces such as `IRenderer` and `IKeyInput`.
+- `src/main/java/yourproject/` is the reserved home for actual applications built on the engine.
+- `src/main/java/demos/` contains examples that demonstrate engine usage. The particle simulation and Pong are demos, not the engine's primary product.
 
-## Steps
+Projects and demos can each have a launcher, settings, an `ISimulationLogic` implementation, components, and systems. They should depend on engine abstractions; the engine should not depend on any individual project or demo.
 
-1. Copy `src/main/java/demos/yourproject` to a lowercase package directory and update each Java `package` declaration and import.
-2. Add the simulation's settings as a class implementing `ISettings`; register it in the launcher with `settings.add(...)`.
-3. In `Launcher.main`, call `Settings.createDefault()`, override `WorldSettings` and other engine settings as needed, then call `EngineLauncher.launch(LauncherType.LIBGDX, simulation, settings)`.
-4. In `ISimulationLogic.start`, read required settings, create entities with components, and enqueue them with `world.addEntity(...)`.
-5. Create each custom system by extending `SystemECS`; declare required component classes in `super(...)`, then implement `processGameObject` or override `processUpdate` for a custom pass.
-6. In `ISimulationLogic.update`, invoke custom systems with the supplied `deltaTime` and active `gameObjects` list. This logic runs after the engine movement and collision systems.
-7. Run the demo with `./gradlew run -PmainClass=demos.<name>.Launcher` or `./gradlew runLauncher -PmainClass=demos.<name>.Launcher`.
-8. Add or update focused tests under `src/test/java`, then run `./gradlew test`.
+## Adding a Project
 
-## Run the Starter Scaffold
+The repository is currently one Gradle project; `yourproject` is a Java package area, not a separate Gradle module. To host a project in this source tree:
+
+1. Create a package beneath `src/main/java/yourproject/`, for example `yourproject/orbit/` with Java package `yourproject.orbit`.
+2. Add a project launcher that creates `Settings`, adds engine and project-specific settings, and calls `EngineLauncher.launch(...)` with a project-owned `ISimulationLogic` implementation.
+3. In `ISimulationLogic.start`, read settings, create `GameObject` instances and their components, and queue them through `world.addEntity(...)`.
+4. Create project-specific behavior in systems that extend `SystemECS`. Declare required component types in `super(...)` and implement `processGameObject` or `processUpdate`.
+5. Call project systems from `ISimulationLogic.update`. This hook runs after the engine's movement and collision systems.
+6. Depend on engine interfaces and domain types. Keep LibGDX imports and platform-specific details out of the project layer.
+7. Add tests under `src/test/java` and run `./gradlew test`.
+
+When a project launcher exists, it can be selected without changing the default entry point:
 
 ```bash
-./gradlew run -PmainClass=demos.yourproject.Launcher
+./gradlew run -PmainClass=yourproject.orbit.Launcher
 ```
 
-The scaffold creates one rendered entity and moves it through a demo-specific `ExampleSystem`. Replace that behavior, component, and settings with the needs of the new simulation. Pong is another example of a demo package: `demos.pong` contains its launcher, simulation logic, player component, settings, and player system.
+## Using Demos as Examples
 
-## Standalone Gradle Project
+The existing demos provide working patterns to inspect:
 
-If the goal is an independent application rather than another demo in this engine, create a separate Gradle project and add PhysicsEngine as a dependency or include its engine source as a module. This repository is currently configured as a single Gradle project and does not publish an engine artifact.
+- `demos.dots.Launcher` and `DotSimulationLogic` show a particle simulation with custom settings, components, types, and a custom system.
+- `demos.pong.Launcher` and `Simulation` show a compact interactive application with project-specific settings, player components, and a `PlayerSystem`.
+
+Use these as examples of engine integration, not as definitions of what all future projects must be. Pong is a demo, just like dots.
+
+## Separate Gradle Projects
+
+If an application needs its own lifecycle, dependency graph, release process, or artifact, it may be better as a separate Gradle project. This repository does not currently publish the engine as a dependency or define a multi-project Gradle build, so that packaging work would need to be designed separately.

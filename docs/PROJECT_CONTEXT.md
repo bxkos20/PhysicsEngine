@@ -4,9 +4,9 @@ This document is a portable briefing for an AI assistant working on this reposit
 
 ## Project at a Glance
 
-PhysicsEngine is a Java 21, 2D physics and simulation project. It contains a small ECS engine, a desktop LibGDX/LWJGL3 backend, and two runnable demos: an interacting-particle simulation and Pong. A third `demos/yourproject` package is a starter scaffold, not a finished game. It is a local graphical application, not a server or REST API.
+PhysicsEngine's primary goal is to provide a reusable 2D physics engine, with additional simulation capabilities, that can support many kinds of projects. The engine is the product; `demos/dots` and `demos/pong` are reference consumers that show how to use it. The empty `src/main/java/yourproject` package is reserved for actual projects hosted on the engine, not a demo or starter implementation. The current runtime is a local graphical application, not a server or REST API.
 
-The project aims to make simulation behavior configurable and separable from the rendering backend. It is an educational and evolving engine, not a production-grade general-purpose physics library.
+The project aims to make simulation behavior configurable and separable from the rendering backend. It is an evolving engine; its current implementation and limitations are described in this document and the linked architecture guide.
 
 ## Repository Map
 
@@ -22,9 +22,9 @@ src/main/java/
   engine/util/            Profiler and thread-local random utility
   engine/world/           World, WorldFactory, boards, spatial partitions
   backend/libgdx/         Desktop backend, LibGDX renderer, camera, keyboard input
-  demos/dots/             Particle demo and DotSystem
-  demos/pong/             Pong demo, settings, components, and player system
-  demos/yourproject/      Starter demo template
+  demos/dots/             Particle example and DotSystem
+  demos/pong/             Pong example, settings, components, and player system
+  yourproject/             Reserved for projects built on the engine (currently empty)
 src/test/java/engine/     ECS, components, graphics, math, physics, world tests
 docs/                     Architecture decision, API, operations, and project context
 ```
@@ -49,11 +49,11 @@ The graphical launchers require a desktop session with graphics support. `run` a
 
 ### Composition and initialization
 
-1. A demo launcher creates `Settings` and adds generic plus demo-specific settings.
+1. An application launcher creates `Settings` and adds generic plus application-specific settings. The launchers under `demos` show example setups.
 2. `EngineLauncher.launch(...)` selects `LauncherType.LIBGDX` and delegates to the backend.
 3. `BackendSimulation` reads screen, world, simulation, and rendering settings; it creates the LibGDX camera, renderer, input adapter, and `EngineSimulation`.
 4. `EngineSimulation` creates a `World` through `WorldFactory`, creates movement and collision systems, then calls `ISimulationLogic.start(world, keyInput, settings)`.
-5. The demo logic queues its entities with `World.addEntity(...)` and initializes demo-specific systems.
+5. The project or demo logic queues its entities with `World.addEntity(...)` and initializes application-specific systems.
 
 ### Simulation update
 
@@ -131,5 +131,5 @@ Documentation links and behavior claims should be checked against implementation
 - Follow the existing ECS, settings, and Gradle conventions. Prefer a focused change and focused tests over broad refactoring.
 - Avoid claiming strict linear collision complexity, complete AABB behavior, entity removal, environment configuration, HTTP endpoints, Docker deployment, or non-desktop runtime support.
 - Main unfinished areas are end-to-end AABB collision support, incremental grid updates, collision jitter under compression, settings validation, lifecycle APIs for adding/removing entities, and optional UI/features.
-- The intended layer rule is that demos and engine orchestration depend on contracts, while concrete platform behavior lives in adapters. This is not yet absolute: `WorldFactory` selects concrete board, collision, and spatial-partition classes.
-- See [layered architecture and execution flow](arquitecture/ARCHITECTURE.md), [new-demo guide](NEW_DEMO.md), [TODO.md](../TODO.md), [README.md](../README.md), [API reference](api/ENDPOINTS.md), and [configuration guide](operaciones/CONFIGURACION.md).
+- The intended layer rule is that projects, demos, and engine orchestration depend on contracts, while concrete platform behavior lives in adapters. This is not yet absolute: `WorldFactory` selects concrete board, collision, and spatial-partition classes.
+- See [layered architecture and execution flow](arquitecture/ARCHITECTURE.md), [projects and reference demos](NEW_DEMO.md), [TODO.md](../TODO.md), [README.md](../README.md), [API reference](api/ENDPOINTS.md), and [configuration guide](operaciones/CONFIGURACION.md).
