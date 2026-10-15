@@ -30,6 +30,8 @@ The primary goal is a reusable physics engine with additional capabilities that 
 
 ## Features
 
+- [ ] Implement camera movement through a dedicated system rather than handling camera motion only in the backend controller.
+- [ ] Provide a controlled mechanism for systems to modify runtime engine variables, such as the simulation time scale.
 - [ ] Add collision layers or masks to filter candidate pairs.
 - [ ] Add optional runtime particle spawning and removal.
 - [ ] Add a lightweight in-app debug UI for simulation settings and profiling.
