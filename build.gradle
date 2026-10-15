@@ -21,14 +21,14 @@ java {
 }
 
 application {
-    mainClass = project.findProperty('mainClass') ?: 'pong.Launcher'
+    mainClass = project.findProperty('mainClass') ?: 'demos.pong.Launcher'
 }
 
 tasks.register('runLauncher', JavaExec) {
     group = 'application'
     description = 'Runs the selected Launcher class. Use -PmainClass=package.Launcher'
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = project.findProperty('mainClass') ?: 'pong.Launcher'
+    mainClass = project.findProperty('mainClass') ?: 'demos.pong.Launcher'
 }
 
 ext {

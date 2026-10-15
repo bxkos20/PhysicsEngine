@@ -1,6 +1,6 @@
 # Physics Engine
 
-A 2D physics and simulation engine written in Java 21. The project combines a small Entity-Component-System (ECS) core, configurable world geometry, collision processing, and a LibGDX desktop renderer. It is both an engine-learning project and a runnable sandbox with particle and Pong simulations.
+A 2D physics and simulation engine written in Java 21. The project combines a small Entity-Component-System (ECS) core, configurable world geometry, collision processing, and a LibGDX desktop renderer. It is both an engine-learning project and a runnable sandbox with particle and Pong demos.
 
 ## Current Capabilities
 
@@ -37,8 +37,9 @@ src/main/java/
         util/                Profiling and random utilities
         world/               World, factory, boards, and spatial partition
     backend/libgdx/         LibGDX launcher, input, camera, and renderer
-    demos/dots/             Interacting-particle simulation
-    pong/                   Pong simulation
+    demos/dots/             Interacting-particle demo
+    demos/pong/             Pong demo
+    demos/yourproject/      Runnable starter demo scaffold
 src/test/java/engine/     ECS, math, physics, board, and world tests
 docs/                     Architecture, API, operations, and project context
 ```
@@ -56,7 +57,7 @@ The graphical applications require a desktop environment that can create a LibGD
 
 ## Run a Simulation
 
-Pong is the default application entry point:
+Pong is a demo and is the default application entry point:
 
 ```bash
 ./gradlew run
@@ -71,7 +72,7 @@ Select the particle demo explicitly:
 The repository also defines a dedicated launcher task:
 
 ```bash
-./gradlew runLauncher -PmainClass=pong.Launcher
+./gradlew runLauncher -PmainClass=demos.pong.Launcher
 ./gradlew runLauncher -PmainClass=demos.dots.Launcher
 ```
 
@@ -89,6 +90,12 @@ An `EngineSimulation.update(dt)` performs the following work:
 Rendering is a separate call. `RendererSystem` draws entities that have both transform and renderer components. The LibGDX backend drives update and render using fixed-step accumulators and the values in `SimulationSettings`.
 
 An entity is a `GameObject` with components such as `TransformComponent`, `PhysicsComponent`, `ColliderComponent`, and `RendererComponent`. Components hold state; systems own processing. `World.addEntity` queues additions until the next world update. The current world API does not provide entity removal.
+
+The code is organized in layers: demo/application code depends on engine contracts; the engine core owns ECS, world, math, and physics rules; backend adapters implement rendering and input interfaces. Higher-level simulation code should depend on abstractions rather than LibGDX implementations. This boundary is in place for renderer and input, while `WorldFactory` still chooses concrete board, collision, and partition implementations. See [Layered Architecture and Execution Flow](docs/arquitecture/ARCHITECTURE.md).
+
+## Add a Demo
+
+In this repository, a new project means a new runnable simulation under `src/main/java/demos/<lowercase-name>/`, not a separate Gradle build. The starter implementation lives in `demos/yourproject`; setup steps and package responsibilities are in [Creating a New Demo](docs/NEW_DEMO.md).
 
 ## Configuration
 
@@ -108,7 +115,9 @@ The dots launcher currently configures a 2500 x 2500 toroidal world, elastic col
 ## Documentation
 
 - [Project context for AI assistants](docs/PROJECT_CONTEXT.md)
-- [Architecture decision record: technology stack](docs/arquitectura/ADR-001-stack-tecnologico.md)
+- [Layered architecture and execution flow](docs/arquitecture/ARCHITECTURE.md)
+- [Creating a new demo](docs/NEW_DEMO.md)
+- [Architecture decision record: technology stack](docs/arquitecture/ADR-001-stack-tecnologico.md)
 - [Programmatic API reference](docs/api/ENDPOINTS.md)
 - [Configuration and operations](docs/operaciones/CONFIGURACION.md)
 - [Project TODO and roadmap](TODO.md)

@@ -30,7 +30,7 @@ The launcher values override defaults by adding instances to `Settings`:
 
 | Launcher | World | Simulation-specific settings |
 |---|---|---|
-| `pong.Launcher` | 1000 x 500, `EDGED`, elastic collision, grid size 0 (factory-derived) | Default `PongSettings`; multithreading enabled. |
+| `demos.pong.Launcher` | 1000 x 500, `EDGED`, elastic collision, grid size 0 (factory-derived) | Default `PongSettings`; multithreading enabled. |
 | `demos.dots.Launcher` | 2500 x 2500, `TOROIDAL`, elastic collision, grid size 5 | 5000 dots, 10 types, radius 2.5, interaction strength 1, interaction distances 10 and 50; 1920 x 1080 screen. |
 
 The dots demo's `DotSettings` is not part of `Settings.createDefault()` and must be added by its launcher. The Pong demo similarly adds `PongSettings`.
@@ -52,9 +52,9 @@ Use the included Gradle Wrapper and a Java 21 JDK:
 ```bash
 ./gradlew build
 ./gradlew test
-./gradlew run                         # pong.Launcher
+./gradlew run                         # demos.pong.Launcher
 ./gradlew run -PmainClass=demos.dots.Launcher
-./gradlew runLauncher -PmainClass=pong.Launcher
+./gradlew runLauncher -PmainClass=demos.pong.Launcher
 ```
 
 The graphical launchers need a desktop graphics environment. The dedicated `runLauncher` task uses the same `mainClass` project property as `run`.

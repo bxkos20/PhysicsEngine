@@ -70,7 +70,7 @@ World(Board board, Collision collision, GridPartition gridPartition)
 | `CollisionSystem` | Uses the spatial partition for broad-phase candidates and a `Collision` strategy for collision checks and response. |
 | `RendererSystem` | Draws entities with transform and renderer components through `IRenderer`. |
 
-The base `engine.ecs.systems.System` filters entities by required component signature. It can process eligible work sequentially or use a shared fixed thread pool when threading is enabled. `CollisionSystem` gathers candidate pairs in parallel when configured to do so and resolves them sequentially.
+The base `engine.ecs.systems.SystemECS` filters entities by required component signature. It can process eligible work sequentially or use a shared fixed thread pool when threading is enabled. `CollisionSystem` gathers candidate pairs in parallel when configured to do so and resolves them sequentially.
 
 ### Collision limitation
 
@@ -101,4 +101,4 @@ particle.addComponent(new RendererComponent(color, shape));
 world.addEntity(particle);
 ```
 
-The entity becomes active at the next world update. For a complete runnable setup, start from `pong.Launcher` or `demos.dots.Launcher`, which assemble settings and invoke `EngineLauncher`.
+The entity becomes active at the next world update. For a complete runnable setup, start from `demos.pong.Launcher`, `demos.dots.Launcher`, or the `demos.yourproject` starter scaffold; these assemble settings and invoke `EngineLauncher`.

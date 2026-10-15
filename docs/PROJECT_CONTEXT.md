@@ -4,7 +4,7 @@ This document is a portable briefing for an AI assistant working on this reposit
 
 ## Project at a Glance
 
-PhysicsEngine is a Java 21, 2D physics and simulation project. It contains a small ECS engine, a desktop LibGDX/LWJGL3 backend, and two runnable simulations: an interacting-particle demo and a basic Pong simulation. It is a local graphical application, not a server or REST API.
+PhysicsEngine is a Java 21, 2D physics and simulation project. It contains a small ECS engine, a desktop LibGDX/LWJGL3 backend, and two runnable demos: an interacting-particle simulation and Pong. A third `demos/yourproject` package is a starter scaffold, not a finished game. It is a local graphical application, not a server or REST API.
 
 The project aims to make simulation behavior configurable and separable from the rendering backend. It is an educational and evolving engine, not a production-grade general-purpose physics library.
 
@@ -23,7 +23,8 @@ src/main/java/
   engine/world/           World, WorldFactory, boards, spatial partitions
   backend/libgdx/         Desktop backend, LibGDX renderer, camera, keyboard input
   demos/dots/             Particle demo and DotSystem
-  pong/                   Pong simulation, settings, and player system
+  demos/pong/             Pong demo, settings, components, and player system
+  demos/yourproject/      Starter demo template
 src/test/java/engine/     ECS, components, graphics, math, physics, world tests
 docs/                     Architecture decision, API, operations, and project context
 ```
@@ -37,9 +38,9 @@ Prerequisite: a Java 21 JDK. Use the checked-in Gradle Wrapper.
 ```bash
 ./gradlew build
 ./gradlew test
-./gradlew run                                  # default: pong.Launcher
+./gradlew run                                  # default: demos.pong.Launcher
 ./gradlew run -PmainClass=demos.dots.Launcher
-./gradlew runLauncher -PmainClass=pong.Launcher
+./gradlew runLauncher -PmainClass=demos.pong.Launcher
 ```
 
 The graphical launchers require a desktop session with graphics support. `run` and the custom `runLauncher` task both read the `mainClass` Gradle project property. JUnit Jupiter 5 tests run on the JUnit Platform. No JaCoCo task is configured.
@@ -72,7 +73,7 @@ Rendering is a separate `EngineSimulation.render(dt)` call. `RendererSystem` bat
 - `GameObject` is an entity with a unique integer ID, a `long` signature, and a fixed-size array of 32 component slots.
 - `ComponentRegistry` assigns process-wide IDs to component classes and maps them to signature bits.
 - Components are ordinary objects holding state. Common types are `TransformComponent`, `PhysicsComponent`, `ColliderComponent`, and `RendererComponent`.
-- `engine.ecs.systems.System` filters the active entity list using required component signatures.
+- `engine.ecs.systems.SystemECS` filters the active entity list using required component signatures.
 - `World.addEntity` queues insertion until the next update. `World.getGameObjects()` returns the mutable active list itself. There is no entity-removal API yet.
 
 ### Physics, boundaries, and collision
@@ -107,7 +108,7 @@ Rendering is a separate `EngineSimulation.render(dt)` call. `RendererSystem` bat
 
 Demo launchers override some defaults:
 
-- `pong.Launcher`: 1000 x 500 edged world, elastic collision, grid size 0 (factory derives a size), default Pong settings, multithreading enabled.
+- `demos.pong.Launcher`: 1000 x 500 edged world, elastic collision, grid size 0 (factory derives a size), default Pong settings, multithreading enabled.
 - `demos.dots.Launcher`: 2500 x 2500 toroidal world, grid size 5, 5000 dots, 10 types, radius 2.5, interaction strength 1, distance bounds 10 and 50, 1920 x 1080 screen.
 
 When `gridPartitionSize <= 0`, `WorldFactory` derives the grid cell size as `max(10, max(width, height) / 25)`. `DotSettings` and `PongSettings` are demo-specific settings and are not installed by `Settings.createDefault()`.
@@ -130,4 +131,5 @@ Documentation links and behavior claims should be checked against implementation
 - Follow the existing ECS, settings, and Gradle conventions. Prefer a focused change and focused tests over broad refactoring.
 - Avoid claiming strict linear collision complexity, complete AABB behavior, entity removal, environment configuration, HTTP endpoints, Docker deployment, or non-desktop runtime support.
 - Main unfinished areas are end-to-end AABB collision support, incremental grid updates, collision jitter under compression, settings validation, lifecycle APIs for adding/removing entities, and optional UI/features.
-- See [TODO.md](../TODO.md) for the tracked roadmap, [README.md](../README.md) for the project overview, [API reference](api/ENDPOINTS.md) for Java contracts, and [configuration guide](operaciones/CONFIGURACION.md) for defaults and launch commands.
+- The intended layer rule is that demos and engine orchestration depend on contracts, while concrete platform behavior lives in adapters. This is not yet absolute: `WorldFactory` selects concrete board, collision, and spatial-partition classes.
+- See [layered architecture and execution flow](arquitecture/ARCHITECTURE.md), [new-demo guide](NEW_DEMO.md), [TODO.md](../TODO.md), [README.md](../README.md), [API reference](api/ENDPOINTS.md), and [configuration guide](operaciones/CONFIGURACION.md).
