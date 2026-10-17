@@ -2,10 +2,11 @@ package backend.libgdx.app;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+
 import engine.app.backend.IBackendLauncher;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.Settings;
-import engine.config.implementations.ScreenSettings;
+import engine.config.settings.Settings;
+import engine.config.settings.implementations.ScreenSettings;
 
 /**
  * Application entry point for the LibGDX-based physics simulation.

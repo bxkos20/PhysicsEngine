@@ -1,6 +1,6 @@
 package engine.world;
 
-import engine.config.implementations.WorldSettings;
+import engine.config.settings.implementations.WorldSettings;
 import engine.physics.Collision;
 import engine.physics.ElasticCollision;
 import engine.world.board.Board;

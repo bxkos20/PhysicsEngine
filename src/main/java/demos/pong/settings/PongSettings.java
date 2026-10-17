@@ -1,6 +1,6 @@
 package demos.pong.settings;
 
-import engine.config.ISettings;
+import engine.config.settings.ISettings;
 
 /**
  * Contains all configurable settings for the Pong simulation.

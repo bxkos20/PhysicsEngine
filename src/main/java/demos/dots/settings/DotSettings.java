@@ -1,6 +1,6 @@
 package demos.dots.settings;
 
-import engine.config.ISettings;
+import engine.config.settings.ISettings;
 
 public class DotSettings implements ISettings {
     public float defaultDotRadius;

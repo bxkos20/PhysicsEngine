@@ -3,9 +3,9 @@ package demos.pong;
 import demos.pong.settings.PongSettings;
 import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;
-import engine.config.Settings;
-import engine.config.implementations.PerformanceSettings;
-import engine.config.implementations.WorldSettings;
+import engine.config.settings.Settings;
+import engine.config.settings.implementations.PerformanceSettings;
+import engine.config.settings.implementations.WorldSettings;
 
 public class Launcher {
     public static void main(String[] args) {

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import engine.app.implementation.ISimulationLogic;
-import engine.config.Settings;
-import engine.config.implementations.PerformanceSettings;
-import engine.config.implementations.WorldSettings;
+import engine.config.settings.Settings;
+import engine.config.settings.implementations.PerformanceSettings;
+import engine.config.settings.implementations.WorldSettings;
 import engine.ecs.GameObject;
 import engine.ecs.systems.SystemECS;
 import engine.ecs.systems.implementations.CollisionSystem;

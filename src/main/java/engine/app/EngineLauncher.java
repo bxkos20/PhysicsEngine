@@ -3,7 +3,7 @@ package engine.app;
 import engine.app.backend.IBackendLauncher;
 import engine.app.backend.LauncherType;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.Settings;
+import engine.config.settings.Settings;
 
 public abstract class EngineLauncher {
 

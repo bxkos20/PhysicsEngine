@@ -13,7 +13,7 @@ import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.rawDataMesh.RawDataMesh;
 import backend.libgdx.render.shapes.MeshBatch;
 import backend.libgdx.render.shapes.ShapeRegistry;
-import engine.config.implementations.RenderingSettings;
+import engine.config.settings.implementations.RenderingSettings;
 import engine.graphics.Color;
 import engine.graphics.Shape;
 import engine.graphics.interfaces.ICamera;

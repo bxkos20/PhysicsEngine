@@ -3,10 +3,10 @@ package demos.dots;
 import demos.dots.settings.DotSettings;
 import engine.app.EngineLauncher;
 import engine.app.backend.LauncherType;
-import engine.config.Settings;
-import engine.config.implementations.ScreenSettings;
-import engine.config.implementations.SimulationSettings;
-import engine.config.implementations.WorldSettings;
+import engine.config.settings.Settings;
+import engine.config.settings.implementations.ScreenSettings;
+import engine.config.settings.implementations.SimulationSettings;
+import engine.config.settings.implementations.WorldSettings;
 
 public class Launcher {
     public static void main(String[] args) {

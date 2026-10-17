@@ -1,10 +1,14 @@
 // Nuevo archivo: engine/config/Settings.java
-package engine.config;
-
-import engine.config.implementations.*;
+package engine.config.settings;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import engine.config.settings.implementations.PerformanceSettings;
+import engine.config.settings.implementations.RenderingSettings;
+import engine.config.settings.implementations.ScreenSettings;
+import engine.config.settings.implementations.SimulationSettings;
+import engine.config.settings.implementations.WorldSettings;
 
 public class Settings {
     private final Map<Class<? extends ISettings>, ISettings> settingsMap = new HashMap<>();

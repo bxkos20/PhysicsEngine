@@ -1,6 +1,6 @@
-package engine.config.implementations;
+package engine.config.settings.implementations;
 
-import engine.config.ISettings;
+import engine.config.settings.ISettings;
 
 public class SimulationSettings implements ISettings {
     public float fixedTimestepSimulation;

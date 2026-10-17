@@ -9,11 +9,11 @@ import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.camera.LibGDXCamera;
 import engine.app.EngineSimulation;
 import engine.app.implementation.ISimulationLogic;
-import engine.config.Settings;
-import engine.config.implementations.RenderingSettings;
-import engine.config.implementations.ScreenSettings;
-import engine.config.implementations.SimulationSettings;
-import engine.config.implementations.WorldSettings;
+import engine.config.settings.Settings;
+import engine.config.settings.implementations.RenderingSettings;
+import engine.config.settings.implementations.ScreenSettings;
+import engine.config.settings.implementations.SimulationSettings;
+import engine.config.settings.implementations.WorldSettings;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.inputs.IKeyInput;
@@ -42,7 +42,7 @@ public class BackendSimulation extends ApplicationAdapter {
     /**
      * Specific simulation logic, independent of the engine and backend
      */
-    private ISimulationLogic simulationLogic;
+    private final ISimulationLogic simulationLogic;
 
     /**
      * Core simulation logic, independent of rendering backend

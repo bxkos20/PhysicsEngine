@@ -1,11 +1,11 @@
 package engine.app.implementation;
 
-import engine.config.Settings;
+import java.util.List;
+
+import engine.config.settings.Settings;
 import engine.ecs.GameObject;
 import engine.inputs.IKeyInput;
 import engine.world.World;
-
-import java.util.List;
 
 /**
  * Interface for simulation logic implementations.
