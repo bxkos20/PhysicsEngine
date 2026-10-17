@@ -9,6 +9,7 @@ import demos.dots.settings.DotSettings;
 import demos.dots.systems.DotSystem;
 import demos.dots.types.DotType;
 import engine.app.implementation.ISimulationLogic;
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.config.settings.implementations.PerformanceSettings;
 import engine.config.settings.implementations.WorldSettings;
@@ -33,7 +34,7 @@ public class DotSimulationLogic implements ISimulationLogic {
     private DotSystem dotSystem;
     
     @Override
-    public void start(World world, IKeyInput keyInput, Settings settings) {
+    public void start(World world, IKeyInput keyInput, Settings settings, Parameters parameters) {
         DotSettings dotSettings = settings.get(DotSettings.class);
 
         dotSystem = new DotSystem(settings.get(PerformanceSettings.class).enableMultithreading,

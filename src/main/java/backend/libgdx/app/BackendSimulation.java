@@ -7,32 +7,20 @@ import backend.libgdx.inputs.LibGDXKeyInputs;
 import backend.libgdx.render.Renderer;
 import backend.libgdx.render.camera.CameraController;
 import backend.libgdx.render.camera.LibGDXCamera;
+import engine.app.EngineRunner;
 import engine.app.EngineSimulation;
 import engine.app.implementation.ISimulationLogic;
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.config.settings.implementations.RenderingSettings;
 import engine.config.settings.implementations.ScreenSettings;
-import engine.config.settings.implementations.SimulationSettings;
 import engine.config.settings.implementations.WorldSettings;
 import engine.graphics.interfaces.ICamera;
 import engine.graphics.interfaces.IRenderer;
 import engine.inputs.IKeyInput;
 
 /**
- * Main controller for the physics simulation, bridging LibGDX's game loop
- * with the engine-agnostic {@link EngineSimulation}.
- *
- * <p>Implements a fixed timestep game loop with accumulator pattern to ensure
- * deterministic physics regardless of frame rate variations.</p>
- *
- * <h3>Controls:</h3>
- * <ul>
- *   <li>UP/DOWN - Multiply/divide time scale by 2</li>
- *   <li>LEFT/RIGHT - Increment/decrement time scale by 1</li>
- *   <li>P - Toggle pause</li>
- *   <li>R - Toggle rendering</li>
- *   <li>E - Randomize dot interactions</li>
- * </ul>
+ * Adapts LibGDX's application lifecycle and rendering/input services to the engine.
  *
  * @see EngineSimulation
  * @see engine.world.World
@@ -84,42 +72,18 @@ public class BackendSimulation extends ApplicationAdapter {
      */
     private final int worldHeight;
 
-    /**
-     * Time multiplier for simulation speed control (default: 1.0)
-     */
-    public float timeScale;
-
-    /**
-     * Toggle rendering on/off for performance testing
-     */
-    public boolean render = true;
-
-    /**
-     * Toggle simulation update on/off
-     */
-    public boolean pause = false;
-
-    /**
-     * Accumulated time for fixed timestep physics
-     */
-    private float simulationAccumulator = 0f;
-
-    /**
-     * Accumulated time for fixed timestep rendering
-     */
-    private float renderAccumulator = 0f;
-
-    private final float maxFrameRate;
-    private final float RENDERER_FIXED_TIME_STEP;
-    private final float SIMULATION_FIXED_TIME_STEP;
+    private EngineRunner engineRunner;
 
     private final Settings settings;
+
+    private final Parameters parameters;
 
     /**
      * Creates the simulation controller with a pre-configured simulation core.
      */
-    public BackendSimulation(ISimulationLogic simulationLogic, Settings settings) {
+    public BackendSimulation(ISimulationLogic simulationLogic, Settings settings, Parameters parameters) {
         this.settings = settings;
+        this.parameters = parameters;
 
         // Extract dimensions from the simulation core
         WorldSettings worldSettings = settings.get(WorldSettings.class);
@@ -130,12 +94,6 @@ public class BackendSimulation extends ApplicationAdapter {
         ScreenSettings screenSettings = settings.get(ScreenSettings.class);
         this.displayWidht = screenSettings.width;
         this.displayHeight = screenSettings.height;
-
-        SimulationSettings simulationSettings = settings.get(SimulationSettings.class);
-        this.timeScale = simulationSettings.defaultTimescale;
-        this.maxFrameRate = simulationSettings.maxFrameTime;
-        this.RENDERER_FIXED_TIME_STEP = simulationSettings.fixedTimestepRendering;
-        this.SIMULATION_FIXED_TIME_STEP = simulationSettings.fixedTimestepSimulation;
 
         this.simulationLogic = simulationLogic;
     }
@@ -151,11 +109,13 @@ public class BackendSimulation extends ApplicationAdapter {
         keyInput = new LibGDXKeyInputs();
 
         //Create engineSimulation
-        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput, settings);
+        this.engineSimulation = new EngineSimulation(renderer, simulationLogic , keyInput, settings, parameters);
 
         // Setup camera controls
         cameraController = new CameraController(camera);
         Gdx.input.setInputProcessor(cameraController);
+
+        engineRunner = new EngineRunner(engineSimulation, parameters);
     }
 
     /**
@@ -173,28 +133,9 @@ public class BackendSimulation extends ApplicationAdapter {
     @Override
     public void render() {
         // Show FPS in title
-        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() + " - TimeScale: " + timeScale +
+        Gdx.graphics.setTitle("Simulation.Simulation - FPS: " + Gdx.graphics.getFramesPerSecond() +
                 " | " + engineSimulation.getProfilingInfo());
 
-        float frameTime = Math.min(Gdx.graphics.getDeltaTime(), maxFrameRate);
-
-        renderAccumulator += frameTime;
-        if (render) {
-            while (renderAccumulator >= RENDERER_FIXED_TIME_STEP) {
-                engineSimulation.render(RENDERER_FIXED_TIME_STEP);
-                renderAccumulator -= RENDERER_FIXED_TIME_STEP;
-            }
-        }
-
-        if (pause) return;
-
-        // Fixed timestep with accumulator
-        simulationAccumulator += frameTime * timeScale;
-
-        while (simulationAccumulator >= SIMULATION_FIXED_TIME_STEP) {
-            engineSimulation.update(SIMULATION_FIXED_TIME_STEP);
-            simulationAccumulator -= SIMULATION_FIXED_TIME_STEP;
-        }
-
+        engineRunner.run(Gdx.graphics.getDeltaTime());
     }
 }

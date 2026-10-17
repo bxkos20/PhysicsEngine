@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import engine.app.implementation.ISimulationLogic;
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.config.settings.implementations.PerformanceSettings;
 import engine.config.settings.implementations.WorldSettings;
@@ -47,7 +48,7 @@ public class EngineSimulation {
      *
      * @param renderer Renderer for drawing
      */
-    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput, Settings settings) {
+    public EngineSimulation(IRenderer renderer, ISimulationLogic simulationLogic, IKeyInput keyInput, Settings settings, Parameters parameters) {
         if (renderer == null) throw new IllegalArgumentException("Renderer cannot be null");
 
         this.simulationLogic = simulationLogic;
@@ -65,7 +66,7 @@ public class EngineSimulation {
         systems.add(new MovementSystem(multithreading, board));
         systems.add(new CollisionSystem(multithreading, world.gridPartition, board, world.collision));
 
-        simulationLogic.start(world, keyInput, settings);
+        simulationLogic.start(world, keyInput, settings, parameters);
     }
 
     /**

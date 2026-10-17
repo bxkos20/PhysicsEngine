@@ -8,6 +8,7 @@ import demos.pong.components.PlayerComponent;
 import demos.pong.settings.PongSettings;
 import demos.pong.systems.PlayerSystem;
 import engine.app.implementation.ISimulationLogic;
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.config.settings.implementations.WorldSettings;
 import engine.ecs.ComponentRegistry;
@@ -37,7 +38,7 @@ public class Simulation implements ISimulationLogic {
     GameObject ball = new GameObject();
 
     @Override
-    public void start(World world, IKeyInput keyInput, Settings settings) {
+    public void start(World world, IKeyInput keyInput, Settings settings, Parameters parameters) {
         WorldSettings worldSettings = settings.get(WorldSettings.class);
         PongSettings pongSettings = settings.get(PongSettings.class);
 

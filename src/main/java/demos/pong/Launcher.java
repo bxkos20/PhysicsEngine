@@ -18,7 +18,6 @@ public class Launcher {
                 .add(performanceSettings)
                 .add(pongSettings);
 
-
         Simulation simulation = new Simulation();
 
         EngineLauncher.launch(LauncherType.LIBGDX, simulation, settings);

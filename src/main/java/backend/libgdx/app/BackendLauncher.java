@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 
 import engine.app.backend.IBackendLauncher;
 import engine.app.implementation.ISimulationLogic;
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.config.settings.implementations.ScreenSettings;
 
@@ -22,7 +23,8 @@ public class BackendLauncher implements IBackendLauncher {
      * Application entry point.
      * Configures the LWJGL3 window and starts the simulation.
      */
-    public void launch(ISimulationLogic simulationLogic, Settings settings) {
+    @Override 
+    public void launch(ISimulationLogic simulationLogic, Settings settings, Parameters parameters) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 
         ScreenSettings screenSettings = settings.get(ScreenSettings.class);
@@ -39,7 +41,7 @@ public class BackendLauncher implements IBackendLauncher {
 
         // Start simulation with pre-created simulation core
         new Lwjgl3Application(
-                new BackendSimulation(simulationLogic, settings),
+                new BackendSimulation(simulationLogic, settings, parameters),
                 config
         );
     }

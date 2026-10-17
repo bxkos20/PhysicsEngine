@@ -1,4 +1,3 @@
-// Nuevo archivo: engine/config/Settings.java
 package engine.config.settings;
 
 import java.util.HashMap;

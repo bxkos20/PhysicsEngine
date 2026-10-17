@@ -2,6 +2,7 @@ package engine.app.implementation;
 
 import java.util.List;
 
+import engine.config.parameters.Parameters;
 import engine.config.settings.Settings;
 import engine.ecs.GameObject;
 import engine.inputs.IKeyInput;
@@ -26,7 +27,7 @@ public interface ISimulationLogic {
      * Called once during simulation initialization.
      * Should create all necessary entities and systems.
      */
-    void start(World world, IKeyInput keyInput, Settings settings);
+    void start(World world, IKeyInput keyInput, Settings settings, Parameters parameters);
 
     /**
      * Called every update cycle during simulation runtime.
